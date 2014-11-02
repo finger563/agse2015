@@ -3,6 +3,11 @@ ImageProcessingDesign:
 This document covers the design of the AGSE software and all relevant information
 
 
+Motivation for Image Processing:
+--------------------------------
+Given (1) the prevalence of cameras and imaging hardware, which has (2) further increased the availability of high-performance image processing hardware and software, and (3) the versatility provided by imaging-based sensing, we have chosen to use a camera combined with image processing hardware and software as the base of the sample detection subsystem of the AGSE.
+
+
 Sample Description:
 -------------------
 The sample will be of an overall cylindrical shape. When viewed from all unoccluded non-coaxial angles, the sample will have as part of its defining shape outline two straight lines.  These lines' relative angle, theta, will converge to 0 (parallel) as phi, the angle between the view vector and the sample axial vector, approaches PI/2.  At all other angles the lines' infinite extrusions will intersect and produce theta.  Theta in image space provides the system with enough information to create the inverse perspective transform, which produces from theta the camera-space phi, providing the angle between the camera and the sample's axial vector.  
@@ -12,10 +17,12 @@ Furthermore, we can optionally improve the sample detection by making one of two
 
 Relevant Object Detection Methods:
 ----------------------------------
-The main classes of image-based object detection and segmentation we have available utilize as their base functions one or more of the following: (1) color segmentation, (2) depth segmentation, (3) edge sementation, (4) line segmentation.  
+The main classes of image-based object detection and segmentation we have available utilize as their base functions one or more of the following: (1) color segmentation, (2) depth segmentation, (3) edge sementation, (4) line segmentation.  Color segmentation in its basic form assumes that an object has a uniform diffuse color which is distinct from the background of the image.  Depth Segmentation in its basic form asssumes that an object has a uniform perceived depth or perceived depth profile which is distinct from the background depth or depth profile of the image.  Edge segmenation in its basic form segments the image using a combination of color and contrast and produces edges between each segment of the image.  Line Segmentation can be an extension of edge segmentation which filters out all segment edges whose straight lengths fall below some threshold.  
+
 
 Chosen Object Detection Algorithms:
 -----------------------------------
+Given the image-space sample description provided above, we have chosen to use line segmentation as the base of the sample detection software subsystem of the AGSE.
 
 
 Algorithm I/O:
