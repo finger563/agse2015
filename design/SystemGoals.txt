@@ -1,0 +1,18 @@
+SystemGoals:
+============
+This Document describes the overall goals of the AGSE software system.
+
+* Verify Subsystem Functionality
+* Detect the sample from an image
+** Position
+** Relative orientation
+* Detect the Payload Bay from an image
+** Position
+** Relative orientation
+* Navigate to sample
+* Navigate to Payload Bay
+* Open Payload Bay
+* Verify sample aquisition
+* Verify sample insertion
+* Close Payload Bay
+* Minimize Sample Hold Time

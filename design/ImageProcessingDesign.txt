@@ -1,0 +1,22 @@
+ImageProcessingDesign:
+======================
+This document covers the design of the AGSE software and all relevant information
+
+
+Sample Description:
+-------------------
+The sample will be of an overall cylindrical shape. When viewed from all unoccluded non-coaxial angles, the sample will have as part of its defining shape outline two straight lines.  These lines' relative angle, theta, will converge to 0 (parallel) as phi, the angle between the view vector and the sample axial vector, approaches PI/2.  At all other angles the lines' infinite extrusions will intersect and produce theta.  Theta in image space provides the system with enough information to create the inverse perspective transform, which produces from theta the camera-space phi, providing the angle between the camera and the sample's axial vector.  
+
+Furthermore, we can optionally improve the sample detection by making one of two assumptions about the color of the sample.  Either we can assume the sample to be of uniform diffuse color, or we can assume the sample to have some defined pattern to the color of its surface.  
+
+
+Relevant Object Detection Methods:
+----------------------------------
+The main classes of image-based object detection and segmentation we have available utilize as their base functions one or more of the following: (1) color segmentation, (2) depth segmentation, (3) edge sementation, (4) line segmentation.  
+
+Chosen Object Detection Algorithms:
+-----------------------------------
+
+
+Algorithm I/O:
+--------------
