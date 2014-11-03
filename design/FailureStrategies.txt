@@ -20,7 +20,10 @@ Integration Issues:
 By utilizing a modular design and implementation approach (with respect to both hardware and software) we can independently develop smaller units of functionality and test their integration in a more well-defined manner to ensure that each component works and works together before proceeding futher with integration.  The use of unit tests for each component aids in this strategy.  
 
 Deadlines:
-By building the system in a modular manner and adding in more advanced features only as the basic features are guaranteed to work, we can ensure that at each stage of development we have a working system.  Should one stage not be able to be finished due to deadline issues, we can fall back to the previous working stage.  
+By building the system in a modular manner and adding in more advanced features only as the basic features are guaranteed to work, we can ensure that at each stage of development we have a working system.  Should one stage not be able to be finished due to deadline issues, we can fall back to the previous working stage.  Finally, we have developed an in-depth development and testing timeline which ensures that each team member has a task and that thier task is related to their areas of expertise.  
+
+Software Complexity and Developmental Bugs:
+Much of our code complexity will come from the image processing algorithms that we will be using.  To minimize the number of developental bugs and challenges will be starting our implementations using off-the-shelf algorithms as a base.  These will be provided as CUDA libraries, which enjoys a large user-base and many avenues of debugging and developmental assistance.  
 
 Run-Time:
 ---------
