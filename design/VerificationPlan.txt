@@ -1,0 +1,20 @@
+VerificationPlan:
+=================
+This Document describes the software verification plan for the AGSE.
+
+The software for the AGSE can be broken down into the following subsystems: (1) kinematics and actuator control, (2) sample detection, (3) and Payload Bay detection.  We will break the verification plan of the AGSE into smaller verification plans for each of those subsystems.
+
+
+Kinematics and Actuator Control:
+--------------------------------
+To verify the functionality of the kinematics and actuator control subsystem, we must ensure that it meets the following criteria: (1) the actuator control must, given as input a desired state, properly format the commands for the actuator to arrive at that state, and (2) the feedback must provide the capability to request the current state of each actuator's sensor and convert it to the current state of the system, and (3) the kinematics solver must, given a current AGSE state and a desired AGSE state, produce the sequence of actuator control inputs to transition between the two states.  Using these criteria, we can write unit tests which automatically verify each function according to the dependency tree.  For instance, the unit test for actuator control can be run independently of the unit test for feedback.  These two tests together however, provide not only the capability to run the unit tests for the kinematics solver but also can provide information about the state of each atuator.  If all of the unit tests for both the feedback and the actuator control fail, we can safely assume that there is an electronics error or other software error in the sysytem.  However, Working unit tests in either category show that the electronics and communications systems work between the processing board and the actuators, and that there is a bug in the system with failing unit tests.  
+
+
+Sample Detection:
+-----------------
+To verify the functionality of the sample detection subsystem, we must ensure that it meets the following criteria: (1) for each image processing algorithm, an input sample image (read from disk) must always produce the corresponding output sample image (also read from disk), (2) for the composite sample detection algorithm, a sample input image (read from disk) must always produce the sample output image (also read from disk), and finally (3) the sample detection algorithm should properly locate the sample in a laboratory test environment.  For the algorithm unit tests, the lack of a generated output image or a discrepancy between the sample output image and the generated output mage indicates test failure.  If all unit tests for (1) pass, the unit tests for (2) can be executed; similarly, if all unit tests for (2) pass, the unit tests for (3) can be executed.  
+
+
+Payload bay Detection:
+----------------------
+To verify the functionality of the payload bay detection software, the same criteria and unit tests can be used that were used by the sample detection verification.  All that is requried to be changed is the functions that are called by the unit tests and the sample dataset used as sample inputs and sample outputs.  
