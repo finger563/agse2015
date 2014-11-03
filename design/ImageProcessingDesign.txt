@@ -5,7 +5,7 @@ This document covers the design of the AGSE software and all relevant informatio
 
 Motivation for Image Processing:
 --------------------------------
-Given (1) the prevalence of cameras and imaging hardware, which has (2) further increased the availability of high-performance image processing hardware and software, and (3) the versatility provided by imaging-based sensing, we have chosen to use a camera combined with image processing hardware and software as the base of the sample detection subsystem of the AGSE.
+Given (1) the prevalence of cameras and imaging hardware, which has (2) further increased the availability of high-performance image processing hardware and software, and (3) the versatility provided by imaging-based sensing, we have chosen to use a camera combined with image processing hardware and software as the base of the sample detection subsystem of the AGSE.  This camera integrates directly with our main processing board, the NVIDIA Jetson TK1.  Furthermore the Jetson, designed to add high fidelity image processing to robotics applications, contains 192 parallel GPU cores which support both OpenGL and CUDA parallel programming and image processing applications. Parallel image processing, segmentation, and object detection algorithms have been heavily researched and developed using both CUDA and OpenGL, and provide us with a large base of users and application code.  
 
 
 Sample Description:
