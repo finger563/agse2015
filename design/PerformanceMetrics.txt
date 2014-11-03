@@ -1,0 +1,20 @@
+Performance Metrics:
+===================
+
+A fully functional AGSE needs to be analyzed to derive useful metrics that can help refine the design parameters. This section briefly describes the performance metrics of interest on each sub-system. 
+
+* Camera Feed Sampling Rate: We will identify a stable, minimum sampling rate at which the sensing camera feed is received and processed. This is the number of image frames per second that is inputted to the Image Processing sub-system. At each frame, a global detect-plan-move loop is executed until a globally relevant point in space is reached. Once the arm is moved to a desired location, a new frame (or set of frames) is analyzed and processed. In order to not damage the gripper or any physical object that is in close proximity to the gripper, the image processing unit that is responsible for actuation must receive camera input at a mininum rate relative to a unit of arm movement. 
+
+* Sample Detection Time: The Image Processing software uses line detection algorithms to identify the desired sample in a frame of camera input. Once detected, the control system triggers the actuation of the arm in order to move towards the sample. The interesting metric here is identifying the average-case time taken for an initialized AGSE to identify a sample on the ground and mark it as "detected". This elapsed time is dependent on the relative position of the sample from the AGSE and is a measure of the efficiency of the image processing and arm control. 
+
+* Payload Bay Detection Time: Similar to sample detection time, this is a measure of the average-case time taken for the AGSE to accurately identify the relative position of the payload bay. This is important to make sure that a retrieved sample is securely placed in the bay. 
+
+* Gripper Offset from Sample Center: The efficiency and accuracy of the arm control can be measured by identifying the maximum distance from the center of the sample to the center of the gripper base. The closer the gripper is to the center of the sample, the smaller will be this offset. The accuracy of sample gripping is important to secure the sample and not unintentionally drop it. 
+
+* Electric Power: Power requirements for a fully functional AGSE system is a metric that shows the efficiency of the system design. The minimum power required by the AGSE should be enough to sufficiently power all sub-system components but never more than a specifiable upper bound. Necessary precautionary measures are taken at power junctions to prevent damaging effects of unexpected power draws. 
+
+* Environmental Tolerance: Tolerance to environmental changes such as lighting show the robustness and repeatability of the AGSE system. Changes in lighting should not affect the sample or payload detection time. 
+
+* Incorrect Detection: This is an average-case count of the number of times the AGSE incorrectly identifies an unknown object as the desired sample. Comparisons are made against objects that have a similar shape but not the desired size or vice versa. Tested calibrations on the image processing should enable low probabilities for such failures leading to robust design. 
+
+* Repeatability: This is a measure of the number of times the AGSE can perform the sample retrieval operations on a specific scenario. This is observed for a set of scenarios to identify the repeatability and robustness of the run-time system. 
