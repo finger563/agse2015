@@ -27,3 +27,11 @@ Much of our code complexity will come from the image processing algorithms that 
 
 Run-Time:
 ---------
+Sample Detection Failures: 
+We plan on tackling inconsistencies in sample detection by running multiple off-the-shelf image processing algorithms (on every input image frame) that detect the target sample. The results obtained from either sequential or parallel multi-algorithm image processing provide a measure of confidence about the relative position and orientation of the target sample. An average position and orientation is chosen and the gripper is moved to this position. 
+
+Inconsistent State of the Control System: 
+The software design for the AGSE follows a strictly deterministic state machine. For every state, the system transitions into a deterministic and consistent new state. All state variables that dictate arm movement and image processing are stored in persistent memory. If the system reaches an inconsistent state where some system-level constraints are not satisfied, the control system rolls back to the nearest stable state. Indefinite control loops caused by propagating software faults are also detected and broken.  
+
+Component Failures: 
+System components such as the camera, processing and actuation units are integral to correct operation of the AGSE. Failures at the component-level are tackled by using (1) redundant sub-system units and (2) failure-tolerant software. Hardware-level redundancies are constrained by the overall power and weight specifications. Software-level redundancies provide a stable control system platform to handle memory corruptions and unexpected state inconsistencies. 
