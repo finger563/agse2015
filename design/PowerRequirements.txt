@@ -1,0 +1,9 @@
+PowerRequirements:
+==================
+This Document describes the power requirements for each component of the AGSE system.
+
+* NVIDIA Jetson TK1
+** 3 - 11 W
+* Logitech C920 USB 2.0 Webcam
+* Trossen LACT2P 12" Linear Actuator * 2
+* MX-28 Pro-Series Turntable
