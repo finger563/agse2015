@@ -1,0 +1,59 @@
+This section briefly describes aspects from existing scientific literature that inspired our system composition, elaborating on the implications of design choices in the various sub-systems such as image processing, grippers, manipulators and arm construction. The highest-priority system goal from the perspective of the AGSE sub-system is to design, implement and deploy a safety and mission-critical sample retrieval device. This device (1) surveys its surroundings to identify an object of interest, (2) plans a path to this object, (3) collects the object using a retrieval mechanism and (4) secures this object in a destination. The automation of the above sequence of steps along with the nature of the environment add layers of complexity to the design, including complex computer vision techniques, programmed intelligence and fault tolerance. We have surveyed the literature of robotics engineering to identify necessary considerations when designing and building our retrieval system. 
+
+(1) Computer Vision:
+One of the key motivations for using Computer Vision [1] techniques to identify and retrieve a foreign sample is the run-time automation that can be realized. It is often the case that obtaining significant remote access to deployed sub-systems on planets such as Mars is difficult and nondeterministic. For such systems, the level of automation directly influences the effective usefulness of the deployment. Computer Vision techniques have been applied to a heterogeneous range of systems such as Medical Robotics [2], Mobile emergency assistance [3], Industrial robotics [4] where the applications are as diverse as the processing algorithms. In Medical Robotics, imaging systems have been used for several image-guided invasive and non-invasive medical procedures [5], [6], [7] and [8]. The confidence required for the wide-scale use of such techniques stems from the robustness and repeatable applicability of the processing algorithms. Many of these techniques are not completely automated in order to meet safety requirements but are certainly guided by processed images obtained from controlled sensors. Path planning [9], [10] techniques that follow modular and theoretical image processing principles can be easily applied to domain-specific problems such as controlled sample retrieval. At its core, the retrieval problem can be broken down into (1) Sample Reachability and (2) Sample Manipulation. Sample Reachability is handled  by the image processing outputs that feed back and control the actuating motors. This also avoids the need for collision avoidance techniques such as proximity sensing []. Furthermore, the modularity of the processing techniques and the wide-scale availability of off-the-shelf image manipulation algorithms [11], [12] that interface with embedded system cameras provide the necessary foundations for a realiable and robust vision-based arm control sub-system for the sample retrieval problem. One of the main performance measures of interest here is the accuracy of the image guidance. This depends on not only the precision obtained from image processing but also the degrees of freedom that are available for actuation. Though mission-critical concerns such as cumulative failure probabilities and power-to-weight ratios have limited the extent to which our robotic arm is capable of moving, the precion obtained from image processing and perceived depth [13] will allow efficient path planning and guidance to the arm. 
+
+(2) Gripper Designs:
+The design of the AGSE gripper is influenced by a number of factors. Due to the remote nature of the device and the size of the target sample, we decided on a simple claw-based gripper similar to [14], [15]. Some of the design choices such as number of claws is determined based on the maximum allowable weight, power requirements and modularity of development as we can hot-swap gripper designs without changing much of the programmed microncontroller brain. We have also identified some interesting design principles that enable high versatility to the gripping such as nonholonomic gripping [16], grasping with slippage and handling objects with variances in mass, size and texture [17]. However, we have limited our design to be optimal for carrying the target sample (as defined for this project) to (1) simplify the design, (2) improve predictable movement and path planning towards the center of the sample, and (3) use modified off-the-shelf grippers that can be easily controlled, manipulated and replaced. Since the image processing software works in a closed loop with this gripper design, the size and shape of the gripper affects the points in space where the camera can be mounted on the arm (and therefore the viewing angles) and also the accuracy of the path planning. All of these reasons inspired our gripper choice and arm designs. 
+
+(3) Robotic Arm: 
+Our primary concern while designing the robotic arm was to consider a design where the arm itself was not part of the rocket that eventually took flight. This immediately removes several weight and power-related limitations of designs where the retrieving system is entirely within the confines of the rocket. Our secondary goal was to identify a stable and robust design that had sufficient degrees of freedom to reach a target within a defined radius while not being over-specified or over-built. This enabled us to build an arm that is similar in construction to the SCARA robotic arm designs [19], [20], [21] but using lead-screw guide-rails as used in other domains such as remote surgery techniques [22]. This removes part collission concerns and greatly simplifies the actuation along the coordinate axes. 
+
+
+
+References: 
+----------
+
+[1] Matthies, Larry, et al. "Computer vision on Mars." International Journal of Computer Vision 75.1 (2007): 67-92.
+
+[2] Ayache, Nicholas. "Medical Computer Vision, Virtual Reality and Robotics: Promising Research Tracks." BMVC. 1995.
+
+[3] Bonin-Font, Francisco, Alberto Ortiz, and Gabriel Oliver. "Visual navigation for mobile robots: A survey." Journal of intelligent and robotic systems 53.3 (2008): 263-296.
+
+[4] Cheng, Frank, and Xiaoting Chen. "Integration of 3D stereo vision measurements in industrial robot applications." International Conference on Engineering & Technology. 2008.
+
+[5] Widmann, G. "Image-guided surgery and medical robotics in the cranial area." revolution 17 (2007): 18.
+
+[6] Abolmaesumi, Purang, et al. "Image-guided control of a robot for medical ultrasound." Robotics and Automation, IEEE Transactions on 18.1 (2002): 11-23.
+
+[7] Adler Jr, John R., et al. "Image-guided robotic radiosurgery." Neurosurgery 44.6 (1999): 1299-1306.
+
+[8] Howe, Robert D., and Yoky Matsuoka. "Robotics for surgery." Annual Review of Biomedical Engineering 1.1 (1999): 211-240.
+
+[9] Ferguson, Dave, Maxim Likhachev, and Anthony Stentz. "A guide to heuristic-based path planning." Proceedings of the international workshop on planning under uncertainty for autonomous systems, international conference on automated planning and scheduling (ICAPS). 2005.
+
+[10] Ersson, Torvald, and Xiaoming Hu. "Path planning and navigation of mobile robots in unknown environments." Intelligent Robots and Systems, 2001. Proceedings. 2001 IEEE/RSJ International Conference on. Vol. 2. IEEE, 2001.
+
+[11] Herrington, Daniel. "Easy Image Processing Camera Interfacing for Robotics." CIRCUIT CELLAR (2003): 44-53.
+
+[12] Theis, Christoph, Ioannis Iossifidis, and Axel Steinhage. "Image processing methods for interactive robot control." Proc. IEEE Roman International Workshop on Robot-Human Interactive Communication. 2001.
+
+[13] Saxena, Ashutosh, Sung H. Chung, and Andrew Y. Ng. "3-d depth reconstruction from a single still image." International Journal of Computer Vision 76.1 (2008): 53-69.
+
+[14] Alqasemi, Redwan, Sebastian Mahler, and Rajiv Dubey. "A Double Claw Robotic End-Effector Design." Florida Conference on Recent Advances in Robotics. May. 2007.
+
+[15] Ramaiah, P. S., M. Venkateswara Rao, and G. V. Satyanarayana. "A microcontroller based four fingered robotic hand." International Journal of Artificial Intelligence & Applications (IJAIA) 2.2 (2011): 90-102.
+
+[16] Bicchi, Antonio, and Alessia Marigo. "Dexterous grippers: Putting nonholonomy to work for fine manipulation." The International Journal of Robotics Research 21.5-6 (2002): 427-442.
+
+[17] Ohol, S. S., and S. R. Kajale. "Simulation of Multifinger Robotic Gripper for Dynamic Analysis of Dexterous Grasping." Proceedings of the World Congress on Engineering and Computer Science, San Francisco. 2008.
+
+[18] Volpe, Richard, and Robert Ivlev. "A survey and experimental evaluation of proximity sensors for space robotics." Robotics and Automation, 1994. Proceedings., 1994 IEEE International Conference on. IEEE, 1994.
+
+[19] http://en.wikipedia.org/wiki/SCARA
+
+[20] Urrea, Claudio, and John Kern. "Modeling, Simulation and Control of a Redundant SCARA-Type Manipulator Robot." Int J Adv Robotic Sy 9.58 (2012).
+
+[21] Eliot, Elias, Deepak BBVL, and D. R. Parhi. "Design & Kinematic Analysis of an Articulated Robotic Manipulator." (2012).
+
+[22] Dinger, Steven, John Dickens, and Adam Pantanowitz. "Robotic Arm for Remote Surgery." arXiv preprint arXiv:1307.5641 (2013).
