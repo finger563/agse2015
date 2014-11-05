@@ -2,6 +2,15 @@ PowerRequirements:
 ==================
 This Document describes the power requirements for each component of the AGSE system.
 
+Solar power on Mars [1] is a function of the incident solar radiation, the thickness of the Martian atmosphere, and the makeup of the Martian atmosphere.  The thinness of the martian atmosphere helps to compensate for the increased perihelion of mars with respect to the surface-usable solar radiation.  Example data from the Viking Lander 1 site, indicated that during the middle of a midsummer solar day on mars, over 500W/m2 were available to solar collectors on the surface of Mars.  From 0800-1600 solar time, the irradiance exceeded 200 W/m2.  Conservatively, with a 10% efficient collector with an area of 1 m2, the system would have at its disposal,  20 W for the 8 hours between 0800 and 1600 solar time.  
+
+Further, given that the system will not require maximum power throughout the duration of the day, the excess engery harvested can be used to charge the system's batteries.  In this way, the system can remain functional despite inclement solar or atmospheric conditions.  
+
+These data were used to determine power goals for the AGSE system.  Given that the AGSE should operate remotely on the Martian surface, we consider design descisions which would enable such functionality.  Therefore we impose upon our design a constraint that the AGSE should consume no more than 20W, for both battery and solar power design considerations.  We will continue to refine our design to meet these criteria.  
+
+[1] : R. Haberle, C.P. McKay, O. Gwynne, D. Atkinson, G. Landis, R. Zurek, J. Pollack and J. Appelbaum, “Atmospheric Effects on the Utility of Solar Power on Mars,” Resources of Near Earth Space, 799-818. U. Arizona Press Space Science Series (1993).
+
+
 * NVIDIA Jetson TK1
 ** 3 - 11 W
 * Logitech C920 USB 2.0 Webcam
