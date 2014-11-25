@@ -8,6 +8,3 @@ OpenCV-based Real-time Canny Edge Detection:
 -   Low and high threshold sliders that decide the inclusion or
     rejection of detected edge
 -   Press Escape to quit application
-
-![Alt text](/sample_io.png?raw=true "Real-Time Edge Detection")
-
