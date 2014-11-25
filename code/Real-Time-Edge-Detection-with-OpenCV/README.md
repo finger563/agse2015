@@ -1,4 +1,4 @@
-OpenCV-based Real-time Canny Edge Detection:
+OpenCV-based Real-Time Canny Edge Detection:
 -------------------------------------------
 
 -   Periodically fetches webcam feed
@@ -8,3 +8,7 @@ OpenCV-based Real-time Canny Edge Detection:
 -   Low and high threshold sliders that decide the inclusion or
     rejection of detected edge
 -   Press Escape to quit application
+
+![Alt text](https://github.com/finger563/agse2015/blob/master/code/Real-Time-Edge-Detection-with-OpenCV/sample_io.jpg "Real-Time Edge Detection")
+
+
