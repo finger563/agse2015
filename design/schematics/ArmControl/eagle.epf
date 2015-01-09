@@ -349,9 +349,9 @@ UsedLibrary="C:/EAGLE-7.2.0/lbr/zilog.lbr"
 [Win_1]
 Type="Control Panel"
 Loc="450 249 1252 717"
-State=0
+State=2
 Number=0
 
 [Desktop]
-Screen="2100 1313"
+Screen="1680 1050"
 Window="Win_1"
