@@ -15,12 +15,11 @@ random.seed()
 
 msgs = [ 
     # LEN_L LEN_H INSTR ADDR_L ADDR_H VAL_L VAL_H
-    [ 0x07, 0x00, 0x03, 0x1e, 0x00, 0x2C, 0x01 ],   # move the damn thing
-    [ 0x07, 0x00, 0x03, 0x19, 0x00, 0x07, 0x00 ],   # turn the led on
-    [ 0x07, 0x00, 0x02, 0x25, 0x00, 0x02, 0x00 ],   # read current Pos (2B)
-    [ 0x07, 0x00, 0x02, 0x03, 0x00, 0x01, 0x00 ],   # read servo ID
-    [ 0x07, 0x00, 0x02, 0x00, 0x00, 0x02, 0x00 ],   # read model number
-    [ 0x07, 0x00, 0x82, 0x25, 0x00, 0x02, 0x00 ]    # sync read 
+    ["Moving Servo",[ 0x07, 0x00, 0x03, 0x1e, 0x00, 0x2C, 0x01 ]],   # move the damn thing
+    ["Setting LED",[ 0x07, 0x00, 0x03, 0x19, 0x00, 0x07, 0x00 ]],   # turn the led on
+    ["Reading Position",[ 0x07, 0x00, 0x02, 0x25, 0x00, 0x02, 0x00 ]],   # read current Pos (2B)
+    ["Reading ID",[ 0x07, 0x00, 0x02, 0x03, 0x00, 0x01, 0x00 ]],   # read servo ID
+    ["Reading Model Number",[ 0x07, 0x00, 0x02, 0x00, 0x00, 0x02, 0x00 ]]    # read model number
 ]
 
 def listToHex(dataList):
@@ -30,6 +29,36 @@ def listToHex(dataList):
 def strToHex(data):
     retStr = ':'.join(x.encode('hex') for x in data)
     return retStr
+
+def removeSentFromReceived(sentList,recvStr):
+    recv = ''
+    inRecvStr = False
+    for i in range(0,len(sentList)):
+        if int(sentList[i]) == ord(recvStr[i]):
+            inRecvStr = True
+        else:
+            inRecvStr = False
+            break
+    if inRecvStr == True:
+        recv = recvStr[len(sentList):]
+    return recv
+
+def getRelevantRecv(recvStr):
+    relevant = ''
+    indexID = len(header)
+    ID = ord(recvStr[indexID])
+    index = indexID + 1
+    lenMsg = ord(recvStr[index])
+    index += 1
+    lenMsg += ord(recvStr[index]) * 256
+    lenMsg = lenMsg - ( 1 + 1 + 2 ) # 1 for 0x55 (constant), 1 for error, and 2 for CRC bytes
+    index += 2 # skip the 0x55 byte
+    error = ord(recvStr[index])
+    index += 1
+    data = []
+    for i in range(0,lenMsg):
+        data.append(ord(recvStr[index + i]))
+    return ID,error,data
 
 crc_table = [
         0x0000, 0x8005, 0x800F, 0x000A, 0x801B, 0x001E, 0x0014, 0x8011,
@@ -81,9 +110,9 @@ if __name__=="__main__":
                         stopbits=serial.STOPBITS_ONE)
     ser.isOpen()
     for i in range(loopIterations):
-        msgs[0][-2] = random.randrange(255)
-        msgs[1][-2] = random.randrange(7)
-        for msg in msgs:
+        msgs[0][1][-2] = random.randrange(255)
+        msgs[1][1][-2] = random.randrange(7)
+        for method,msg in msgs:
             fullPacket = []
             for char in header:
                 fullPacket.append(char)
@@ -93,12 +122,17 @@ if __name__=="__main__":
             CRC = int(crc(fullPacket))
             fullPacket.append(CRC % 256)
             fullPacket.append((CRC >> 8) % 256)
-            print 'Writing message:\n\t' + listToHex(fullPacket)
+            print '\n{}:'.format(method) # + '\n\t' + listToHex(fullPacket)
             for char in fullPacket:
                 ser.write(chr(char))
             out = ''
             time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
-            print 'Received:\n\t' + strToHex(out)
+            recv = removeSentFromReceived(fullPacket,out)
+            ID,error,data = getRelevantRecv(recv)
+            #print 'Received:\n\t' + strToHex(recv)
+            print 'ID:\t{}'.format(ID)
+            print 'ERROR:\t{}'.format(error)
+            print 'DATA:\t{}'.format(listToHex(data))
     ser.close()
