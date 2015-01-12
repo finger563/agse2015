@@ -9,14 +9,17 @@ baudRate = 9600
 header = [ 0xFF, 0xFF, 0xFD, 0x0 ]
 broadcastID = [ 0xFE ]
 loopIterations = 2
+messageDelay = 1
 
 random.seed()
 
 msgs = [ 
-    # LEN_L LEN_H WRITE ADDR_L ADDR_H VAL_L VAL_H
+    # LEN_L LEN_H PACKET_VAL ADDR_L ADDR_H VAL_L VAL_H
     [ 0x07, 0x00, 0x03, 0x1e, 0x00, 0x2C, 0x01 ],   # move the damn thing
     [ 0x07, 0x00, 0x03, 0x19, 0x00, 0x07, 0x00 ],   # turn the led on
-    [ 0x07, 0x00, 0x02, 0x25, 0x00, 0x02, 0x00 ]    # read current Pos (2B)
+    [ 0x07, 0x00, 0x02, 0x25, 0x00, 0x02, 0x00 ],   # read current Pos (2B)
+    [ 0x07, 0x00, 0x02, 0x03, 0x00, 0x01, 0x00 ],   # read servo ID
+    [ 0x07, 0x00, 0x82, 0x25, 0x00, 0x02, 0x00 ]    # sync read 
 ]
 
 def listToHex(dataList):
@@ -93,7 +96,7 @@ if __name__=="__main__":
             for char in fullPacket:
                 ser.write(chr(char))
             out = ''
-            time.sleep(2)
+            time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
             print 'Received:\n\t' + strToHex(out)
