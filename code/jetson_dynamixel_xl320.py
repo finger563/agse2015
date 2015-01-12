@@ -2,17 +2,21 @@
 
 import time
 import serial
+import random
 
 serialPort = '/dev/ttyTHS0'
 baudRate = 9600
 header = [ 0xFF, 0xFF, 0xFD, 0x0 ]
 broadcastID = [ 0xFE ]
-loopIterations = 5
+loopIterations = 2
+
+random.seed()
 
 msgs = [ 
     # LEN_L LEN_H WRITE ADDR_L ADDR_H VAL_L VAL_H
     [ 0x07, 0x00, 0x03, 0x1e, 0x00, 0x2C, 0x01 ],   # move the damn thing
-    [ 0x07, 0x00, 0x03, 0x19, 0x00, 0x07, 0x00 ]       # turn the led on
+    [ 0x07, 0x00, 0x03, 0x19, 0x00, 0x07, 0x00 ],   # turn the led on
+    [ 0x07, 0x00, 0x02, 0x25, 0x00, 0x02, 0x00 ]    # read current Pos (2B)
 ]
 
 def listToHex(dataList):
@@ -73,6 +77,8 @@ if __name__=="__main__":
                         stopbits=serial.STOPBITS_ONE)
     ser.isOpen()
     for i in range(loopIterations):
+        msgs[0][-2] = random.randrange(255)
+        msgs[1][-2] = random.randrange(7)
         for msg in msgs:
             fullPacket = []
             for char in header:
@@ -87,7 +93,7 @@ if __name__=="__main__":
             for char in fullPacket:
                 ser.write(chr(char))
             out = ''
-            time.sleep(1)
+            time.sleep(2)
             while ser.inWaiting() > 0:
                 out += ser.read()
             print 'Received:\n\t' + strToHex(out)
