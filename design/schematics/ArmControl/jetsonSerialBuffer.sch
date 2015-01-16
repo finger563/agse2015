@@ -3672,19 +3672,30 @@ DIN A5, landscape with doc field</description>
 <sheets>
 <sheet>
 <plain>
+<text x="10.16" y="99.06" size="3.81" layer="91">Vanderbilt Aerospace Club : AGSE 
+Buffer for Serial Communication between
+NVIDIA Jetson TK1 and
+(1) The Servo Motors
+(2) The Arduino</text>
+<text x="10.16" y="81.28" size="1.778" layer="91">This circuit allows the communication of
+both Full- and Half-Duplex
+serial communication between 
+the NVIDIA Jetson, which uses 1.8V logic
+and the Servos and the Arduino which use
+TTL-level logic.</text>
 </plain>
 <instances>
-<instance part="T1" gate="G1" x="63.5" y="73.66"/>
-<instance part="T2" gate="G1" x="83.82" y="83.82"/>
-<instance part="R1" gate="G$1" x="50.8" y="73.66"/>
-<instance part="GND1" gate="1" x="66.04" y="66.04"/>
-<instance part="P+1" gate="VCC" x="76.2" y="121.92"/>
-<instance part="R2" gate="G$1" x="66.04" y="101.6" rot="R90"/>
-<instance part="R4" gate="G$1" x="86.36" y="101.6" rot="R90"/>
-<instance part="R5" gate="G$1" x="104.14" y="78.74" rot="R90"/>
-<instance part="R7" gate="G$1" x="104.14" y="55.88" rot="R90"/>
-<instance part="GND3" gate="1" x="86.36" y="76.2"/>
-<instance part="GND4" gate="1" x="104.14" y="45.72"/>
+<instance part="T1" gate="G1" x="76.2" y="55.88"/>
+<instance part="T2" gate="G1" x="96.52" y="66.04"/>
+<instance part="R1" gate="G$1" x="63.5" y="55.88"/>
+<instance part="GND1" gate="1" x="78.74" y="48.26"/>
+<instance part="P+1" gate="VCC" x="88.9" y="104.14"/>
+<instance part="R2" gate="G$1" x="78.74" y="83.82" rot="R90"/>
+<instance part="R4" gate="G$1" x="99.06" y="83.82" rot="R90"/>
+<instance part="R5" gate="G$1" x="116.84" y="60.96" rot="R90"/>
+<instance part="R7" gate="G$1" x="116.84" y="38.1" rot="R90"/>
+<instance part="GND3" gate="1" x="99.06" y="58.42"/>
+<instance part="GND4" gate="1" x="116.84" y="27.94"/>
 <instance part="FRAME2" gate="G$1" x="0" y="0"/>
 </instances>
 <busses>
@@ -3694,7 +3705,7 @@ DIN A5, landscape with doc field</description>
 <segment>
 <pinref part="T1" gate="G1" pin="B"/>
 <pinref part="R1" gate="G$1" pin="2"/>
-<wire x1="55.88" y1="73.66" x2="60.96" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="68.58" y1="55.88" x2="73.66" y2="55.88" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -3709,23 +3720,23 @@ DIN A5, landscape with doc field</description>
 <segment>
 <pinref part="R7" gate="G$1" pin="1"/>
 <pinref part="GND4" gate="1" pin="GND"/>
-<wire x1="104.14" y1="48.26" x2="104.14" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="30.48" x2="116.84" y2="33.02" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="JETSON_TX" class="0">
 <segment>
 <pinref part="R1" gate="G$1" pin="1"/>
-<wire x1="45.72" y1="73.66" x2="27.94" y2="73.66" width="0.1524" layer="91"/>
-<label x="27.94" y="73.66" size="1.778" layer="95"/>
+<wire x1="58.42" y1="55.88" x2="40.64" y2="55.88" width="0.1524" layer="91"/>
+<label x="40.64" y="55.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$3" class="0">
 <segment>
 <pinref part="T1" gate="G1" pin="C"/>
 <pinref part="R2" gate="G$1" pin="1"/>
-<wire x1="66.04" y1="96.52" x2="66.04" y2="83.82" width="0.1524" layer="91"/>
-<wire x1="66.04" y1="83.82" x2="66.04" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="66.04" y1="83.82" x2="81.28" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="78.74" x2="78.74" y2="66.04" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="66.04" x2="78.74" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="66.04" x2="93.98" y2="66.04" width="0.1524" layer="91"/>
 <pinref part="T2" gate="G1" pin="B"/>
 </segment>
 </net>
@@ -3733,35 +3744,35 @@ DIN A5, landscape with doc field</description>
 <segment>
 <pinref part="P+1" gate="VCC" pin="VCC"/>
 <pinref part="R2" gate="G$1" pin="2"/>
-<wire x1="66.04" y1="106.68" x2="66.04" y2="114.3" width="0.1524" layer="91"/>
-<wire x1="66.04" y1="114.3" x2="76.2" y2="114.3" width="0.1524" layer="91"/>
-<wire x1="76.2" y1="114.3" x2="76.2" y2="119.38" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="88.9" x2="78.74" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="78.74" y1="96.52" x2="88.9" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="96.52" x2="88.9" y2="101.6" width="0.1524" layer="91"/>
 <pinref part="R4" gate="G$1" pin="2"/>
-<wire x1="76.2" y1="114.3" x2="86.36" y2="114.3" width="0.1524" layer="91"/>
-<wire x1="86.36" y1="114.3" x2="86.36" y2="106.68" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="96.52" x2="99.06" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="99.06" y1="96.52" x2="99.06" y2="88.9" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="JETSON_RX" class="0">
 <segment>
 <pinref part="R7" gate="G$1" pin="2"/>
-<wire x1="104.14" y1="73.66" x2="104.14" y2="63.5" width="0.1524" layer="91"/>
-<wire x1="104.14" y1="63.5" x2="104.14" y2="60.96" width="0.1524" layer="91"/>
-<wire x1="104.14" y1="63.5" x2="83.82" y2="63.5" width="0.1524" layer="91"/>
-<label x="83.82" y="63.5" size="1.778" layer="95"/>
+<wire x1="116.84" y1="55.88" x2="116.84" y2="45.72" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="45.72" x2="116.84" y2="43.18" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="45.72" x2="96.52" y2="45.72" width="0.1524" layer="91"/>
+<label x="96.52" y="45.72" size="1.778" layer="95"/>
 <pinref part="R5" gate="G$1" pin="1"/>
 </segment>
 </net>
-<net name="SERVO" class="0">
+<net name="SERVO_AND_ARDUINO" class="0">
 <segment>
 <pinref part="R4" gate="G$1" pin="1"/>
 <pinref part="T2" gate="G1" pin="C"/>
-<wire x1="86.36" y1="96.52" x2="86.36" y2="93.98" width="0.1524" layer="91"/>
+<wire x1="99.06" y1="78.74" x2="99.06" y2="76.2" width="0.1524" layer="91"/>
 <pinref part="R5" gate="G$1" pin="2"/>
-<wire x1="86.36" y1="93.98" x2="86.36" y2="88.9" width="0.1524" layer="91"/>
-<wire x1="104.14" y1="83.82" x2="104.14" y2="93.98" width="0.1524" layer="91"/>
-<wire x1="104.14" y1="93.98" x2="86.36" y2="93.98" width="0.1524" layer="91"/>
-<wire x1="104.14" y1="93.98" x2="119.38" y2="93.98" width="0.1524" layer="91"/>
-<label x="111.76" y="93.98" size="1.778" layer="95"/>
+<wire x1="99.06" y1="76.2" x2="99.06" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="66.04" x2="116.84" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="76.2" x2="99.06" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="116.84" y1="76.2" x2="132.08" y2="76.2" width="0.1524" layer="91"/>
+<label x="124.46" y="76.2" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
@@ -3769,4 +3780,10 @@ DIN A5, landscape with doc field</description>
 </sheets>
 </schematic>
 </drawing>
+<compatibility>
+<note version="6.3" minversion="6.2.2" severity="warning">
+Since Version 6.2.2 text objects can contain more than one line,
+which will not be processed correctly with this version.
+</note>
+</compatibility>
 </eagle>
