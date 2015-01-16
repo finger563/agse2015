@@ -1,0 +1,8 @@
+Safety Design:
+==============
+
+The AGSE system monitors at all times a pause switch.  The activation of this pause switch, read by the main AGSE control board will send the entire system into a PAUSED state.  During this state, feedback will be provided to the user in the form of appropriately colored LED indicators with labels in the control panel.
+
+The code has been designed to respond immediately to the activation of the pause switch, and engineered to save its current state for the resuming of correct operation upon exiting the PAUSED state.  By minimizing the latency for communication between the subsystems of the AGSE we can provide proper propagation of the PAUSED state transition to all parts of the system to maximize safety.  
+
+Furthermore, we have developed code generators which function to produce reliable, reusable code based on system models we provide.  These models and generators utilize ROS, the Robot Operating System middleware, which runs on top of Linux to provide a communications abstraction layer.  ROS provides an open-source, widely used and well tested solution to robotic systems communication and integration.  
