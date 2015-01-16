@@ -1,0 +1,26 @@
+CDR: Changes Since PDR:
+=======================
+
+* Developed working prototypes of all mechanical systems, electrical systems, and software.  
+	* mechanical:
+		* horizontal, vertical carriages for the arm
+		* gripper 
+		* gripper linkage
+		* horizontal movement of the arm
+		* vertical movement of the arm
+		* angular movement of the arm
+		* angular movement of the wrist
+		* actuation of the gripping mechanism
+	* electrical:
+		* communication circuitry for:
+			* Jetson to XL-320 Servo
+			* Jetson to MX-28T Servo
+			* Jetson to Arduino
+		* Driver circuitry for the high-power horizontal and vertical linear actuators
+	* software:
+		* image-based object detection; GPU accelerated
+		* controls for:
+			* linear actuators (height, radial)
+			* wrist, gripper, and base servo motors
+* Performed unit tests of all mechanical, electrical, and software subsystems.
+* Performed integration tests for the AGSE system
