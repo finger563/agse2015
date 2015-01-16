@@ -11,15 +11,22 @@ broadcastID = [ 0x01 ]
 loopIterations = 1
 messageDelay = 1
 
-random.seed()
+makeRandom = True
+
+gripperPosSet = 0
+
+arduinoMsgs = [
+    'READ\n',
+    'WRITE:128,128,0\n'
+]
 
 msgs = [ 
-    # LEN_L LEN_H INSTR ADDR_L ADDR_H VAL_L VAL_H
-    ["Moving Servo",[ 0x07, 0x00, 0x03, 0x1e, 0x00, 0x2C, 0x01 ]],   # move the damn thing
-    ["Setting LED",[ 0x07, 0x00, 0x03, 0x19, 0x00, 0x07, 0x00 ]],   # turn the led on
-    ["Reading Position",[ 0x07, 0x00, 0x02, 0x25, 0x00, 0x02, 0x00 ]],   # read current Pos (2B)
-    ["Reading ID",[ 0x07, 0x00, 0x02, 0x03, 0x00, 0x01, 0x00 ]],   # read servo ID
-    ["Reading Model Number",[ 0x07, 0x00, 0x02, 0x00, 0x00, 0x02, 0x00 ]]    # read model number
+    #                          LEN_L LEN_H INSTR ADDR_L ADDR_H VAL_L VAL_H
+    ["Moving Servo",         [ 0x07, 0x00, 0x03, 0x1e, 0x00, 0x2C, 0x01 ]],   # move the damn thing
+    ["Setting LED",          [ 0x07, 0x00, 0x03, 0x19, 0x00, 0x07, 0x00 ]]   # turn the led on
+    #["Reading Position",     [ 0x07, 0x00, 0x02, 0x25, 0x00, 0x02, 0x00 ]],   # read current Pos (2B)
+    #["Reading ID",           [ 0x07, 0x00, 0x02, 0x03, 0x00, 0x01, 0x00 ]]   # read servo ID
+    #["Reading Model Number", [ 0x07, 0x00, 0x02, 0x00, 0x00, 0x02, 0x00 ]]    # read model number
 ]
 
 def listToHex(dataList):
@@ -109,9 +116,19 @@ if __name__=="__main__":
                         parity=serial.PARITY_NONE,
                         stopbits=serial.STOPBITS_ONE)
     ser.isOpen()
-    for i in range(loopIterations):
-        msgs[0][1][-2] = random.randrange(255)
-        msgs[1][1][-2] = random.randrange(7)
+    random.seed()
+    angle = 1000
+    angle2 = -200
+    vertPos = 100
+    vertPos2 = 430
+    while True:
+
+        if makeRandom == True:
+            msgs[0][1][-2] = random.randrange(255)
+            gripperPosSet = 0
+            msgs[0][1][-2] = gripperPosSet
+            msgs[1][1][-2] = random.randrange(7)
+
         for method,msg in msgs:
             fullPacket = []
             for char in header:
@@ -129,10 +146,97 @@ if __name__=="__main__":
             time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
-            recv = removeSentFromReceived(fullPacket,out)
-            ID,error,data = getRelevantRecv(recv)
-            #print 'Received:\n\t' + strToHex(recv)
-            print 'ID:\t{}'.format(ID)
-            print 'ERROR:\t{}'.format(error)
-            print 'DATA:\t{}'.format(listToHex(data))
+
+        #angle = -angle
+        arduinoMsgs[1] = "WRITE:{},{},{}\n".format(vertPos,250,angle)
+        for msg in arduinoMsgs:
+            for char in msg:
+                ser.write(char)
+            out = ''
+            time.sleep(messageDelay)
+            while ser.inWaiting() > 0:
+                out += ser.read()
+            if out != '':
+                #recv = removeSentFromReceived(msg,out)
+                print out
+
+        time.sleep(8)
+
+        if makeRandom == True:
+            msgs[0][1][-2] = random.randrange(255)
+            gripperPosSet = 255
+            msgs[0][1][-2] = gripperPosSet
+            msgs[1][1][-2] = random.randrange(7)
+
+        for method,msg in msgs:
+            fullPacket = []
+            for char in header:
+                fullPacket.append(char)
+            fullPacket.append(broadcastID[0])
+            for char in msg:
+                fullPacket.append(char)
+            CRC = int(crc(fullPacket))
+            fullPacket.append(CRC % 256)
+            fullPacket.append((CRC >> 8) % 256)
+            print '\n{}:'.format(method) # + '\n\t' + listToHex(fullPacket)
+            for char in fullPacket:
+                ser.write(chr(char))
+            out = ''
+            time.sleep(messageDelay)
+            while ser.inWaiting() > 0:
+                out += ser.read()
+
+        #angle = -angle
+        arduinoMsgs[1] = "WRITE:{},{},{}\n".format(vertPos2,250,angle)
+        for msg in arduinoMsgs:
+            for char in msg:
+                ser.write(char)
+            out = ''
+            time.sleep(messageDelay)
+            while ser.inWaiting() > 0:
+                out += ser.read()
+            if out != '':
+                print out
+
+        time.sleep(5)
+
+        #angle = -angle
+        arduinoMsgs[1] = "WRITE:{},{},{}\n".format(vertPos2,250,angle2)
+        for msg in arduinoMsgs:
+            for char in msg:
+                ser.write(char)
+            out = ''
+            time.sleep(messageDelay)
+            while ser.inWaiting() > 0:
+                out += ser.read()
+            if out != '':
+                print out
+
+        time.sleep(8)
+
+        if makeRandom == True:
+            msgs[0][1][-2] = random.randrange(255)
+            gripperPosSet = 0
+            msgs[0][1][-2] = gripperPosSet
+            msgs[1][1][-2] = random.randrange(7)
+
+        for method,msg in msgs:
+            fullPacket = []
+            for char in header:
+                fullPacket.append(char)
+            fullPacket.append(broadcastID[0])
+            for char in msg:
+                fullPacket.append(char)
+            CRC = int(crc(fullPacket))
+            fullPacket.append(CRC % 256)
+            fullPacket.append((CRC >> 8) % 256)
+            print '\n{}:'.format(method) # + '\n\t' + listToHex(fullPacket)
+            for char in fullPacket:
+                ser.write(chr(char))
+            out = ''
+            time.sleep(messageDelay)
+            while ser.inWaiting() > 0:
+                out += ser.read()
+        break
+
     ser.close()
