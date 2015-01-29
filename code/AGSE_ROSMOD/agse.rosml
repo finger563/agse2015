@@ -1,38 +1,38 @@
 workspace agse;
-package arm
+package agse_package
 {
     messages
     {
         msg gripperOrientation
         {
-            int theta;
+            int64 theta;
         }
         msg gripperState
         {
-            arm/gripperOrientation orientation;
-            arm/gripperPos position;
+            agse_package/gripperOrientation orientation;
+            agse_package/gripperPos position;
         }
         msg gripperPos
         {
-            float r;
-            float theta;
-            float z;
+            float32 r;
+            float32 theta;
+            float32 z;
         }
         msg sampleState
         {
-            arm/samplePosition pos;
-            arm/sampleOrientation orientation;
+            agse_package/samplePosition pos;
+            agse_package/sampleOrientation orientation;
         }
         msg samplePosition
         {
-            float r;
-            float theta;
-            float z;
+            float32 r;
+            float32 theta;
+            float32 z;
         }
         msg sampleOrientation
         {
-            float theta;
-            float phi;
+            float32 theta;
+            float32 phi;
         }
     }
     services
@@ -41,7 +41,7 @@ package arm
         {
             request
             {
-                int value;
+                int64 value;
             }
             response
             {
@@ -52,7 +52,7 @@ package arm
         {
             request
             {
-                int value;
+                int64 value;
             }
             response
             {
@@ -63,7 +63,7 @@ package arm
         {
             request
             {
-                int value;
+                int64 value;
             }
             response
             {
@@ -74,7 +74,7 @@ package arm
         {
             request
             {
-                int value;
+                int64 value;
             }
             response
             {
@@ -85,7 +85,7 @@ package arm
         {
             request
             {
-                int value;
+                int64 value;
             }
             response
             {
