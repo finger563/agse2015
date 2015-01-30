@@ -8,7 +8,7 @@ serialPort = '/dev/ttyTHS0'
 baudRate = 9600
 header = [ 0xFF, 0xFF, 0xFD, 0x0 ]
 broadcastID = [ 0x01 ]
-loopIterations = 1
+loopIterations = 10
 messageDelay = 1
 
 makeRandom = True
@@ -118,9 +118,11 @@ if __name__=="__main__":
     ser.isOpen()
     random.seed()
     angle = 1000
-    angle2 = -200
+    #angle2 = -200
+    angle2 = 1000
     vertPos = 100
     vertPos2 = 430
+    gripperClosedPos = 255
     while True:
 
         if makeRandom == True:
@@ -164,7 +166,7 @@ if __name__=="__main__":
 
         if makeRandom == True:
             msgs[0][1][-2] = random.randrange(255)
-            gripperPosSet = 255
+            gripperPosSet = gripperClosedPos
             msgs[0][1][-2] = gripperPosSet
             msgs[1][1][-2] = random.randrange(7)
 
@@ -237,6 +239,6 @@ if __name__=="__main__":
             time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
-        break
+        #break
 
     ser.close()
