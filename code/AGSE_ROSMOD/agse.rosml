@@ -3,21 +3,6 @@ package agse_package
 {
     messages
     {
-        msg gripperOrientation
-        {
-            int64 theta;
-        }
-        msg gripperState
-        {
-            agse_package/gripperOrientation orientation;
-            agse_package/gripperPos position;
-        }
-        msg gripperPos
-        {
-            float32 r;
-            float32 theta;
-            float32 z;
-        }
         msg sampleState
         {
             agse_package/samplePosition pos;
@@ -70,7 +55,7 @@ package agse_package
                 bool settingComplete;
             }
         }
-        srv setRotation
+        srv setGripperRotation
         {
             request
             {
@@ -81,7 +66,7 @@ package agse_package
                 bool settingComplete;
             }
         }
-        srv setGripperRotation
+        srv setArmRotation
         {
             request
             {
@@ -90,6 +75,14 @@ package agse_package
             response
             {
                 bool settingComplete;
+            }
+        }
+        srv sampleStateFromImage
+        {
+            response
+            {
+                bool foundSample;
+                agse_package/sampleState sample;
             }
         }
     }
@@ -103,10 +96,6 @@ package agse_package
         {
             provides setVerticalPos;
         }
-        component rotational_actuator_controller
-        {
-            provides setRotation;
-        }
         component gripper_controller
         {
             provides setGripperPos;
@@ -114,18 +103,28 @@ package agse_package
         }
         component arm_controller
         {
-            requires setRotation;
             requires setRadialPos;
             requires setVerticalPos;
             requires setGripperPos;
             requires setGripperRotation;
-            publisher<gripperState> gripperState_pub;
-            subscriber<sampleState> sampleState_sub;
+            requires setArmRotation;
+            requires sampleStateFromImage;
+            timer armTimer
+            {
+                period = 0.02s;
+            }
         }
         component image_processor
         {
-            publisher<sampleState> sampleState_pub;
-            subscriber<gripperState> gripperState_sub;
+            provides sampleStateFromImage;
+            timer imageTimer
+            {
+                period = 0.04s;
+            }
+        }
+        component arm_rotation_controller
+        {
+            provides setArmRotation;
         }
     }
     nodes
@@ -134,12 +133,6 @@ package agse_package
         {
             component<gripper_controller> gripper_controller_i;
         }
-        node positioning
-        {
-            component<radial_actuator_controller> radial_controller_i;
-            component<vertical_actuator_controller> vertical_controller_i;
-            component<rotational_actuator_controller> rotational_controller_i;
-        }
         node arm
         {
             component<arm_controller> arm_controller_i;
@@ -147,6 +140,12 @@ package agse_package
         node camera
         {
             component<image_processor> image_processor_i;
+        }
+        node positioning
+        {
+            component<radial_actuator_controller> radial_controller_i;
+            component<vertical_actuator_controller> vertical_controller_i;
+            component<arm_rotation_controller> rotational_controller_i;
         }
     }
 }
