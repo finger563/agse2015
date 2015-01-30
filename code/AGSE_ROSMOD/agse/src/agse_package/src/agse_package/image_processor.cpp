@@ -13,6 +13,12 @@ void image_processor::Init(const ros::TimerEvent& event)
     initOneShotTimer.stop();
 }
 
+// OnOneData Subscription handler for controlInputs_sub subscriber
+void image_processor::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
+{
+    // Business Logic for controlInputs_sub subscriber callback 
+}
+
 // Component Service Callback
 bool image_processor::sampleStateFromImage_serverCallback(agse_package::sampleStateFromImage::Request  &req,
     agse_package::sampleStateFromImage::Response &res)
@@ -34,12 +40,24 @@ void image_processor::imageTimerCallback(const ros::TimerEvent& event)
 image_processor::~image_processor()
 {
     imageTimer.stop();
+    controlInputs_sub.shutdown();
     sampleStateFromImage_server_server.shutdown();
 }
 
 void image_processor::startUp()
 {
     ros::NodeHandle nh;
+
+    // Configure all subscribers associated with this component
+    ros::SubscribeOptions controlInputs_sub_options;
+    controlInputs_sub_options = 
+	ros::SubscribeOptions::create<agse_package::controlInputs>
+	    ("controlInputs",
+	     1000,
+	     boost::bind(&image_processor::controlInputs_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
 
     // Configure all provided services associated with this component
     ros::AdvertiseServiceOptions sampleStateFromImage_server_server_options;

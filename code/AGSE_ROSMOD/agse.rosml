@@ -19,64 +19,15 @@ package agse_package
             float32 theta;
             float32 phi;
         }
+        msg controlInputs
+        {
+            bool paused;
+            bool start;
+            bool stop;
+        }
     }
     services
     {
-        srv setGripperPos
-        {
-            request
-            {
-                int64 value;
-            }
-            response
-            {
-                bool settingComplete;
-            }
-        }
-        srv setRadialPos
-        {
-            request
-            {
-                int64 value;
-            }
-            response
-            {
-                bool settingComplete;
-            }
-        }
-        srv setVerticalPos
-        {
-            request
-            {
-                int64 value;
-            }
-            response
-            {
-                bool settingComplete;
-            }
-        }
-        srv setGripperRotation
-        {
-            request
-            {
-                int64 value;
-            }
-            response
-            {
-                bool settingComplete;
-            }
-        }
-        srv setArmRotation
-        {
-            request
-            {
-                int64 value;
-            }
-            response
-            {
-                bool settingComplete;
-            }
-        }
         srv sampleStateFromImage
         {
             response
@@ -85,30 +36,106 @@ package agse_package
                 agse_package/sampleState sample;
             }
         }
+        srv verticalPos
+        {
+            request
+            {
+                int64 goal;
+                bool update;
+            }
+            response
+            {
+                int64 current;
+            }
+        }
+        srv armRotation
+        {
+            request
+            {
+                int64 goal;
+                bool update;
+            }
+            response
+            {
+                int64 current;
+            }
+        }
+        srv radialPos
+        {
+            request
+            {
+                int64 goal;
+                bool update;
+            }
+            response
+            {
+                int64 current;
+            }
+        }
+        srv gripperPos
+        {
+            request
+            {
+                int64 goal;
+                bool update;
+            }
+            response
+            {
+                int64 current;
+            }
+        }
+        srv gripperRotation
+        {
+            request
+            {
+                int64 goal;
+                bool update;
+            }
+            response
+            {
+                int64 current;
+            }
+        }
     }
     components
     {
         component radial_actuator_controller
         {
-            provides setRadialPos;
+            provides radialPos;
+            subscriber<controlInputs> controlInputs_sub;
+            timer radialPosTimer
+            {
+                period = 0.01s;
+            }
         }
         component vertical_actuator_controller
         {
-            provides setVerticalPos;
+            provides verticalPos;
+            subscriber<controlInputs> controlInputs_sub;
+            timer verticalPosTimer
+            {
+                period = 0.01s;
+            }
         }
         component gripper_controller
         {
-            provides setGripperPos;
-            provides setGripperRotation;
+            provides gripperRotation;
+            provides gripperPos;
+            subscriber<controlInputs> controlInputs_sub;
+            timer gripperTimer
+            {
+                period = 0.01s;
+            }
         }
         component arm_controller
         {
-            requires setRadialPos;
-            requires setVerticalPos;
-            requires setGripperPos;
-            requires setGripperRotation;
-            requires setArmRotation;
             requires sampleStateFromImage;
+            requires radialPos;
+            requires armRotation;
+            requires gripperRotation;
+            requires verticalPos;
+            requires gripperPos;
+            subscriber<controlInputs> controlInputs_sub;
             timer armTimer
             {
                 period = 0.02s;
@@ -117,6 +144,7 @@ package agse_package
         component image_processor
         {
             provides sampleStateFromImage;
+            subscriber<controlInputs> controlInputs_sub;
             timer imageTimer
             {
                 period = 0.04s;
@@ -124,7 +152,20 @@ package agse_package
         }
         component arm_rotation_controller
         {
-            provides setArmRotation;
+            provides armRotation;
+            subscriber<controlInputs> controlInputs_sub;
+            timer armRotationTimer
+            {
+                period = 0.01s;
+            }
+        }
+        component user_input_controller
+        {
+            publisher<controlInputs> controlInputs_pub;
+            timer userInputTimer
+            {
+                period = 0.01s;
+            }
         }
     }
     nodes
@@ -146,6 +187,10 @@ package agse_package
             component<radial_actuator_controller> radial_controller_i;
             component<vertical_actuator_controller> vertical_controller_i;
             component<arm_rotation_controller> rotational_controller_i;
+        }
+        node user_input
+        {
+            component<user_input_controller> user_intput_controller_i;
         }
     }
 }

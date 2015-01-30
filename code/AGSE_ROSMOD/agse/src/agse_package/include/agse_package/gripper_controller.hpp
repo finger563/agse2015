@@ -4,8 +4,9 @@
 #include "ros/ros.h"
 #include "Component.hpp"
 
-#include "agse_package/setGripperPos.h"
-#include "agse_package/setGripperRotation.h"
+#include "agse_package/controlInputs.h"
+#include "agse_package/gripperRotation.h"
+#include "agse_package/gripperPos.h"
 
 // --------------------------------
 //      USER INCLUDES GO HERE
@@ -20,13 +21,21 @@ class gripper_controller : public Component
 	// Init() is always generated
 	void Init(const ros::TimerEvent& event);
 
-	// Component Service Callback
-	bool setGripperPos_serverCallback(agse_package::setGripperPos::Request  &req,
-		agse_package::setGripperPos::Response &res);
+	// OnOneData Subscription handler for controlInputs_sub subscriber 
+	void controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data); 
+ 
 
 	// Component Service Callback
-	bool setGripperRotation_serverCallback(agse_package::setGripperRotation::Request  &req,
-		agse_package::setGripperRotation::Response &res);
+	bool gripperRotation_serverCallback(agse_package::gripperRotation::Request  &req,
+		agse_package::gripperRotation::Response &res);
+
+	// Component Service Callback
+	bool gripperPos_serverCallback(agse_package::gripperPos::Request  &req,
+		agse_package::gripperPos::Response &res);
+
+
+	// Callback for gripperTimer timer
+	void gripperTimerCallback(const ros::TimerEvent& event);
 
 
 	// these functions' business logic will be auto-generated:
@@ -39,11 +48,19 @@ class gripper_controller : public Component
 
     private:
 
-	// ROS Service Server - setGripperPos_server_server
-	ros::ServiceServer setGripperPos_server_server;
+	// ROS Timer - gripperTimer
+	ros::Timer gripperTimer;
 
-	// ROS Service Server - setGripperRotation_server_server
-	ros::ServiceServer setGripperRotation_server_server;
+
+	// ROS Subscriber - controlInputs_sub
+	ros::Subscriber controlInputs_sub; 
+
+
+	// ROS Service Server - gripperRotation_server_server
+	ros::ServiceServer gripperRotation_server_server;
+
+	// ROS Service Server - gripperPos_server_server
+	ros::ServiceServer gripperPos_server_server;
 
 
 };

@@ -4,7 +4,8 @@
 #include "ros/ros.h"
 #include "Component.hpp"
 
-#include "agse_package/setRadialPos.h"
+#include "agse_package/controlInputs.h"
+#include "agse_package/radialPos.h"
 
 // --------------------------------
 //      USER INCLUDES GO HERE
@@ -19,9 +20,17 @@ class radial_actuator_controller : public Component
 	// Init() is always generated
 	void Init(const ros::TimerEvent& event);
 
+	// OnOneData Subscription handler for controlInputs_sub subscriber 
+	void controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data); 
+ 
+
 	// Component Service Callback
-	bool setRadialPos_serverCallback(agse_package::setRadialPos::Request  &req,
-		agse_package::setRadialPos::Response &res);
+	bool radialPos_serverCallback(agse_package::radialPos::Request  &req,
+		agse_package::radialPos::Response &res);
+
+
+	// Callback for radialPosTimer timer
+	void radialPosTimerCallback(const ros::TimerEvent& event);
 
 
 	// these functions' business logic will be auto-generated:
@@ -34,8 +43,16 @@ class radial_actuator_controller : public Component
 
     private:
 
-	// ROS Service Server - setRadialPos_server_server
-	ros::ServiceServer setRadialPos_server_server;
+	// ROS Timer - radialPosTimer
+	ros::Timer radialPosTimer;
+
+
+	// ROS Subscriber - controlInputs_sub
+	ros::Subscriber controlInputs_sub; 
+
+
+	// ROS Service Server - radialPos_server_server
+	ros::ServiceServer radialPos_server_server;
 
 
 };

@@ -4,6 +4,7 @@
 #include "ros/ros.h"
 #include "Component.hpp"
 
+#include "agse_package/controlInputs.h"
 #include "agse_package/sampleStateFromImage.h"
 
 // --------------------------------
@@ -18,6 +19,10 @@ class image_processor : public Component
 
 	// Init() is always generated
 	void Init(const ros::TimerEvent& event);
+
+	// OnOneData Subscription handler for controlInputs_sub subscriber 
+	void controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data); 
+ 
 
 	// Component Service Callback
 	bool sampleStateFromImage_serverCallback(agse_package::sampleStateFromImage::Request  &req,
@@ -40,6 +45,10 @@ class image_processor : public Component
 
 	// ROS Timer - imageTimer
 	ros::Timer imageTimer;
+
+
+	// ROS Subscriber - controlInputs_sub
+	ros::Subscriber controlInputs_sub; 
 
 
 	// ROS Service Server - sampleStateFromImage_server_server

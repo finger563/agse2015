@@ -4,12 +4,13 @@
 #include "ros/ros.h"
 #include "Component.hpp"
 
-#include "agse_package/setRadialPos.h"
-#include "agse_package/setArmRotation.h"
-#include "agse_package/setVerticalPos.h"
+#include "agse_package/controlInputs.h"
+#include "agse_package/radialPos.h"
+#include "agse_package/armRotation.h"
+#include "agse_package/verticalPos.h"
 #include "agse_package/sampleStateFromImage.h"
-#include "agse_package/setGripperPos.h"
-#include "agse_package/setGripperRotation.h"
+#include "agse_package/gripperPos.h"
+#include "agse_package/gripperRotation.h"
 
 // --------------------------------
 //      USER INCLUDES GO HERE
@@ -23,6 +24,10 @@ class arm_controller : public Component
 
 	// Init() is always generated
 	void Init(const ros::TimerEvent& event);
+
+	// OnOneData Subscription handler for controlInputs_sub subscriber 
+	void controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data); 
+ 
 
 	// Callback for armTimer timer
 	void armTimerCallback(const ros::TimerEvent& event);
@@ -42,23 +47,27 @@ class arm_controller : public Component
 	ros::Timer armTimer;
 
 
-	// ROS Service Client - setRadialPos_client_client
-	ros::ServiceClient setRadialPos_client_client;
+	// ROS Subscriber - controlInputs_sub
+	ros::Subscriber controlInputs_sub; 
 
-	// ROS Service Client - setVerticalPos_client_client
-	ros::ServiceClient setVerticalPos_client_client;
-
-	// ROS Service Client - setGripperPos_client_client
-	ros::ServiceClient setGripperPos_client_client;
-
-	// ROS Service Client - setGripperRotation_client_client
-	ros::ServiceClient setGripperRotation_client_client;
-
-	// ROS Service Client - setArmRotation_client_client
-	ros::ServiceClient setArmRotation_client_client;
 
 	// ROS Service Client - sampleStateFromImage_client_client
 	ros::ServiceClient sampleStateFromImage_client_client;
+
+	// ROS Service Client - radialPos_client_client
+	ros::ServiceClient radialPos_client_client;
+
+	// ROS Service Client - armRotation_client_client
+	ros::ServiceClient armRotation_client_client;
+
+	// ROS Service Client - gripperRotation_client_client
+	ros::ServiceClient gripperRotation_client_client;
+
+	// ROS Service Client - verticalPos_client_client
+	ros::ServiceClient verticalPos_client_client;
+
+	// ROS Service Client - gripperPos_client_client
+	ros::ServiceClient gripperPos_client_client;
 
 
 };

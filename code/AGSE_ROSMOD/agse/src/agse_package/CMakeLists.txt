@@ -52,22 +52,24 @@ add_message_files(
 
   sampleOrientation.msg
 
+  controlInputs.msg
+
 )
 
 # Generate services in the 'srv' folder
 add_service_files(
   FILES
-  setGripperPos.srv
-
-  setRadialPos.srv
-
-  setVerticalPos.srv
-
-  setGripperRotation.srv
-
-  setArmRotation.srv
-
   sampleStateFromImage.srv
+
+  verticalPos.srv
+
+  armRotation.srv
+
+  radialPos.srv
+
+  gripperPos.srv
+
+  gripperRotation.srv
 
 )
 
@@ -202,6 +204,9 @@ add_executable( positioning src/agse_package/positioning_main.cpp src/agse_packa
               )
 target_link_libraries(positioning ${catkin_LIBRARIES})
 add_dependencies(positioning agse_package_generate_messages_cpp)
+add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package/Component.cpp)
+target_link_libraries(user_input ${catkin_LIBRARIES})
+add_dependencies(user_input agse_package_generate_messages_cpp)
 
 
 
