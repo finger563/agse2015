@@ -23,7 +23,7 @@ void radial_actuator_controller::controlInputs_sub_OnOneData(const agse_package:
 bool radial_actuator_controller::radialPos_serverCallback(agse_package::radialPos::Request  &req,
     agse_package::radialPos::Response &res)
 {
-    // Business Logic for <listener.ROS_Server instance at 0xb5425e68> Service
+    // Business Logic for <listener.ROS_Server instance at 0xb541cb70> Service
 }
 
 // Callback for radialPosTimer timer

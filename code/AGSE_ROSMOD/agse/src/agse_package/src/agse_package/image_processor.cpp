@@ -23,7 +23,7 @@ void image_processor::controlInputs_sub_OnOneData(const agse_package::controlInp
 bool image_processor::sampleStateFromImage_serverCallback(agse_package::sampleStateFromImage::Request  &req,
     agse_package::sampleStateFromImage::Response &res)
 {
-    // Business Logic for <listener.ROS_Server instance at 0xb5429c10> Service
+    // Business Logic for <listener.ROS_Server instance at 0xb53efc38> Service
 }
 
 // Callback for imageTimer timer

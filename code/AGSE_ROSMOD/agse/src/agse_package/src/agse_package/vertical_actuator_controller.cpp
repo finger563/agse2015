@@ -23,7 +23,7 @@ void vertical_actuator_controller::controlInputs_sub_OnOneData(const agse_packag
 bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::verticalPos::Request  &req,
     agse_package::verticalPos::Response &res)
 {
-    // Business Logic for <listener.ROS_Server instance at 0xb54290f8> Service
+    // Business Logic for <listener.ROS_Server instance at 0xb5417bc0> Service
 }
 
 // Callback for verticalPosTimer timer

@@ -196,10 +196,13 @@ add_executable( positioning src/agse_package/positioning_main.cpp src/agse_packa
                 src/agse_package/radial_actuator_controller.cpp  
                 src/agse_package/vertical_actuator_controller.cpp  
                 src/agse_package/arm_rotation_controller.cpp  
+                src/agse_package/gripper_controller.cpp  
               )
 target_link_libraries(positioning ${catkin_LIBRARIES})
 add_dependencies(positioning agse_package_generate_messages_cpp)
-add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package/Component.cpp)
+add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package/Component.cpp 
+                src/agse_package/user_input_controller.cpp  
+              )
 target_link_libraries(user_input ${catkin_LIBRARIES})
 add_dependencies(user_input agse_package_generate_messages_cpp)
 

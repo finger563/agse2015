@@ -23,13 +23,13 @@ void gripper_controller::controlInputs_sub_OnOneData(const agse_package::control
 bool gripper_controller::gripperRotation_serverCallback(agse_package::gripperRotation::Request  &req,
     agse_package::gripperRotation::Response &res)
 {
-    // Business Logic for <listener.ROS_Server instance at 0xb54293a0> Service
+    // Business Logic for <listener.ROS_Server instance at 0xb5417288> Service
 }
 // Component Service Callback
 bool gripper_controller::gripperPos_serverCallback(agse_package::gripperPos::Request  &req,
     agse_package::gripperPos::Response &res)
 {
-    // Business Logic for <listener.ROS_Server instance at 0xb5429328> Service
+    // Business Logic for <listener.ROS_Server instance at 0xb5417148> Service
 }
 
 // Callback for gripperTimer timer

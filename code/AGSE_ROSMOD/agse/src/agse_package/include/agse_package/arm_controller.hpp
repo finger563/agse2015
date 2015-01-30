@@ -5,12 +5,12 @@
 #include "Component.hpp"
 
 #include "agse_package/controlInputs.h"
-#include "agse_package/radialPos.h"
+#include "agse_package/gripperRotation.h"
 #include "agse_package/armRotation.h"
+#include "agse_package/gripperPos.h"
+#include "agse_package/radialPos.h"
 #include "agse_package/verticalPos.h"
 #include "agse_package/sampleStateFromImage.h"
-#include "agse_package/gripperPos.h"
-#include "agse_package/gripperRotation.h"
 
 // --------------------------------
 //      USER INCLUDES GO HERE
