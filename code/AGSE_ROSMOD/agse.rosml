@@ -170,10 +170,6 @@ package agse_package
     }
     nodes
     {
-        node gripper
-        {
-            component<gripper_controller> gripper_controller_i;
-        }
         node arm
         {
             component<arm_controller> arm_controller_i;
@@ -187,6 +183,7 @@ package agse_package
             component<radial_actuator_controller> radial_controller_i;
             component<vertical_actuator_controller> vertical_controller_i;
             component<arm_rotation_controller> rotational_controller_i;
+            component<gripper_controller> gripper_controller_i;
         }
         node user_input
         {

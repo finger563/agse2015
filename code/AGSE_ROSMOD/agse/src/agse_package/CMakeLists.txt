@@ -182,11 +182,6 @@ include_directories(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable( gripper src/agse_package/gripper_main.cpp src/agse_package/Component.cpp 
-                src/agse_package/gripper_controller.cpp  
-              )
-target_link_libraries(gripper ${catkin_LIBRARIES})
-add_dependencies(gripper agse_package_generate_messages_cpp)
 add_executable( arm src/agse_package/arm_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/arm_controller.cpp  
               )
