@@ -1,0 +1,152 @@
+workspace agse;
+package agse_package
+{
+    messages
+    {
+        msg gripperOrientation
+        {
+            int64 theta;
+        }
+        msg gripperState
+        {
+            agse_package/gripperOrientation orientation;
+            agse_package/gripperPos position;
+        }
+        msg gripperPos
+        {
+            float32 r;
+            float32 theta;
+            float32 z;
+        }
+        msg sampleState
+        {
+            agse_package/samplePosition pos;
+            agse_package/sampleOrientation orientation;
+        }
+        msg samplePosition
+        {
+            float32 r;
+            float32 theta;
+            float32 z;
+        }
+        msg sampleOrientation
+        {
+            float32 theta;
+            float32 phi;
+        }
+    }
+    services
+    {
+        srv setGripperPos
+        {
+            request
+            {
+                int64 value;
+            }
+            response
+            {
+                bool settingComplete;
+            }
+        }
+        srv setRadialPos
+        {
+            request
+            {
+                int64 value;
+            }
+            response
+            {
+                bool settingComplete;
+            }
+        }
+        srv setVerticalPos
+        {
+            request
+            {
+                int64 value;
+            }
+            response
+            {
+                bool settingComplete;
+            }
+        }
+        srv setRotation
+        {
+            request
+            {
+                int64 value;
+            }
+            response
+            {
+                bool settingComplete;
+            }
+        }
+        srv setGripperRotation
+        {
+            request
+            {
+                int64 value;
+            }
+            response
+            {
+                bool settingComplete;
+            }
+        }
+    }
+    components
+    {
+        component radial_actuator_controller
+        {
+            provides setRadialPos;
+        }
+        component vertical_actuator_controller
+        {
+            provides setVerticalPos;
+        }
+        component rotational_actuator_controller
+        {
+            provides setRotation;
+        }
+        component gripper_controller
+        {
+            provides setGripperPos;
+            provides setGripperRotation;
+        }
+        component arm_controller
+        {
+            requires setRotation;
+            requires setRadialPos;
+            requires setVerticalPos;
+            requires setGripperPos;
+            requires setGripperRotation;
+            publisher<gripperState> gripperState_pub;
+            subscriber<sampleState> sampleState_sub;
+        }
+        component image_processor
+        {
+            publisher<sampleState> sampleState_pub;
+            subscriber<gripperState> gripperState_sub;
+        }
+    }
+    nodes
+    {
+        node gripper
+        {
+            component<gripper_controller> gripper_controller_i;
+        }
+        node positioning
+        {
+            component<radial_actuator_controller> radial_controller_i;
+            component<vertical_actuator_controller> vertical_controller_i;
+            component<rotational_actuator_controller> rotational_controller_i;
+        }
+        node arm
+        {
+            component<arm_controller> arm_controller_i;
+        }
+        node camera
+        {
+            component<image_processor> image_processor_i;
+        }
+    }
+}
