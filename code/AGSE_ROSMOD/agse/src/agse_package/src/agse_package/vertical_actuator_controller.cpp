@@ -1,14 +1,24 @@
 #include "agse_package/vertical_actuator_controller.hpp"
+#include "agse_package/gpio.h"
 
 // -------------------------------------------------------
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
+unsigned int LEDGPIO = 57; // GPIO1_25 = (1x32) + 25 = 57
+unsigned int READGPIO = 15; // GPIO0_15 = (0x32) + 15 = 15
+bool ledState = true;
+const unsigned int onTime = 50;
+unsigned int ledTime = 0;
+
 // Init Function
 void vertical_actuator_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-
+  gpio_export(LEDGPIO);
+  gpio_export(READGPIO);
+  gpio_set_dir(LEDGPIO,OUTPUT_PIN);
+  gpio_set_dir(READGPIO,INPUT_PIN);
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -30,6 +40,19 @@ bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::vert
 void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for verticalPosTimer 
+  if (ledTime < onTime)
+    ledTime++;
+  else
+    {
+      ledTime=0;
+      if (ledState)
+	gpio_set_value(LEDGPIO,HIGH);
+      else
+	gpio_set_value(LEDGPIO,LOW);
+      ledState = ledState ? false : true;
+    }
+  unsigned int value = LOW;
+  gpio_get_value(READGPIO, &value);
 }
 
 // ---------------------------------------------

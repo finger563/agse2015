@@ -1,4 +1,5 @@
 #include "agse_package/radial_actuator_controller.hpp"
+#include "agse_package/gpio.h"
 
 // -------------------------------------------------------
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
