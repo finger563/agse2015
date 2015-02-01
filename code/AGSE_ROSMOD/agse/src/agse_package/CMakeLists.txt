@@ -198,6 +198,9 @@ add_executable( positioning src/agse_package/positioning_main.cpp src/agse_packa
                 src/agse_package/arm_rotation_controller.cpp  
                 src/agse_package/gripper_controller.cpp  
 		src/agse_package/gpio.cpp
+		src/agse_package/Dynamixel.cpp
+		src/agse_package/SerialPort.cpp
+		src/agse_package/Utils.cpp
               )
 target_link_libraries(positioning ${catkin_LIBRARIES})
 add_dependencies(positioning agse_package_generate_messages_cpp)

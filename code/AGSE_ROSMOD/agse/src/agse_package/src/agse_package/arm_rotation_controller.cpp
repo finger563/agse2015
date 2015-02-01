@@ -1,13 +1,35 @@
 #include "agse_package/arm_rotation_controller.hpp"
+#include "agse_package/SerialPort.h"
+#include "agse_package/Dynamixel.h"
 
 // -------------------------------------------------------
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
+int ax12_base_id=1;
+int ax12_gripper_id=10;
+
+bool myLedState = true;
+int myPosition1 = 100;
+int myPosition2 = 500;
+int pos = myPosition1;
+
+char portName[] = "//dev//ttyTHS0";
+
+SerialPort serialPort;
+Dynamixel dynamixel;
+
 // Init Function
 void arm_rotation_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
+
+  if (serialPort.connect(portName)!=0) {
+  }
+  else {
+    ROS_INFO ("Can't open serial port");
+  }
+
 
     // Stop Init Timer
     initOneShotTimer.stop();
@@ -29,7 +51,25 @@ bool arm_rotation_controller::armRotation_serverCallback(agse_package::armRotati
 // Callback for armRotationTimer timer
 void arm_rotation_controller::armRotationTimerCallback(const ros::TimerEvent& event)
 {
-    // Business Logic for armRotationTimer 
+  myLedState = !myLedState;
+  if (pos==myPosition1)
+    pos = myPosition2;
+  else
+    pos = myPosition1;
+  // Business Logic for armRotationTimer 
+  int retVal;
+  retVal = dynamixel.sendTossModeCommand(&serialPort);
+  ROS_INFO ("sendTossModeCommand retVal = %d\n",retVal);
+
+  retVal = dynamixel.getSetLedCommand(&serialPort, ax12_base_id, !myLedState);
+  dynamixel.setPosition(&serialPort, ax12_base_id, pos+100);
+
+  int pos2=dynamixel.getPosition(&serialPort, ax12_gripper_id);
+  ROS_INFO ("Position: <%i>\n", pos2);
+
+  retVal = dynamixel.getSetLedCommand(&serialPort, ax12_gripper_id, myLedState);
+  ROS_INFO ("Led retVal = %d\n",retVal);
+  dynamixel.setPosition(&serialPort, ax12_gripper_id, pos);
 }
 
 // ---------------------------------------------
@@ -42,6 +82,7 @@ arm_rotation_controller::~arm_rotation_controller()
     armRotationTimer.stop();
     controlInputs_sub.shutdown();
     armRotation_server_server.shutdown();
+    serialPort.disconnect();
 }
 
 void arm_rotation_controller::startUp()
@@ -82,7 +123,7 @@ void arm_rotation_controller::startUp()
     // Create all component timers
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(0.01),
+             (ros::Duration(1),
 	     boost::bind(&arm_rotation_controller::armRotationTimerCallback, this, _1),
 	     &this->compQueue);
     this->armRotationTimer = nh.createTimer(timer_options);

@@ -156,7 +156,7 @@ package agse_package
             subscriber<controlInputs> controlInputs_sub;
             timer armRotationTimer
             {
-                period = 0.01s;
+                period = 1s;
             }
         }
         component user_input_controller

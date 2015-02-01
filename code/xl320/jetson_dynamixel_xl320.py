@@ -148,6 +148,7 @@ if __name__=="__main__":
             time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
+            print strToHex(out)
 
         #angle = -angle
         arduinoMsgs[1] = "WRITE:{},{},{}\n".format(vertPos,250,angle)
@@ -158,9 +159,7 @@ if __name__=="__main__":
             time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
-            if out != '':
-                #recv = removeSentFromReceived(msg,out)
-                print out
+            print strToHex(out)
 
         time.sleep(8)
 
@@ -187,6 +186,7 @@ if __name__=="__main__":
             time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
+            print strToHex(out)
 
         #angle = -angle
         arduinoMsgs[1] = "WRITE:{},{},{}\n".format(vertPos2,250,angle)
@@ -197,8 +197,7 @@ if __name__=="__main__":
             time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
-            if out != '':
-                print out
+            print strToHex(out)
 
         time.sleep(5)
 
@@ -211,8 +210,7 @@ if __name__=="__main__":
             time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
-            if out != '':
-                print out
+            print strToHex(out)
 
         time.sleep(8)
 
@@ -239,6 +237,7 @@ if __name__=="__main__":
             time.sleep(messageDelay)
             while ser.inWaiting() > 0:
                 out += ser.read()
+            print strToHex(out)
         #break
 
     ser.close()
