@@ -117,16 +117,6 @@ package agse_package
                 period = 0.01s;
             }
         }
-        component gripper_controller
-        {
-            provides gripperRotation;
-            provides gripperPos;
-            subscriber<controlInputs> controlInputs_sub;
-            timer gripperTimer
-            {
-                period = 0.01s;
-            }
-        }
         component arm_controller
         {
             requires sampleStateFromImage;
@@ -150,21 +140,23 @@ package agse_package
                 period = 0.04s;
             }
         }
-        component arm_rotation_controller
-        {
-            provides armRotation;
-            subscriber<controlInputs> controlInputs_sub;
-            timer armRotationTimer
-            {
-                period = 1s;
-            }
-        }
         component user_input_controller
         {
             publisher<controlInputs> controlInputs_pub;
             timer userInputTimer
             {
                 period = 0.01s;
+            }
+        }
+        component servo_controller
+        {
+            provides armRotation;
+            provides gripperPos;
+            provides gripperRotation;
+            subscriber<controlInputs> controlInputs_sub;
+            timer servoTimer
+            {
+                period = 1.0s;
             }
         }
     }
@@ -182,8 +174,7 @@ package agse_package
         {
             component<radial_actuator_controller> radial_controller_i;
             component<vertical_actuator_controller> vertical_controller_i;
-            component<arm_rotation_controller> rotational_controller_i;
-            component<gripper_controller> gripper_controller_i;
+            component<servo_controller> servo_controller_i;
         }
         node user_input
         {
