@@ -101,6 +101,7 @@ void SerialPort::disconnect(void)
 
 int SerialPort::sendArray(unsigned char *buffer, int len) {
 	int n=write(fileDescriptor, buffer, len);
+	clear();
 	return n;
 }
 

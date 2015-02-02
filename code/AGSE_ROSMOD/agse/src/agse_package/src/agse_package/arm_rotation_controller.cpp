@@ -58,17 +58,13 @@ void arm_rotation_controller::armRotationTimerCallback(const ros::TimerEvent& ev
     pos = myPosition1;
   // Business Logic for armRotationTimer 
   int retVal;
-  retVal = dynamixel.sendTossModeCommand(&serialPort);
-  ROS_INFO ("sendTossModeCommand retVal = %d\n",retVal);
-
+  ROS_INFO("\nSERVO ID %d:",ax12_base_id);
+  int pos1=dynamixel.getPosition(&serialPort, ax12_base_id);
   retVal = dynamixel.getSetLedCommand(&serialPort, ax12_base_id, !myLedState);
   dynamixel.setPosition(&serialPort, ax12_base_id, pos+100);
-
+  ROS_INFO("\nSERVO ID %d:",ax12_gripper_id);
   int pos2=dynamixel.getPosition(&serialPort, ax12_gripper_id);
-  ROS_INFO ("Position: <%i>\n", pos2);
-
   retVal = dynamixel.getSetLedCommand(&serialPort, ax12_gripper_id, myLedState);
-  ROS_INFO ("Led retVal = %d\n",retVal);
   dynamixel.setPosition(&serialPort, ax12_gripper_id, pos);
 }
 

@@ -187,7 +187,7 @@ int Dynamixel::getSetLedCommand(SerialPort *serialPort, byte id, bool onOff)
   buffer[pos++] = id;
 
   // length = (Numbers of parameters) + 3
-  buffer[pos++] = 0; //placeholder
+  buffer[pos++] = 4; 
 
   //the instruction, send => 3
   buffer[pos++] = 3;
@@ -199,23 +199,20 @@ int Dynamixel::getSetLedCommand(SerialPort *serialPort, byte id, bool onOff)
   if (onOff)
     ledOnOff = 1;
 
-  byte hexHPos=0, hexLPos=0;
-  toHexHLConversion(ledOnOff, &hexHPos, &hexLPos);
-  buffer[pos++] = hexLPos;
-  numberOfParameters++;
-  buffer[pos++] = hexHPos;
-  numberOfParameters++;
-  //            buffer[pos++] = torqueOnOff;
-  buffer[3] = (byte)(numberOfParameters + 3);
+  buffer[pos++] = ledOnOff;
+  
   byte checksum = checkSumatory(buffer, pos);
   buffer[pos++] = checksum;
 
-  //string command = Util.byteArrayTostring(buffer, pos);
   long l=serialPort->sendArray(buffer,pos);
   Utils::sleepMS(waitTimeForResponse);
   int n;
   memset(bufferIn,0,BufferSize);
   n=serialPort->getArray(bufferIn, 8);
+  memset(bufferIn,0,BufferSize);
+  n=serialPort->getArray(bufferIn, 6);
+  //bf(bufferIn,n);
+  printf("setLED: id=<%i> LED=<%s>\n", id, ledOnOff ? "ON" : "OFF" );
 
   return pos;
 }
@@ -242,7 +239,6 @@ int Dynamixel::getReadLedCommand(byte id)
   byte checksum = checkSumatory(buffer, pos);
   buffer[pos++] = checksum;
 
-  //string command = Util.byteArrayTostring(buffer, pos);
   return pos;
 }
 
@@ -256,6 +252,9 @@ int Dynamixel::getPosition(SerialPort *serialPort, int idAX12)
 
   memset(bufferIn,0,BufferSize);
   n=serialPort->getArray(bufferIn, 8);
+  memset(bufferIn,0,BufferSize);
+  n=serialPort->getArray(bufferIn, 8);
+  //bf(bufferIn,8);
 
   short pos = -1;
   if (n>7)
@@ -263,7 +262,7 @@ int Dynamixel::getPosition(SerialPort *serialPort, int idAX12)
       pos = fromHexHLConversion(bufferIn[5], bufferIn[6]);				
     }
 
-  printf("\nid=<%i> pos=<%i> length=<%i>\n", idAX12, pos, n);
+  printf("getPosition: id=<%i> pos=<%i>\n", idAX12, pos);
   if (pos<0 || pos > 1023)
     ret=-2;
   else
@@ -282,12 +281,15 @@ int Dynamixel::setPosition(SerialPort *serialPort, int idAX12, int position)
 
   memset(bufferIn,0,BufferSize);
   n=serialPort->getArray(bufferIn, 8);
+  memset(bufferIn,0,BufferSize);
+  n=serialPort->getArray(bufferIn, 8);
+  //bf(bufferIn,n);
 
-  if (n>4 && bufferIn[4] == 0)
-    printf("\nid=<%i> set at pos=<%i>\n", idAX12, position);
+  if (n>4 && bufferIn[5] == 0)
+    printf("setPosition: id=<%i> set at pos=<%i>\n", idAX12, position);
   else {
     error=-1;
-    printf("\nid=<%i> error: <%i>\n", idAX12, bufferIn[4]);
+    printf("setPosition: id=<%i> error: <%i>\n", idAX12, bufferIn[4]);
     bf(bufferIn, n);
   }
 
@@ -314,15 +316,13 @@ int Dynamixel::sendTossModeCommand(SerialPort *serialPort)
 
 void Dynamixel::bf (byte *buffer, int n)
 {
-  printf ("Response (length <%i>)\n",n);
+  printf ("Response (length <%i>): ",n);
   for (int i=0;i<n;i++)
     {
-      //printf("%i [%c]", buffer[i], buffer[i]);
-      printf("%i", buffer[i]);
       if (i<(n-1))
-	{
-	  printf(",%i", buffer[i]);
-	}
+	printf("%i,", buffer[i]);
+      else
+	printf("%i",buffer[i]);
     }
   printf("\n");
 }
