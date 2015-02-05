@@ -41,6 +41,18 @@ float Dynamixel::posToAngle(short pos)
   return angle;
 }
 
+// angle: floating point value between 0 and 300 degrees
+// returns: short which can be sent to the motor
+short Dynamixel::angleToPos(float angle)
+{
+  // ax-12a has an operating range: [0,300] degrees
+  // which corresponds to a digital value range: [0,1024]
+  // this gives us a precision of 0.29 degrees
+  short pos = 0;
+  pos = (short)(angle/0.29f);
+  return pos;
+}
+
 void Dynamixel::cleanBuffers()
 {
   memset(buffer,0,BufferSize);

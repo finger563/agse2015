@@ -7,6 +7,8 @@
 #include "agse_package/controlInputs.h"
 #include "agse_package/radialPos.h"
 
+#include "agse_package/gpio.h"
+
 // --------------------------------
 //      USER INCLUDES GO HERE
 // --------------------------------
@@ -43,7 +45,22 @@ class radial_actuator_controller : public Component
 
     private:
 
+  // paused variable which is controlled by the pause switch
   bool paused;
+  // epsion value for minimum actionable difference between goal and current
+  int epsilon;
+  // goal position for the radial linear actuator
+  int radialGoal;
+  // current position of the radial linear actuator
+  int radialCurrent;
+  // pin that motor forward is connected to
+  unsigned int motorForwardPin;
+  // pin that motor backward is connected to
+  unsigned int motorBackwardPin;
+  // pin that encoder pin 0 is connected to
+  unsigned int radialEncoderPin0;
+  // pin that encoder pin 1 is connected to
+  unsigned int radialEncoderPin1;
 
 	// ROS Timer - radialPosTimer
 	ros::Timer radialPosTimer;

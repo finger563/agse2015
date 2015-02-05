@@ -9,6 +9,9 @@
 #include "agse_package/gripperPos.h"
 #include "agse_package/gripperRotation.h"
 
+#include "agse_package/Dynamixel.h"
+#include "agse_package/SerialPort.h"
+
 // --------------------------------
 //      USER INCLUDES GO HERE
 // --------------------------------
@@ -54,6 +57,32 @@ class servo_controller : public Component
     private:
 
   bool paused;
+
+  // serial port we use on the Jetson TK1
+  SerialPort serialPort;
+  char portName[50];
+  // object for reading/writing to AX-12A servos
+  Dynamixel dynamixel;
+
+  // IDs for the servo motors
+  int armServoID;
+  int gripperRotationID;
+  int gripperPositionID;
+
+  // goal Position for the arm servo
+  float armRotationGoal;
+  // current position of the arm servo
+  float armRotationCurrent;
+
+  // goal Position for the gripperRotation servo
+  float gripperRotationGoal;
+  // current position of the gripperRotation servo
+  float gripperRotationCurrent;
+
+  // goal Position for the gripperPos servo
+  float gripperPosGoal;
+  // current position of the gripperPos servo
+  float gripperPosCurrent;
 
 	// ROS Timer - servoTimer
 	ros::Timer servoTimer;

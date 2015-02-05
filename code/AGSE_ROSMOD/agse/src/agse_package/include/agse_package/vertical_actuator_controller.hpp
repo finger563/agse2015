@@ -7,6 +7,8 @@
 #include "agse_package/controlInputs.h"
 #include "agse_package/verticalPos.h"
 
+#include "agse_package/gpio.h"
+
 // --------------------------------
 //      USER INCLUDES GO HERE
 // --------------------------------
@@ -44,6 +46,20 @@ class vertical_actuator_controller : public Component
     private:
 
   bool paused;
+  // epsion value for minimum actionable difference between goal and current
+  int epsilon;
+  // goal position for the vertical linear actuator
+  int verticalGoal;
+  // current position of the vertical linear actuator
+  int verticalCurrent;
+  // pin that motor forward is connected to
+  unsigned int motorForwardPin;
+  // pin that motor backward is connected to
+  unsigned int motorBackwardPin;
+  // pin that encoder pin 0 is connected to
+  unsigned int verticalEncoderPin0;
+  // pin that encoder pin 1 is connected to
+  unsigned int verticalEncoderPin1;
 
 	// ROS Timer - verticalPosTimer
 	ros::Timer verticalPosTimer;

@@ -1,6 +1,4 @@
 #include "agse_package/servo_controller.hpp"
-#include "agse_package/SerialPort.h"
-#include "agse_package/Dynamixel.h"
 
 // -------------------------------------------------------
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
@@ -13,21 +11,26 @@ int myPosition1 = 0;
 int myPosition2 = 1023;
 int pos = myPosition1;
 
-char portName[] = "//dev//ttyTHS0";
-
-SerialPort serialPort;
-Dynamixel dynamixel;
-
 // Init Function
 void servo_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-  if (serialPort.connect(portName)!=0) {
-  }
-  else {
-    ROS_INFO ("Can't open serial port");
-  }
   paused = true;
+  sprintf(portName,"//dev//ttyTHS0");
+  armServoID = 1;
+  gripperRotationID = 10;
+  gripperPositionID = 11;
+  if (serialPort.connect(portName)!=0)
+    {
+      armRotationGoal = 0;
+      gripperRotationGoal = 0;
+      gripperPosGoal = 0;
+    }
+  else
+    {
+      ROS_INFO ("Can't open serial port %s", portName);
+    }  
+  
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -37,7 +40,7 @@ void servo_controller::controlInputs_sub_OnOneData(const agse_package::controlIn
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
-  ROS_INFO( paused ? "System paused!" : "System Unpaused" );
+  ROS_INFO( paused ? "Servos paused!" : "Servos Unpaused" );
 }
 
 // Component Service Callback
@@ -45,21 +48,36 @@ bool servo_controller::armRotation_serverCallback(agse_package::armRotation::Req
     agse_package::armRotation::Response &res)
 {
     // Business Logic for armRotation_server Server providing armRotation Service
-
+  if (req.update == true)
+    {
+      armRotationGoal = req.goal;
+    }
+  res.current = armRotationCurrent;
+  return true;
 }
 // Component Service Callback
 bool servo_controller::gripperPos_serverCallback(agse_package::gripperPos::Request  &req,
     agse_package::gripperPos::Response &res)
 {
     // Business Logic for gripperPos_server Server providing gripperPos Service
-
+  if (req.update == true)
+    {
+      gripperPosGoal = req.goal;
+    }
+  res.current = gripperPosCurrent;
+  return true;
 }
 // Component Service Callback
 bool servo_controller::gripperRotation_serverCallback(agse_package::gripperRotation::Request  &req,
     agse_package::gripperRotation::Response &res)
 {
     // Business Logic for gripperRotation_server Server providing gripperRotation Service
-
+  if (req.update == true)
+    {
+      gripperRotationGoal = req.goal;
+    }
+  res.current = gripperRotationCurrent;
+  return true;
 }
 
 // Callback for servoTimer timer
@@ -68,23 +86,30 @@ void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
     // Business Logic for servoTimer 
   if (!paused) {
     myLedState = !myLedState;
-    if (pos==myPosition1)
-      pos = myPosition2;
-    else
-      pos = myPosition1;
     int retVal;
 
-    ROS_INFO("\nSERVO ID %d:",ax12_base_id);
-    int pos1=dynamixel.getPosition(&serialPort, ax12_base_id);
-    ROS_INFO("servo angle: %f\n",Dynamixel::posToAngle(pos1));
-    retVal = dynamixel.getSetLedCommand(&serialPort, ax12_base_id, !myLedState);
-    dynamixel.setPosition(&serialPort, ax12_base_id, pos);
+    int pos; // temp value to store position from servo
+    
+    // ARM SERVO 
+    retVal = dynamixel.getSetLedCommand(&serialPort, armServoID, myLedState);
+    dynamixel.setPosition(&serialPort, armServoID, Dynamixel::angleToPos(armRotationGoal));
+    pos = dynamixel.getPosition(&serialPort, armServoID);
+    ROS_INFO("Arm base servo angle: %f\n",Dynamixel::posToAngle(pos));
+    armRotationCurrent = Dynamixel::posToAngle(pos);
 
-    ROS_INFO("\nSERVO ID %d:",ax12_gripper_id);
-    int pos2=dynamixel.getPosition(&serialPort, ax12_gripper_id);
-    ROS_INFO("servo angle: %f\n",Dynamixel::posToAngle(pos2));
-    retVal = dynamixel.getSetLedCommand(&serialPort, ax12_gripper_id, myLedState);
-    dynamixel.setPosition(&serialPort, ax12_gripper_id, pos);
+    // GRIPPER ROTATION SERVO
+    retVal = dynamixel.getSetLedCommand(&serialPort, gripperRotationID, myLedState);
+    dynamixel.setPosition(&serialPort, gripperRotationID, Dynamixel::angleToPos(gripperRotationGoal));
+    pos = dynamixel.getPosition(&serialPort, gripperRotationID);
+    ROS_INFO("Gripper rotation servo angle: %f\n",Dynamixel::posToAngle(pos));
+    gripperRotationCurrent = Dynamixel::posToAngle(pos);
+    
+    // GRIPPER POSITION SERVO
+    retVal = dynamixel.getSetLedCommand(&serialPort, gripperPositionID, myLedState);
+    dynamixel.setPosition(&serialPort, gripperPositionID, Dynamixel::angleToPos(gripperPosGoal));
+    pos = dynamixel.getPosition(&serialPort, gripperPositionID);
+    ROS_INFO("Gripper position servo angle: %f\n",Dynamixel::posToAngle(pos));
+    gripperPosCurrent = Dynamixel::posToAngle(pos);
   }
 }
 

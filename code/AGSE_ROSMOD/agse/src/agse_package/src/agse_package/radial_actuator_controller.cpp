@@ -9,6 +9,26 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
   paused = true;
+
+  // THESE NEED TO BE UPDATED
+  epsilon = 5;
+  motorForwardPin = 57;
+  motorBackwardPin = 58;
+  radialEncoderPin0 = 59;
+  radialEncoderPin1 = 60;
+
+  // set up the pins to control the h-bridge
+  gpio_export(motorForwardPin);
+  gpio_export(motorBackwardPin);
+  gpio_set_dir(motorForwardPin,OUTPUT_PIN);
+  gpio_set_dir(motorBackwardPin,OUTPUT_PIN);
+  // set up the pins to read the encoder
+  gpio_export(radialEncoderPin0);
+  gpio_export(radialEncoderPin1);
+  gpio_set_dir(radialEncoderPin0,INPUT_PIN);
+  gpio_set_dir(radialEncoderPin1,INPUT_PIN);
+  // initialize the goal position to 0
+  radialGoal = 0;
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -18,6 +38,7 @@ void radial_actuator_controller::controlInputs_sub_OnOneData(const agse_package:
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
+  ROS_INFO( paused ? "Radial motor PAUSED!" : "Radial motor UNPAUSED!");
 }
 
 // Component Service Callback
@@ -25,14 +46,36 @@ bool radial_actuator_controller::radialPos_serverCallback(agse_package::radialPo
     agse_package::radialPos::Response &res)
 {
     // Business Logic for radialPos_server Server providing radialPos Service
-
+  if (req.update == true)
+    {
+      radialGoal = req.goal;
+    }
+  res.current = radialCurrent;
+  return true;
 }
 
 // Callback for radialPosTimer timer
 void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for radialPosTimer 
-
+  if (!paused)
+    {
+      // read current value for radial position (encoder)
+      // update motor based on current value
+      if ( abs(radialGoal-radialCurrent) > epsilon ) // if there's significant reason to move
+	{
+	  if (radialGoal > radialCurrent) 
+	    {
+	      gpio_set_value(motorBackwardPin,LOW);
+	      gpio_set_value(motorForwardPin,HIGH);
+	    }
+	  else
+	    {
+	      gpio_set_value(motorForwardPin,LOW);
+	      gpio_set_value(motorBackwardPin,HIGH);
+	    }
+	}
+    }
 }
 
 // ---------------------------------------------
