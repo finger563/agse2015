@@ -26,14 +26,16 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
 // OnOneData Subscription handler for controlInputs_sub subscriber
 void vertical_actuator_controller::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
-    // Business Logic for controlInputs_sub subscriber callback 
+    // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
+
 }
 
 // Component Service Callback
 bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::verticalPos::Request  &req,
     agse_package::verticalPos::Response &res)
 {
-    // Business Logic for <listener.ROS_Server instance at 0xb5417bc0> Service
+    // Business Logic for verticalPos_server Server providing verticalPos Service
+
 }
 
 // Callback for verticalPosTimer timer
@@ -72,6 +74,7 @@ void vertical_actuator_controller::startUp()
     ros::NodeHandle nh;
 
     // Configure all subscribers associated with this component
+    // subscriber: controlInputs_sub
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -83,6 +86,7 @@ void vertical_actuator_controller::startUp()
     this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
 
     // Configure all provided services associated with this component
+    // server: verticalPos_server
     ros::AdvertiseServiceOptions verticalPos_server_server_options;
     verticalPos_server_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::verticalPos>
@@ -103,6 +107,7 @@ void vertical_actuator_controller::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
+    // timer: timer.name
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(0.01),

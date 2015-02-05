@@ -1,18 +1,19 @@
-#ifndef GRIPPER_CONTROLLER_HPP
-#define GRIPPER_CONTROLLER_HPP
+#ifndef SERVO_CONTROLLER_HPP
+#define SERVO_CONTROLLER_HPP
 
 #include "ros/ros.h"
 #include "Component.hpp"
 
 #include "agse_package/controlInputs.h"
-#include "agse_package/gripperRotation.h"
+#include "agse_package/armRotation.h"
 #include "agse_package/gripperPos.h"
+#include "agse_package/gripperRotation.h"
 
 // --------------------------------
 //      USER INCLUDES GO HERE
 // --------------------------------
 
-class gripper_controller : public Component
+class servo_controller : public Component
 {
     public:
 
@@ -26,16 +27,20 @@ class gripper_controller : public Component
  
 
 	// Component Service Callback
-	bool gripperRotation_serverCallback(agse_package::gripperRotation::Request  &req,
-		agse_package::gripperRotation::Response &res);
+	bool armRotation_serverCallback(agse_package::armRotation::Request  &req,
+		agse_package::armRotation::Response &res);
 
 	// Component Service Callback
 	bool gripperPos_serverCallback(agse_package::gripperPos::Request  &req,
 		agse_package::gripperPos::Response &res);
 
+	// Component Service Callback
+	bool gripperRotation_serverCallback(agse_package::gripperRotation::Request  &req,
+		agse_package::gripperRotation::Response &res);
 
-	// Callback for gripperTimer timer
-	void gripperTimerCallback(const ros::TimerEvent& event);
+
+	// Callback for servoTimer timer
+	void servoTimerCallback(const ros::TimerEvent& event);
 
 
 	// these functions' business logic will be auto-generated:
@@ -44,23 +49,26 @@ class gripper_controller : public Component
 	void startUp();
 
 	// required for clean shutdown
-	~gripper_controller();
+	~servo_controller();
 
     private:
 
-	// ROS Timer - gripperTimer
-	ros::Timer gripperTimer;
+	// ROS Timer - servoTimer
+	ros::Timer servoTimer;
 
 
 	// ROS Subscriber - controlInputs_sub
 	ros::Subscriber controlInputs_sub; 
 
 
-	// ROS Service Server - gripperRotation_server_server
-	ros::ServiceServer gripperRotation_server_server;
+	// ROS Service Server - armRotation_server_server
+	ros::ServiceServer armRotation_server_server;
 
 	// ROS Service Server - gripperPos_server_server
 	ros::ServiceServer gripperPos_server_server;
+
+	// ROS Service Server - gripperRotation_server_server
+	ros::ServiceServer gripperRotation_server_server;
 
 
 };

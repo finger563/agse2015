@@ -1,5 +1,4 @@
 #include "agse_package/radial_actuator_controller.hpp"
-#include "agse_package/gpio.h"
 
 // -------------------------------------------------------
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
@@ -17,20 +16,23 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
 // OnOneData Subscription handler for controlInputs_sub subscriber
 void radial_actuator_controller::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
-    // Business Logic for controlInputs_sub subscriber callback 
+    // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
+
 }
 
 // Component Service Callback
 bool radial_actuator_controller::radialPos_serverCallback(agse_package::radialPos::Request  &req,
     agse_package::radialPos::Response &res)
 {
-    // Business Logic for <listener.ROS_Server instance at 0xb541cb70> Service
+    // Business Logic for radialPos_server Server providing radialPos Service
+
 }
 
 // Callback for radialPosTimer timer
 void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for radialPosTimer 
+
 }
 
 // ---------------------------------------------
@@ -50,6 +52,7 @@ void radial_actuator_controller::startUp()
     ros::NodeHandle nh;
 
     // Configure all subscribers associated with this component
+    // subscriber: controlInputs_sub
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -61,6 +64,7 @@ void radial_actuator_controller::startUp()
     this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
 
     // Configure all provided services associated with this component
+    // server: radialPos_server
     ros::AdvertiseServiceOptions radialPos_server_server_options;
     radialPos_server_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::radialPos>
@@ -81,6 +85,7 @@ void radial_actuator_controller::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
+    // timer: timer.name
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(0.01),

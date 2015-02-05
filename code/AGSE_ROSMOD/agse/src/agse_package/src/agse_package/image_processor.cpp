@@ -16,20 +16,23 @@ void image_processor::Init(const ros::TimerEvent& event)
 // OnOneData Subscription handler for controlInputs_sub subscriber
 void image_processor::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
-    // Business Logic for controlInputs_sub subscriber callback 
+    // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
+
 }
 
 // Component Service Callback
 bool image_processor::sampleStateFromImage_serverCallback(agse_package::sampleStateFromImage::Request  &req,
     agse_package::sampleStateFromImage::Response &res)
 {
-    // Business Logic for <listener.ROS_Server instance at 0xb53efc38> Service
+    // Business Logic for sampleStateFromImage_server Server providing sampleStateFromImage Service
+
 }
 
 // Callback for imageTimer timer
 void image_processor::imageTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for imageTimer 
+
 }
 
 // ---------------------------------------------
@@ -49,6 +52,7 @@ void image_processor::startUp()
     ros::NodeHandle nh;
 
     // Configure all subscribers associated with this component
+    // subscriber: controlInputs_sub
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -60,6 +64,7 @@ void image_processor::startUp()
     this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
 
     // Configure all provided services associated with this component
+    // server: sampleStateFromImage_server
     ros::AdvertiseServiceOptions sampleStateFromImage_server_server_options;
     sampleStateFromImage_server_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::sampleStateFromImage>
@@ -80,6 +85,7 @@ void image_processor::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
+    // timer: timer.name
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(0.04),

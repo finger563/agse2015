@@ -17,6 +17,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for userInputTimer 
+
 }
 
 // ---------------------------------------------
@@ -35,6 +36,7 @@ void user_input_controller::startUp()
     ros::NodeHandle nh;
 
     // Configure all publishers associated with this component
+    // publisher: controlInputs_pub
     this->controlInputs_pub = nh.advertise<agse_package::controlInputs>
 	("controlInputs", 1000);	
 
@@ -49,6 +51,7 @@ void user_input_controller::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
+    // timer: timer.name
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(0.01),

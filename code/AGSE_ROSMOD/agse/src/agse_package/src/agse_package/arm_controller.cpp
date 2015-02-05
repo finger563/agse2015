@@ -16,13 +16,15 @@ void arm_controller::Init(const ros::TimerEvent& event)
 // OnOneData Subscription handler for controlInputs_sub subscriber
 void arm_controller::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
-    // Business Logic for controlInputs_sub subscriber callback 
+    // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
+
 }
 
 // Callback for armTimer timer
 void arm_controller::armTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for armTimer 
+
 }
 
 // ---------------------------------------------
@@ -47,6 +49,7 @@ void arm_controller::startUp()
     ros::NodeHandle nh;
 
     // Configure all subscribers associated with this component
+    // subscriber: controlInputs_sub
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -58,21 +61,22 @@ void arm_controller::startUp()
     this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
 
     // Configure all required services associated with this component
+    // client: sampleStateFromImage_client_client
     this->sampleStateFromImage_client_client = nh.serviceClient<agse_package::sampleStateFromImage>
 	("sampleStateFromImage"); 
-    // Configure all required services associated with this component
+    // client: radialPos_client_client
     this->radialPos_client_client = nh.serviceClient<agse_package::radialPos>
 	("radialPos"); 
-    // Configure all required services associated with this component
+    // client: armRotation_client_client
     this->armRotation_client_client = nh.serviceClient<agse_package::armRotation>
 	("armRotation"); 
-    // Configure all required services associated with this component
+    // client: gripperRotation_client_client
     this->gripperRotation_client_client = nh.serviceClient<agse_package::gripperRotation>
 	("gripperRotation"); 
-    // Configure all required services associated with this component
+    // client: verticalPos_client_client
     this->verticalPos_client_client = nh.serviceClient<agse_package::verticalPos>
 	("verticalPos"); 
-    // Configure all required services associated with this component
+    // client: gripperPos_client_client
     this->gripperPos_client_client = nh.serviceClient<agse_package::gripperPos>
 	("gripperPos"); 
 
@@ -87,6 +91,7 @@ void arm_controller::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
+    // timer: timer.name
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(0.02),

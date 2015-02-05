@@ -195,8 +195,7 @@ add_dependencies(camera agse_package_generate_messages_cpp)
 add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/radial_actuator_controller.cpp  
                 src/agse_package/vertical_actuator_controller.cpp  
-                src/agse_package/arm_rotation_controller.cpp  
-                src/agse_package/gripper_controller.cpp  
+                src/agse_package/servo_controller.cpp  
 		src/agse_package/gpio.cpp
 		src/agse_package/Dynamixel.cpp
 		src/agse_package/SerialPort.cpp
