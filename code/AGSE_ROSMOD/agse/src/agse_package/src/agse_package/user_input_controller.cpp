@@ -4,14 +4,19 @@
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
-int timerDelay = 500;
-int timerIterations = 0;
-bool paused = true;
-
 // Init Function
 void user_input_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
+  paused = true;
+
+  // THESE NEED TO BE UPDATED
+  pauseSwitchPin = 57;
+
+  // set up the pins to control the h-bridge
+  gpio_export(pauseSwitchPin);
+  gpio_set_dir(pauseSwitchPin,INPUT_PIN);
+
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -20,18 +25,19 @@ void user_input_controller::Init(const ros::TimerEvent& event)
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for userInputTimer 
-  timerIterations++;
-  if (timerIterations >= timerDelay){
-    timerIterations = 0;
-    paused = !paused;
-    agse_package::controlInputs control;
-    control.paused = paused;
-    controlInputs_pub.publish(control);
-    if (paused)
-      ROS_INFO("Pausing the system!");
-    else
-      ROS_INFO("Unpausing the system!");
-  }
+  unsigned int previousSwitchState = pauseSwitchState;
+  gpio_get_value(pauseSwitchPin, &pauseSwitchState);
+  if ( previousSwitchState != pauseSwitchState )
+    {
+      paused = (pauseSwitchState == HIGH) ? true : false;
+      agse_package::controlInputs control;
+      control.paused = paused;
+      controlInputs_pub.publish(control);
+      if (paused)
+	ROS_INFO("Pausing the system!");
+      else
+	ROS_INFO("Unpausing the system!");
+    }
 }
 
 // ---------------------------------------------

@@ -6,6 +6,8 @@
 
 #include "agse_package/controlInputs.h"
 
+#include "agse_package/gpio.h"
+
 // --------------------------------
 //      USER INCLUDES GO HERE
 // --------------------------------
@@ -32,6 +34,12 @@ class user_input_controller : public Component
 	~user_input_controller();
 
     private:
+
+  bool paused;
+  // pin for pause switch
+  unsigned int pauseSwitchPin;
+  // variable to keep track of switch state
+  unsigned int pauseSwitchState;
 
 	// ROS Timer - userInputTimer
 	ros::Timer userInputTimer;
