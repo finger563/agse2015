@@ -43,6 +43,8 @@ class vertical_actuator_controller : public Component
 
     private:
 
+  bool paused;
+
 	// ROS Timer - verticalPosTimer
 	ros::Timer verticalPosTimer;
 

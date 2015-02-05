@@ -43,6 +43,8 @@ class radial_actuator_controller : public Component
 
     private:
 
+  bool paused;
+
 	// ROS Timer - radialPosTimer
 	ros::Timer radialPosTimer;
 

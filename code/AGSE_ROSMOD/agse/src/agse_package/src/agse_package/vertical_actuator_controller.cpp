@@ -19,6 +19,7 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   gpio_export(READGPIO);
   gpio_set_dir(LEDGPIO,OUTPUT_PIN);
   gpio_set_dir(READGPIO,INPUT_PIN);
+  paused = true;
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -27,7 +28,7 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
 void vertical_actuator_controller::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
-
+  paused = received_data->paused;
 }
 
 // Component Service Callback
@@ -41,20 +42,22 @@ bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::vert
 // Callback for verticalPosTimer timer
 void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEvent& event)
 {
-    // Business Logic for verticalPosTimer 
-  if (ledTime < onTime)
-    ledTime++;
-  else
-    {
-      ledTime=0;
-      if (ledState)
-	gpio_set_value(LEDGPIO,HIGH);
-      else
-	gpio_set_value(LEDGPIO,LOW);
-      ledState = ledState ? false : true;
-    }
-  unsigned int value = LOW;
-  gpio_get_value(READGPIO, &value);
+  // Business Logic for verticalPosTimer 
+  if (!paused) {
+    if (ledTime < onTime)
+      ledTime++;
+    else
+      {
+	ledTime=0;
+	if (ledState)
+	  gpio_set_value(LEDGPIO,HIGH);
+	else
+	  gpio_set_value(LEDGPIO,LOW);
+	ledState = ledState ? false : true;
+      }
+    unsigned int value = LOW;
+    gpio_get_value(READGPIO, &value);
+  }
 }
 
 // ---------------------------------------------

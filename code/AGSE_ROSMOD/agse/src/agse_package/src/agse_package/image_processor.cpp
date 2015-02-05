@@ -8,7 +8,7 @@
 void image_processor::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-
+  paused = true;
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -17,7 +17,7 @@ void image_processor::Init(const ros::TimerEvent& event)
 void image_processor::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
-
+  paused = received_data->paused;
 }
 
 // Component Service Callback

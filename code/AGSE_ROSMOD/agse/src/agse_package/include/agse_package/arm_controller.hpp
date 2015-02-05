@@ -43,6 +43,8 @@ class arm_controller : public Component
 
     private:
 
+  bool paused;
+
 	// ROS Timer - armTimer
 	ros::Timer armTimer;
 

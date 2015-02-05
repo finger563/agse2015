@@ -53,6 +53,8 @@ class servo_controller : public Component
 
     private:
 
+  bool paused;
+
 	// ROS Timer - servoTimer
 	ros::Timer servoTimer;
 

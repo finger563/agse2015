@@ -27,7 +27,7 @@ void servo_controller::Init(const ros::TimerEvent& event)
   else {
     ROS_INFO ("Can't open serial port");
   }
-
+  paused = true;
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -36,7 +36,7 @@ void servo_controller::Init(const ros::TimerEvent& event)
 void servo_controller::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
-
+  paused = received_data->paused;
 }
 
 // Component Service Callback
@@ -65,20 +65,22 @@ bool servo_controller::gripperRotation_serverCallback(agse_package::gripperRotat
 void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for servoTimer 
-  myLedState = !myLedState;
-  if (pos==myPosition1)
-    pos = myPosition2;
-  else
-    pos = myPosition1;
-  int retVal;
-  ROS_INFO("\nSERVO ID %d:",ax12_base_id);
-  int pos1=dynamixel.getPosition(&serialPort, ax12_base_id);
-  retVal = dynamixel.getSetLedCommand(&serialPort, ax12_base_id, !myLedState);
-  dynamixel.setPosition(&serialPort, ax12_base_id, pos+100);
-  ROS_INFO("\nSERVO ID %d:",ax12_gripper_id);
-  int pos2=dynamixel.getPosition(&serialPort, ax12_gripper_id);
-  retVal = dynamixel.getSetLedCommand(&serialPort, ax12_gripper_id, myLedState);
-  dynamixel.setPosition(&serialPort, ax12_gripper_id, pos);
+  if (!paused) {
+    myLedState = !myLedState;
+    if (pos==myPosition1)
+      pos = myPosition2;
+    else
+      pos = myPosition1;
+    int retVal;
+    ROS_INFO("\nSERVO ID %d:",ax12_base_id);
+    int pos1=dynamixel.getPosition(&serialPort, ax12_base_id);
+    retVal = dynamixel.getSetLedCommand(&serialPort, ax12_base_id, !myLedState);
+    dynamixel.setPosition(&serialPort, ax12_base_id, pos+100);
+    ROS_INFO("\nSERVO ID %d:",ax12_gripper_id);
+    int pos2=dynamixel.getPosition(&serialPort, ax12_gripper_id);
+    retVal = dynamixel.getSetLedCommand(&serialPort, ax12_gripper_id, myLedState);
+    dynamixel.setPosition(&serialPort, ax12_gripper_id, pos);
+  }
 }
 
 // ---------------------------------------------

@@ -8,7 +8,6 @@
 void user_input_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -17,7 +16,10 @@ void user_input_controller::Init(const ros::TimerEvent& event)
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for userInputTimer 
-
+  agse_package::controlInputs control;
+  control.paused = false;
+  ROS_INFO("Unpausing the system!");
+  controlInputs_pub.publish(control);
 }
 
 // ---------------------------------------------

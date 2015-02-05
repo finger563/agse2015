@@ -43,6 +43,8 @@ class image_processor : public Component
 
     private:
 
+  bool paused;
+
 	// ROS Timer - imageTimer
 	ros::Timer imageTimer;
 
