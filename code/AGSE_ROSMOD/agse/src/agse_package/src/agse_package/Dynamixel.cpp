@@ -29,6 +29,17 @@ Dynamixel::~Dynamixel()
 	
 }
 
+// pos: input as gotten from getPosition()
+// returns: floating point current angle
+float Dynamixel::posToAngle(short pos)
+{
+  // ax-12a has an operating range: [0,300] degrees
+  // which corresponds to a digital value range: [0,1024]
+  // this gives us a precision of 0.29 degrees
+  float angle = 0;
+  angle = (float)pos * 0.29f;
+  return angle;
+}
 
 void Dynamixel::cleanBuffers()
 {

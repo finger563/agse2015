@@ -9,8 +9,8 @@ int ax12_base_id=1;
 int ax12_gripper_id=10;
 
 bool myLedState = true;
-int myPosition1 = 100;
-int myPosition2 = 500;
+int myPosition1 = 0;
+int myPosition2 = 1023;
 int pos = myPosition1;
 
 char portName[] = "//dev//ttyTHS0";
@@ -37,6 +37,7 @@ void servo_controller::controlInputs_sub_OnOneData(const agse_package::controlIn
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
+  ROS_INFO( paused ? "System paused!" : "System Unpaused" );
 }
 
 // Component Service Callback
@@ -72,12 +73,16 @@ void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
     else
       pos = myPosition1;
     int retVal;
+
     ROS_INFO("\nSERVO ID %d:",ax12_base_id);
     int pos1=dynamixel.getPosition(&serialPort, ax12_base_id);
+    ROS_INFO("servo angle: %f\n",Dynamixel::posToAngle(pos1));
     retVal = dynamixel.getSetLedCommand(&serialPort, ax12_base_id, !myLedState);
-    dynamixel.setPosition(&serialPort, ax12_base_id, pos+100);
+    dynamixel.setPosition(&serialPort, ax12_base_id, pos);
+
     ROS_INFO("\nSERVO ID %d:",ax12_gripper_id);
     int pos2=dynamixel.getPosition(&serialPort, ax12_gripper_id);
+    ROS_INFO("servo angle: %f\n",Dynamixel::posToAngle(pos2));
     retVal = dynamixel.getSetLedCommand(&serialPort, ax12_gripper_id, myLedState);
     dynamixel.setPosition(&serialPort, ax12_gripper_id, pos);
   }
@@ -156,7 +161,7 @@ void servo_controller::startUp()
     // timer: timer.name
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(1.0),
+             (ros::Duration(2.0),
 	     boost::bind(&servo_controller::servoTimerCallback, this, _1),
 	     &this->compQueue);
     this->servoTimer = nh.createTimer(timer_options);

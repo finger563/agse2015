@@ -44,6 +44,8 @@ class Dynamixel {
   Dynamixel();
   ~Dynamixel();
 
+  static float posToAngle(short pos);
+
   int getPosition(SerialPort *serialPort, int idAX12);
   int setPosition(SerialPort *serialPort, int idAX12, int position);		
 		

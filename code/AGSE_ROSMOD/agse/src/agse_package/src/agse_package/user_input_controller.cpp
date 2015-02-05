@@ -4,6 +4,10 @@
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
+int timerDelay = 500;
+int timerIterations = 0;
+bool paused = true;
+
 // Init Function
 void user_input_controller::Init(const ros::TimerEvent& event)
 {
@@ -16,10 +20,18 @@ void user_input_controller::Init(const ros::TimerEvent& event)
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for userInputTimer 
-  agse_package::controlInputs control;
-  control.paused = false;
-  ROS_INFO("Unpausing the system!");
-  controlInputs_pub.publish(control);
+  timerIterations++;
+  if (timerIterations >= timerDelay){
+    timerIterations = 0;
+    paused = !paused;
+    agse_package::controlInputs control;
+    control.paused = paused;
+    controlInputs_pub.publish(control);
+    if (paused)
+      ROS_INFO("Pausing the system!");
+    else
+      ROS_INFO("Unpausing the system!");
+  }
 }
 
 // ---------------------------------------------
