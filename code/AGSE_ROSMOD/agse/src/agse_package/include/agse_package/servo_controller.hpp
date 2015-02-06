@@ -13,9 +13,9 @@
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
+#include "agse_package/gripperRotation.h"
 #include "agse_package/armRotation.h"
 #include "agse_package/gripperPos.h"
-#include "agse_package/gripperRotation.h"
 
 class servo_controller : public Component
 {

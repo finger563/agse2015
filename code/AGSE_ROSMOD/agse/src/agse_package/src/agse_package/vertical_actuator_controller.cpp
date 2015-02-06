@@ -46,7 +46,7 @@ void vertical_actuator_controller::controlInputs_sub_OnOneData(const agse_packag
 //# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
-//# Start verticalPos_serverCallback  Marker
+//# Start verticalPos_serverCallback Marker
 bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::verticalPos::Request  &req,
     agse_package::verticalPos::Response &res)
 {
@@ -58,7 +58,7 @@ bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::vert
   res.current = verticalCurrent;
   return true;
 }
-//# End verticalPos_serverCallback  Marker
+//# End verticalPos_serverCallback Marker
 
 // Callback for verticalPosTimer timer
 //# Start verticalPosTimerCallback Marker

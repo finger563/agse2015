@@ -40,7 +40,7 @@ void servo_controller::controlInputs_sub_OnOneData(const agse_package::controlIn
 //# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
-//# Start armRotation_serverCallback  Marker
+//# Start armRotation_serverCallback Marker
 bool servo_controller::armRotation_serverCallback(agse_package::armRotation::Request  &req,
     agse_package::armRotation::Response &res)
 {
@@ -52,9 +52,9 @@ bool servo_controller::armRotation_serverCallback(agse_package::armRotation::Req
   res.current = armRotationCurrent;
   return true;
 }
-//# End armRotation_serverCallback  Marker
+//# End armRotation_serverCallback Marker
 // Component Service Callback
-//# Start gripperPos_serverCallback  Marker
+//# Start gripperPos_serverCallback Marker
 bool servo_controller::gripperPos_serverCallback(agse_package::gripperPos::Request  &req,
     agse_package::gripperPos::Response &res)
 {
@@ -66,9 +66,9 @@ bool servo_controller::gripperPos_serverCallback(agse_package::gripperPos::Reque
   res.current = gripperPosCurrent;
   return true;
 }
-//# End gripperPos_serverCallback  Marker
+//# End gripperPos_serverCallback Marker
 // Component Service Callback
-//# Start gripperRotation_serverCallback  Marker
+//# Start gripperRotation_serverCallback Marker
 bool servo_controller::gripperRotation_serverCallback(agse_package::gripperRotation::Request  &req,
     agse_package::gripperRotation::Response &res)
 {
@@ -80,7 +80,7 @@ bool servo_controller::gripperRotation_serverCallback(agse_package::gripperRotat
   res.current = gripperRotationCurrent;
   return true;
 }
-//# End gripperRotation_serverCallback  Marker
+//# End gripperRotation_serverCallback Marker
 
 // Callback for servoTimer timer
 //# Start servoTimerCallback Marker

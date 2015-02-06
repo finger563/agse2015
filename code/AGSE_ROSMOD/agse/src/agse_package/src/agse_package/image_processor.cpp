@@ -25,14 +25,14 @@ void image_processor::controlInputs_sub_OnOneData(const agse_package::controlInp
 //# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
-//# Start sampleStateFromImage_serverCallback  Marker
+//# Start sampleStateFromImage_serverCallback Marker
 bool image_processor::sampleStateFromImage_serverCallback(agse_package::sampleStateFromImage::Request  &req,
     agse_package::sampleStateFromImage::Response &res)
 {
     // Business Logic for sampleStateFromImage_server Server providing sampleStateFromImage Service
 
 }
-//# End sampleStateFromImage_serverCallback  Marker
+//# End sampleStateFromImage_serverCallback Marker
 
 // Callback for imageTimer timer
 //# Start imageTimerCallback Marker

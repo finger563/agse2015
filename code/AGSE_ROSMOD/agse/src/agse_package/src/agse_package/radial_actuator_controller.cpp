@@ -46,7 +46,7 @@ void radial_actuator_controller::controlInputs_sub_OnOneData(const agse_package:
 //# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
-//# Start radialPos_serverCallback  Marker
+//# Start radialPos_serverCallback Marker
 bool radial_actuator_controller::radialPos_serverCallback(agse_package::radialPos::Request  &req,
     agse_package::radialPos::Response &res)
 {
@@ -58,7 +58,7 @@ bool radial_actuator_controller::radialPos_serverCallback(agse_package::radialPo
   res.current = radialCurrent;
   return true;
 }
-//# End radialPos_serverCallback  Marker
+//# End radialPos_serverCallback Marker
 
 // Callback for radialPosTimer timer
 //# Start radialPosTimerCallback Marker
