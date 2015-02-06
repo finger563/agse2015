@@ -1,5 +1,9 @@
 #include "agse_package/radial_actuator_controller.hpp"
 
+//# Start User Globals Marker
+
+//# End User Globals Marker
+
 // -------------------------------------------------------
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------

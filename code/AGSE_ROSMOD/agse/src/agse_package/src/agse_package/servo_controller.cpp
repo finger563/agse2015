@@ -1,5 +1,9 @@
 #include "agse_package/servo_controller.hpp"
 
+//# Start User Globals Marker
+
+//# End User Globals Marker
+
 // -------------------------------------------------------
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
