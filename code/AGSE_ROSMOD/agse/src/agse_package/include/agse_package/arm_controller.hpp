@@ -11,11 +11,11 @@
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
-#include "agse_package/gripperRotation.h"
-#include "agse_package/armRotation.h"
 #include "agse_package/sampleStateFromImage.h"
-#include "agse_package/verticalPos.h"
 #include "agse_package/radialPos.h"
+#include "agse_package/armRotation.h"
+#include "agse_package/gripperRotation.h"
+#include "agse_package/verticalPos.h"
 #include "agse_package/gripperPos.h"
 
 class arm_controller : public Component
