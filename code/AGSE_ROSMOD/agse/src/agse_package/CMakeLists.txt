@@ -8,6 +8,8 @@ find_package(catkin REQUIRED COMPONENTS
 roscpp
 std_msgs
 message_generation
+## Start Package Marker
+## End Package Marker
 )
 
 ## System dependencies are found with CMake's conventions
@@ -184,11 +186,15 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable( arm src/agse_package/arm_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/arm_controller.cpp  
+		## Start CPP Marker
+		## End CPP Marker
               )
 target_link_libraries(arm ${catkin_LIBRARIES})
 add_dependencies(arm agse_package_generate_messages_cpp)
 add_executable( camera src/agse_package/camera_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/image_processor.cpp  
+		## Start CPP Marker
+		## End CPP Marker
               )
 target_link_libraries(camera ${catkin_LIBRARIES})
 add_dependencies(camera agse_package_generate_messages_cpp)
@@ -196,16 +202,20 @@ add_executable( positioning src/agse_package/positioning_main.cpp src/agse_packa
                 src/agse_package/radial_actuator_controller.cpp  
                 src/agse_package/vertical_actuator_controller.cpp  
                 src/agse_package/servo_controller.cpp  
+		## Start CPP Marker
 		src/agse_package/gpio.cpp
 		src/agse_package/Dynamixel.cpp
 		src/agse_package/SerialPort.cpp
 		src/agse_package/Utils.cpp
+		## End CPP Marker
               )
 target_link_libraries(positioning ${catkin_LIBRARIES})
 add_dependencies(positioning agse_package_generate_messages_cpp)
 add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/user_input_controller.cpp  
+		## Start CPP Marker
 		src/agse_package/gpio.cpp
+		## End CPP Marker
               )
 target_link_libraries(user_input ${catkin_LIBRARIES})
 add_dependencies(user_input agse_package_generate_messages_cpp)
