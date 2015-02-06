@@ -4,13 +4,14 @@
 #include "ros/ros.h"
 #include "Component.hpp"
 
-#include "agse_package/controlInputs.h"
-
-#include "agse_package/gpio.h"
-
 // --------------------------------
 //      USER INCLUDES GO HERE
 // --------------------------------
+//# Start User Includes Marker
+#include "agse_package/gpio.h"
+//# End User Includes Marker
+
+#include "agse_package/controlInputs.h"
 
 class user_input_controller : public Component
 {
@@ -35,12 +36,6 @@ class user_input_controller : public Component
 
     private:
 
-  bool paused;
-  // pin for pause switch
-  unsigned int pauseSwitchPin;
-  // variable to keep track of switch state
-  unsigned int pauseSwitchState;
-
 	// ROS Timer - userInputTimer
 	ros::Timer userInputTimer;
 
@@ -49,6 +44,13 @@ class user_input_controller : public Component
 	ros::Publisher controlInputs_pub;
 
 
+        //# Start User Private Variables Marker
+  bool paused;
+  // pin for pause switch
+  unsigned int pauseSwitchPin;
+  // variable to keep track of switch state
+  unsigned int pauseSwitchState;
+        //# End User Private Variables Marker
 };
 
 

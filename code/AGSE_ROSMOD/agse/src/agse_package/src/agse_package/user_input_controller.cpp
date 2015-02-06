@@ -5,6 +5,7 @@
 // -------------------------------------------------------
 
 // Init Function
+//# Start Init Marker
 void user_input_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
@@ -16,12 +17,13 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   // set up the pins to control the h-bridge
   gpio_export(pauseSwitchPin);
   gpio_set_dir(pauseSwitchPin,INPUT_PIN);
-
     // Stop Init Timer
     initOneShotTimer.stop();
 }
+//# End Init Marker
 
 // Callback for userInputTimer timer
+//# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for userInputTimer 
@@ -39,6 +41,7 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 	ROS_INFO("Unpausing the system!");
     }
 }
+//# End userInputTimerCallback Marker
 
 // ---------------------------------------------
 // EVERYTHING BELOW HERE IS COMPLETELY GENERATED

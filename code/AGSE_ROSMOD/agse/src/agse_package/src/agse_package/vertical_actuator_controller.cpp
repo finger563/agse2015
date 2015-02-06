@@ -4,21 +4,11 @@
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
-unsigned int LEDGPIO = 57; // GPIO1_25 = (1x32) + 25 = 57
-unsigned int READGPIO = 15; // GPIO0_15 = (0x32) + 15 = 15
-bool ledState = true;
-const unsigned int onTime = 50;
-unsigned int ledTime = 0;
-
 // Init Function
+//# Start Init Marker
 void vertical_actuator_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-  gpio_export(LEDGPIO);
-  gpio_export(READGPIO);
-  gpio_set_dir(LEDGPIO,OUTPUT_PIN);
-  gpio_set_dir(READGPIO,INPUT_PIN);
-
   paused = true;
 
   // THESE NEED TO BE UPDATED
@@ -43,16 +33,20 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
     // Stop Init Timer
     initOneShotTimer.stop();
 }
+//# End Init Marker
 
 // OnOneData Subscription handler for controlInputs_sub subscriber
+//# Start controlInputs_sub_OnOneData Marker
 void vertical_actuator_controller::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
   ROS_INFO( paused ? "Vertical motor PAUSED!" : "Vertical motor UNPAUSED!");
 }
+//# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
+//# Start verticalPos_serverCallback  Marker
 bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::verticalPos::Request  &req,
     agse_package::verticalPos::Response &res)
 {
@@ -64,11 +58,13 @@ bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::vert
   res.current = verticalCurrent;
   return true;
 }
+//# End verticalPos_serverCallback  Marker
 
 // Callback for verticalPosTimer timer
+//# Start verticalPosTimerCallback Marker
 void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEvent& event)
 {
-  // Business Logic for verticalPosTimer 
+    // Business Logic for verticalPosTimer 
   if (!paused)
     {
       // read current value for vertical position (encoder)
@@ -86,21 +82,9 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
 	      gpio_set_value(motorBackwardPin,HIGH);
 	    }
 	}
-      if (ledTime < onTime)
-	ledTime++;
-      else
-	{
-	  ledTime=0;
-	  if (ledState)
-	    gpio_set_value(LEDGPIO,HIGH);
-	  else
-	    gpio_set_value(LEDGPIO,LOW);
-	  ledState = ledState ? false : true;
-	}
-      unsigned int value = LOW;
-      gpio_get_value(READGPIO, &value);
     }
 }
+//# End verticalPosTimerCallback Marker
 
 // ---------------------------------------------
 // EVERYTHING BELOW HERE IS COMPLETELY GENERATED

@@ -4,14 +4,15 @@
 #include "ros/ros.h"
 #include "Component.hpp"
 
-#include "agse_package/controlInputs.h"
-#include "agse_package/verticalPos.h"
-
-#include "agse_package/gpio.h"
-
 // --------------------------------
 //      USER INCLUDES GO HERE
 // --------------------------------
+//# Start User Includes Marker
+#include "agse_package/gpio.h"
+//# End User Includes Marker
+
+#include "agse_package/controlInputs.h"
+#include "agse_package/verticalPos.h"
 
 class vertical_actuator_controller : public Component
 {
@@ -45,6 +46,19 @@ class vertical_actuator_controller : public Component
 
     private:
 
+	// ROS Timer - verticalPosTimer
+	ros::Timer verticalPosTimer;
+
+
+	// ROS Subscriber - controlInputs_sub
+	ros::Subscriber controlInputs_sub; 
+
+
+	// ROS Service Server - verticalPos_server_server
+	ros::ServiceServer verticalPos_server_server;
+
+
+        //# Start User Private Variables Marker
   bool paused;
   // epsion value for minimum actionable difference between goal and current
   int epsilon;
@@ -60,19 +74,7 @@ class vertical_actuator_controller : public Component
   unsigned int verticalEncoderPin0;
   // pin that encoder pin 1 is connected to
   unsigned int verticalEncoderPin1;
-
-	// ROS Timer - verticalPosTimer
-	ros::Timer verticalPosTimer;
-
-
-	// ROS Subscriber - controlInputs_sub
-	ros::Subscriber controlInputs_sub; 
-
-
-	// ROS Service Server - verticalPos_server_server
-	ros::ServiceServer verticalPos_server_server;
-
-
+        //# End User Private Variables Marker
 };
 
 

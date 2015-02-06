@@ -4,12 +4,14 @@
 #include "ros/ros.h"
 #include "Component.hpp"
 
-#include "agse_package/controlInputs.h"
-#include "agse_package/sampleStateFromImage.h"
-
 // --------------------------------
 //      USER INCLUDES GO HERE
 // --------------------------------
+//# Start User Includes Marker
+//# End User Includes Marker
+
+#include "agse_package/controlInputs.h"
+#include "agse_package/sampleStateFromImage.h"
 
 class image_processor : public Component
 {
@@ -43,8 +45,6 @@ class image_processor : public Component
 
     private:
 
-  bool paused;
-
 	// ROS Timer - imageTimer
 	ros::Timer imageTimer;
 
@@ -57,6 +57,9 @@ class image_processor : public Component
 	ros::ServiceServer sampleStateFromImage_server_server;
 
 
+        //# Start User Private Variables Marker
+
+        //# End User Private Variables Marker
 };
 
 

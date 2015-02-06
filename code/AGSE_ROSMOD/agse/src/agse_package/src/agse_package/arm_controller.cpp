@@ -5,27 +5,33 @@
 // -------------------------------------------------------
 
 // Init Function
+//# Start Init Marker
 void arm_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-  paused = true;
+
     // Stop Init Timer
     initOneShotTimer.stop();
 }
+//# End Init Marker
 
 // OnOneData Subscription handler for controlInputs_sub subscriber
+//# Start controlInputs_sub_OnOneData Marker
 void arm_controller::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
-  paused = received_data->paused;
+
 }
+//# End controlInputs_sub_OnOneData Marker
 
 // Callback for armTimer timer
+//# Start armTimerCallback Marker
 void arm_controller::armTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for armTimer 
 
 }
+//# End armTimerCallback Marker
 
 // ---------------------------------------------
 // EVERYTHING BELOW HERE IS COMPLETELY GENERATED

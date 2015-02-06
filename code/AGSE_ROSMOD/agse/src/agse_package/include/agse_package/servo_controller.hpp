@@ -4,17 +4,18 @@
 #include "ros/ros.h"
 #include "Component.hpp"
 
+// --------------------------------
+//      USER INCLUDES GO HERE
+// --------------------------------
+//# Start User Includes Marker
+#include "agse_package/Dynamixel.h"
+#include "agse_package/SerialPort.h"
+//# End User Includes Marker
+
 #include "agse_package/controlInputs.h"
 #include "agse_package/armRotation.h"
 #include "agse_package/gripperPos.h"
 #include "agse_package/gripperRotation.h"
-
-#include "agse_package/Dynamixel.h"
-#include "agse_package/SerialPort.h"
-
-// --------------------------------
-//      USER INCLUDES GO HERE
-// --------------------------------
 
 class servo_controller : public Component
 {
@@ -56,6 +57,25 @@ class servo_controller : public Component
 
     private:
 
+	// ROS Timer - servoTimer
+	ros::Timer servoTimer;
+
+
+	// ROS Subscriber - controlInputs_sub
+	ros::Subscriber controlInputs_sub; 
+
+
+	// ROS Service Server - armRotation_server_server
+	ros::ServiceServer armRotation_server_server;
+
+	// ROS Service Server - gripperPos_server_server
+	ros::ServiceServer gripperPos_server_server;
+
+	// ROS Service Server - gripperRotation_server_server
+	ros::ServiceServer gripperRotation_server_server;
+
+
+        //# Start User Private Variables Marker
   bool paused;
 
   // serial port we use on the Jetson TK1
@@ -83,25 +103,7 @@ class servo_controller : public Component
   float gripperPosGoal;
   // current position of the gripperPos servo
   float gripperPosCurrent;
-
-	// ROS Timer - servoTimer
-	ros::Timer servoTimer;
-
-
-	// ROS Subscriber - controlInputs_sub
-	ros::Subscriber controlInputs_sub; 
-
-
-	// ROS Service Server - armRotation_server_server
-	ros::ServiceServer armRotation_server_server;
-
-	// ROS Service Server - gripperPos_server_server
-	ros::ServiceServer gripperPos_server_server;
-
-	// ROS Service Server - gripperRotation_server_server
-	ros::ServiceServer gripperRotation_server_server;
-
-
+        //# End User Private Variables Marker
 };
 
 

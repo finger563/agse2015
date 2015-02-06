@@ -5,35 +5,43 @@
 // -------------------------------------------------------
 
 // Init Function
+//# Start Init Marker
 void image_processor::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-  paused = true;
+
     // Stop Init Timer
     initOneShotTimer.stop();
 }
+//# End Init Marker
 
 // OnOneData Subscription handler for controlInputs_sub subscriber
+//# Start controlInputs_sub_OnOneData Marker
 void image_processor::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
-  paused = received_data->paused;
+
 }
+//# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
+//# Start sampleStateFromImage_serverCallback  Marker
 bool image_processor::sampleStateFromImage_serverCallback(agse_package::sampleStateFromImage::Request  &req,
     agse_package::sampleStateFromImage::Response &res)
 {
     // Business Logic for sampleStateFromImage_server Server providing sampleStateFromImage Service
 
 }
+//# End sampleStateFromImage_serverCallback  Marker
 
 // Callback for imageTimer timer
+//# Start imageTimerCallback Marker
 void image_processor::imageTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for imageTimer 
 
 }
+//# End imageTimerCallback Marker
 
 // ---------------------------------------------
 // EVERYTHING BELOW HERE IS COMPLETELY GENERATED

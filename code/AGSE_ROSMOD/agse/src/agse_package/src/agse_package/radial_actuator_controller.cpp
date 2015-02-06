@@ -5,6 +5,7 @@
 // -------------------------------------------------------
 
 // Init Function
+//# Start Init Marker
 void radial_actuator_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
@@ -32,16 +33,20 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
     // Stop Init Timer
     initOneShotTimer.stop();
 }
+//# End Init Marker
 
 // OnOneData Subscription handler for controlInputs_sub subscriber
+//# Start controlInputs_sub_OnOneData Marker
 void radial_actuator_controller::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
   ROS_INFO( paused ? "Radial motor PAUSED!" : "Radial motor UNPAUSED!");
 }
+//# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
+//# Start radialPos_serverCallback  Marker
 bool radial_actuator_controller::radialPos_serverCallback(agse_package::radialPos::Request  &req,
     agse_package::radialPos::Response &res)
 {
@@ -53,8 +58,10 @@ bool radial_actuator_controller::radialPos_serverCallback(agse_package::radialPo
   res.current = radialCurrent;
   return true;
 }
+//# End radialPos_serverCallback  Marker
 
 // Callback for radialPosTimer timer
+//# Start radialPosTimerCallback Marker
 void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for radialPosTimer 
@@ -77,6 +84,7 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
 	}
     }
 }
+//# End radialPosTimerCallback Marker
 
 // ---------------------------------------------
 // EVERYTHING BELOW HERE IS COMPLETELY GENERATED

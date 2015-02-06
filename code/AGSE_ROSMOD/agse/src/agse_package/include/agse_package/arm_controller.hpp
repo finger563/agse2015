@@ -4,17 +4,19 @@
 #include "ros/ros.h"
 #include "Component.hpp"
 
-#include "agse_package/controlInputs.h"
-#include "agse_package/radialPos.h"
-#include "agse_package/verticalPos.h"
-#include "agse_package/gripperPos.h"
-#include "agse_package/gripperRotation.h"
-#include "agse_package/armRotation.h"
-#include "agse_package/sampleStateFromImage.h"
-
 // --------------------------------
 //      USER INCLUDES GO HERE
 // --------------------------------
+//# Start User Includes Marker
+//# End User Includes Marker
+
+#include "agse_package/controlInputs.h"
+#include "agse_package/gripperRotation.h"
+#include "agse_package/armRotation.h"
+#include "agse_package/sampleStateFromImage.h"
+#include "agse_package/radialPos.h"
+#include "agse_package/verticalPos.h"
+#include "agse_package/gripperPos.h"
 
 class arm_controller : public Component
 {
@@ -43,8 +45,6 @@ class arm_controller : public Component
 
     private:
 
-  bool paused;
-
 	// ROS Timer - armTimer
 	ros::Timer armTimer;
 
@@ -71,7 +71,9 @@ class arm_controller : public Component
 	// ROS Service Client - gripperPos_client_client
 	ros::ServiceClient gripperPos_client_client;
 
+        //# Start User Private Variables Marker
 
+        //# End User Private Variables Marker
 };
 
 

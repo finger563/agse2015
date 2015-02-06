@@ -3,15 +3,9 @@
 // -------------------------------------------------------
 // BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
-int ax12_base_id=1;
-int ax12_gripper_id=10;
-
-bool myLedState = true;
-int myPosition1 = 0;
-int myPosition2 = 1023;
-int pos = myPosition1;
 
 // Init Function
+//# Start Init Marker
 void servo_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
@@ -30,20 +24,23 @@ void servo_controller::Init(const ros::TimerEvent& event)
     {
       ROS_INFO ("Can't open serial port %s", portName);
     }  
-  
     // Stop Init Timer
     initOneShotTimer.stop();
 }
+//# End Init Marker
 
 // OnOneData Subscription handler for controlInputs_sub subscriber
+//# Start controlInputs_sub_OnOneData Marker
 void servo_controller::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
   ROS_INFO( paused ? "Servos paused!" : "Servos Unpaused" );
 }
+//# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
+//# Start armRotation_serverCallback  Marker
 bool servo_controller::armRotation_serverCallback(agse_package::armRotation::Request  &req,
     agse_package::armRotation::Response &res)
 {
@@ -55,7 +52,9 @@ bool servo_controller::armRotation_serverCallback(agse_package::armRotation::Req
   res.current = armRotationCurrent;
   return true;
 }
+//# End armRotation_serverCallback  Marker
 // Component Service Callback
+//# Start gripperPos_serverCallback  Marker
 bool servo_controller::gripperPos_serverCallback(agse_package::gripperPos::Request  &req,
     agse_package::gripperPos::Response &res)
 {
@@ -67,7 +66,9 @@ bool servo_controller::gripperPos_serverCallback(agse_package::gripperPos::Reque
   res.current = gripperPosCurrent;
   return true;
 }
+//# End gripperPos_serverCallback  Marker
 // Component Service Callback
+//# Start gripperRotation_serverCallback  Marker
 bool servo_controller::gripperRotation_serverCallback(agse_package::gripperRotation::Request  &req,
     agse_package::gripperRotation::Response &res)
 {
@@ -79,39 +80,37 @@ bool servo_controller::gripperRotation_serverCallback(agse_package::gripperRotat
   res.current = gripperRotationCurrent;
   return true;
 }
+//# End gripperRotation_serverCallback  Marker
 
 // Callback for servoTimer timer
+//# Start servoTimerCallback Marker
 void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for servoTimer 
   if (!paused) {
-    myLedState = !myLedState;
-    int retVal;
 
     int pos; // temp value to store position from servo
     
     // ARM SERVO 
-    retVal = dynamixel.getSetLedCommand(&serialPort, armServoID, myLedState);
     dynamixel.setPosition(&serialPort, armServoID, Dynamixel::angleToPos(armRotationGoal));
     pos = dynamixel.getPosition(&serialPort, armServoID);
     ROS_INFO("Arm base servo angle: %f\n",Dynamixel::posToAngle(pos));
     armRotationCurrent = Dynamixel::posToAngle(pos);
 
     // GRIPPER ROTATION SERVO
-    retVal = dynamixel.getSetLedCommand(&serialPort, gripperRotationID, myLedState);
     dynamixel.setPosition(&serialPort, gripperRotationID, Dynamixel::angleToPos(gripperRotationGoal));
     pos = dynamixel.getPosition(&serialPort, gripperRotationID);
     ROS_INFO("Gripper rotation servo angle: %f\n",Dynamixel::posToAngle(pos));
     gripperRotationCurrent = Dynamixel::posToAngle(pos);
     
     // GRIPPER POSITION SERVO
-    retVal = dynamixel.getSetLedCommand(&serialPort, gripperPositionID, myLedState);
     dynamixel.setPosition(&serialPort, gripperPositionID, Dynamixel::angleToPos(gripperPosGoal));
     pos = dynamixel.getPosition(&serialPort, gripperPositionID);
     ROS_INFO("Gripper position servo angle: %f\n",Dynamixel::posToAngle(pos));
     gripperPosCurrent = Dynamixel::posToAngle(pos);
   }
 }
+//# End servoTimerCallback Marker
 
 // ---------------------------------------------
 // EVERYTHING BELOW HERE IS COMPLETELY GENERATED
@@ -186,7 +185,7 @@ void servo_controller::startUp()
     // timer: timer.name
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(2.0),
+             (ros::Duration(1.0),
 	     boost::bind(&servo_controller::servoTimerCallback, this, _1),
 	     &this->compQueue);
     this->servoTimer = nh.createTimer(timer_options);
