@@ -19,6 +19,10 @@
 #include "agse_package/verticalPos.h"
 #include "agse_package/gripperPos.h"
 
+//# Start User Globals Marker
+
+//# End User Globals Marker
+
 class arm_controller : public Component
 {
     public:

@@ -14,6 +14,10 @@
 #include "agse_package/controlInputs.h"
 #include "agse_package/radialPos.h"
 
+//# Start User Globals Marker
+
+//# End User Globals Marker
+
 class radial_actuator_controller : public Component
 {
     public:

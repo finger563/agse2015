@@ -14,6 +14,10 @@
 #include "agse_package/controlInputs.h"
 #include "agse_package/sampleStateFromImage.h"
 
+//# Start User Globals Marker
+
+//# End User Globals Marker
+
 class image_processor : public Component
 {
     public:

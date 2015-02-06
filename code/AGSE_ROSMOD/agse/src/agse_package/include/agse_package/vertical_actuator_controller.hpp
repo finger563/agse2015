@@ -14,6 +14,10 @@
 #include "agse_package/controlInputs.h"
 #include "agse_package/verticalPos.h"
 
+//# Start User Globals Marker
+
+//# End User Globals Marker
+
 class vertical_actuator_controller : public Component
 {
     public:

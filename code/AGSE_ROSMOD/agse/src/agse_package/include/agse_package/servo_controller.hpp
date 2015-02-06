@@ -17,6 +17,10 @@
 #include "agse_package/gripperPos.h"
 #include "agse_package/gripperRotation.h"
 
+//# Start User Globals Marker
+
+//# End User Globals Marker
+
 class servo_controller : public Component
 {
     public:

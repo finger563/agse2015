@@ -13,6 +13,10 @@
 
 #include "agse_package/controlInputs.h"
 
+//# Start User Globals Marker
+
+//# End User Globals Marker
+
 class user_input_controller : public Component
 {
     public:
