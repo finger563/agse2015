@@ -32,7 +32,7 @@ class radial_actuator_controller : public Component
  
 
 	// Component Service Callback
-	bool radialPos_serverCallback(agse_package::radialPos::Request  &req,
+	bool radialPosCallback(agse_package::radialPos::Request  &req,
 		agse_package::radialPos::Response &res);
 
 
@@ -58,8 +58,8 @@ class radial_actuator_controller : public Component
 	ros::Subscriber controlInputs_sub; 
 
 
-	// ROS Service Server - radialPos_server_server
-	ros::ServiceServer radialPos_server_server;
+	// ROS Service Server - radialPos_server
+	ros::ServiceServer radialPos_server;
 
 
         //# Start User Private Variables Marker

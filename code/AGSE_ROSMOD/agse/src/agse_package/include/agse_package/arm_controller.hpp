@@ -58,23 +58,23 @@ class arm_controller : public Component
 	ros::Subscriber controlInputs_sub; 
 
 
-	// ROS Service Client - sampleStateFromImage_client_client
-	ros::ServiceClient sampleStateFromImage_client_client;
+	// ROS Service Client - sampleStateFromImage_client
+	ros::ServiceClient sampleStateFromImage_client;
 
-	// ROS Service Client - radialPos_client_client
-	ros::ServiceClient radialPos_client_client;
+	// ROS Service Client - radialPos_client
+	ros::ServiceClient radialPos_client;
 
-	// ROS Service Client - armRotation_client_client
-	ros::ServiceClient armRotation_client_client;
+	// ROS Service Client - armRotation_client
+	ros::ServiceClient armRotation_client;
 
-	// ROS Service Client - gripperRotation_client_client
-	ros::ServiceClient gripperRotation_client_client;
+	// ROS Service Client - gripperRotation_client
+	ros::ServiceClient gripperRotation_client;
 
-	// ROS Service Client - verticalPos_client_client
-	ros::ServiceClient verticalPos_client_client;
+	// ROS Service Client - verticalPos_client
+	ros::ServiceClient verticalPos_client;
 
-	// ROS Service Client - gripperPos_client_client
-	ros::ServiceClient gripperPos_client_client;
+	// ROS Service Client - gripperPos_client
+	ros::ServiceClient gripperPos_client;
 
         //# Start User Private Variables Marker
 

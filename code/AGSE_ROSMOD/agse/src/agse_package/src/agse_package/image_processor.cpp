@@ -29,14 +29,14 @@ void image_processor::controlInputs_sub_OnOneData(const agse_package::controlInp
 //# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
-//# Start sampleStateFromImage_serverCallback Marker
-bool image_processor::sampleStateFromImage_serverCallback(agse_package::sampleStateFromImage::Request  &req,
+//# Start sampleStateFromImageCallback Marker
+bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFromImage::Request  &req,
     agse_package::sampleStateFromImage::Response &res)
 {
     // Business Logic for sampleStateFromImage_server Server providing sampleStateFromImage Service
 
 }
-//# End sampleStateFromImage_serverCallback Marker
+//# End sampleStateFromImageCallback Marker
 
 // Callback for imageTimer timer
 //# Start imageTimerCallback Marker
@@ -56,7 +56,7 @@ image_processor::~image_processor()
 {
     imageTimer.stop();
     controlInputs_sub.shutdown();
-    sampleStateFromImage_server_server.shutdown();
+    sampleStateFromImage_server.shutdown();
 }
 
 void image_processor::startUp()
@@ -77,14 +77,14 @@ void image_processor::startUp()
 
     // Configure all provided services associated with this component
     // server: sampleStateFromImage_server
-    ros::AdvertiseServiceOptions sampleStateFromImage_server_server_options;
-    sampleStateFromImage_server_server_options = 
+    ros::AdvertiseServiceOptions sampleStateFromImage_server_options;
+    sampleStateFromImage_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::sampleStateFromImage>
 	    ("sampleStateFromImage",
-             boost::bind(&image_processor::sampleStateFromImage_serverCallback, this, _1, _2),
+             boost::bind(&image_processor::sampleStateFromImageCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
-    this->sampleStateFromImage_server_server = nh.advertiseService(sampleStateFromImage_server_server_options);
+    this->sampleStateFromImage_server = nh.advertiseService(sampleStateFromImage_server_options);
  
     // Create Init Timer
     ros::TimerOptions timer_options;
@@ -97,7 +97,7 @@ void image_processor::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
-    // timer: timer.name
+    // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(0.04),

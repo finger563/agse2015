@@ -32,7 +32,7 @@ class image_processor : public Component
  
 
 	// Component Service Callback
-	bool sampleStateFromImage_serverCallback(agse_package::sampleStateFromImage::Request  &req,
+	bool sampleStateFromImageCallback(agse_package::sampleStateFromImage::Request  &req,
 		agse_package::sampleStateFromImage::Response &res);
 
 
@@ -58,8 +58,8 @@ class image_processor : public Component
 	ros::Subscriber controlInputs_sub; 
 
 
-	// ROS Service Server - sampleStateFromImage_server_server
-	ros::ServiceServer sampleStateFromImage_server_server;
+	// ROS Service Server - sampleStateFromImage_server
+	ros::ServiceServer sampleStateFromImage_server;
 
 
         //# Start User Private Variables Marker

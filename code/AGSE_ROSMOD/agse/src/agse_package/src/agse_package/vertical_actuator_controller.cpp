@@ -50,8 +50,8 @@ void vertical_actuator_controller::controlInputs_sub_OnOneData(const agse_packag
 //# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
-//# Start verticalPos_serverCallback Marker
-bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::verticalPos::Request  &req,
+//# Start verticalPosCallback Marker
+bool vertical_actuator_controller::verticalPosCallback(agse_package::verticalPos::Request  &req,
     agse_package::verticalPos::Response &res)
 {
     // Business Logic for verticalPos_server Server providing verticalPos Service
@@ -62,7 +62,7 @@ bool vertical_actuator_controller::verticalPos_serverCallback(agse_package::vert
   res.current = verticalCurrent;
   return true;
 }
-//# End verticalPos_serverCallback Marker
+//# End verticalPosCallback Marker
 
 // Callback for verticalPosTimer timer
 //# Start verticalPosTimerCallback Marker
@@ -99,7 +99,7 @@ vertical_actuator_controller::~vertical_actuator_controller()
 {
     verticalPosTimer.stop();
     controlInputs_sub.shutdown();
-    verticalPos_server_server.shutdown();
+    verticalPos_server.shutdown();
 }
 
 void vertical_actuator_controller::startUp()
@@ -120,14 +120,14 @@ void vertical_actuator_controller::startUp()
 
     // Configure all provided services associated with this component
     // server: verticalPos_server
-    ros::AdvertiseServiceOptions verticalPos_server_server_options;
-    verticalPos_server_server_options = 
+    ros::AdvertiseServiceOptions verticalPos_server_options;
+    verticalPos_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::verticalPos>
 	    ("verticalPos",
-             boost::bind(&vertical_actuator_controller::verticalPos_serverCallback, this, _1, _2),
+             boost::bind(&vertical_actuator_controller::verticalPosCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
-    this->verticalPos_server_server = nh.advertiseService(verticalPos_server_server_options);
+    this->verticalPos_server = nh.advertiseService(verticalPos_server_options);
  
     // Create Init Timer
     ros::TimerOptions timer_options;
@@ -140,7 +140,7 @@ void vertical_actuator_controller::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
-    // timer: timer.name
+    // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(0.01),

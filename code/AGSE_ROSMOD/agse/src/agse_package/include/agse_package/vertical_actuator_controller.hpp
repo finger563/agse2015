@@ -32,7 +32,7 @@ class vertical_actuator_controller : public Component
  
 
 	// Component Service Callback
-	bool verticalPos_serverCallback(agse_package::verticalPos::Request  &req,
+	bool verticalPosCallback(agse_package::verticalPos::Request  &req,
 		agse_package::verticalPos::Response &res);
 
 
@@ -58,8 +58,8 @@ class vertical_actuator_controller : public Component
 	ros::Subscriber controlInputs_sub; 
 
 
-	// ROS Service Server - verticalPos_server_server
-	ros::ServiceServer verticalPos_server_server;
+	// ROS Service Server - verticalPos_server
+	ros::ServiceServer verticalPos_server;
 
 
         //# Start User Private Variables Marker

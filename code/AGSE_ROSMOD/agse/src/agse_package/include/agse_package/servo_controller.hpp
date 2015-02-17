@@ -35,15 +35,15 @@ class servo_controller : public Component
  
 
 	// Component Service Callback
-	bool armRotation_serverCallback(agse_package::armRotation::Request  &req,
+	bool armRotationCallback(agse_package::armRotation::Request  &req,
 		agse_package::armRotation::Response &res);
 
 	// Component Service Callback
-	bool gripperPos_serverCallback(agse_package::gripperPos::Request  &req,
+	bool gripperPosCallback(agse_package::gripperPos::Request  &req,
 		agse_package::gripperPos::Response &res);
 
 	// Component Service Callback
-	bool gripperRotation_serverCallback(agse_package::gripperRotation::Request  &req,
+	bool gripperRotationCallback(agse_package::gripperRotation::Request  &req,
 		agse_package::gripperRotation::Response &res);
 
 
@@ -69,14 +69,14 @@ class servo_controller : public Component
 	ros::Subscriber controlInputs_sub; 
 
 
-	// ROS Service Server - armRotation_server_server
-	ros::ServiceServer armRotation_server_server;
+	// ROS Service Server - armRotation_server
+	ros::ServiceServer armRotation_server;
 
-	// ROS Service Server - gripperPos_server_server
-	ros::ServiceServer gripperPos_server_server;
+	// ROS Service Server - gripperPos_server
+	ros::ServiceServer gripperPos_server;
 
-	// ROS Service Server - gripperRotation_server_server
-	ros::ServiceServer gripperRotation_server_server;
+	// ROS Service Server - gripperRotation_server
+	ros::ServiceServer gripperRotation_server;
 
 
         //# Start User Private Variables Marker

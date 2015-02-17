@@ -46,12 +46,12 @@ arm_controller::~arm_controller()
 {
     armTimer.stop();
     controlInputs_sub.shutdown();
-    sampleStateFromImage_client_client.shutdown();
-    radialPos_client_client.shutdown();
-    armRotation_client_client.shutdown();
-    gripperRotation_client_client.shutdown();
-    verticalPos_client_client.shutdown();
-    gripperPos_client_client.shutdown();
+    sampleStateFromImage_client.shutdown();
+    radialPos_client.shutdown();
+    armRotation_client.shutdown();
+    gripperRotation_client.shutdown();
+    verticalPos_client.shutdown();
+    gripperPos_client.shutdown();
 }
 
 void arm_controller::startUp()
@@ -71,23 +71,23 @@ void arm_controller::startUp()
     this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
 
     // Configure all required services associated with this component
-    // client: sampleStateFromImage_client_client
-    this->sampleStateFromImage_client_client = nh.serviceClient<agse_package::sampleStateFromImage>
+    // client: sampleStateFromImage_client
+    this->sampleStateFromImage_client = nh.serviceClient<agse_package::sampleStateFromImage>
 	("sampleStateFromImage"); 
-    // client: radialPos_client_client
-    this->radialPos_client_client = nh.serviceClient<agse_package::radialPos>
+    // client: radialPos_client
+    this->radialPos_client = nh.serviceClient<agse_package::radialPos>
 	("radialPos"); 
-    // client: armRotation_client_client
-    this->armRotation_client_client = nh.serviceClient<agse_package::armRotation>
+    // client: armRotation_client
+    this->armRotation_client = nh.serviceClient<agse_package::armRotation>
 	("armRotation"); 
-    // client: gripperRotation_client_client
-    this->gripperRotation_client_client = nh.serviceClient<agse_package::gripperRotation>
+    // client: gripperRotation_client
+    this->gripperRotation_client = nh.serviceClient<agse_package::gripperRotation>
 	("gripperRotation"); 
-    // client: verticalPos_client_client
-    this->verticalPos_client_client = nh.serviceClient<agse_package::verticalPos>
+    // client: verticalPos_client
+    this->verticalPos_client = nh.serviceClient<agse_package::verticalPos>
 	("verticalPos"); 
-    // client: gripperPos_client_client
-    this->gripperPos_client_client = nh.serviceClient<agse_package::gripperPos>
+    // client: gripperPos_client
+    this->gripperPos_client = nh.serviceClient<agse_package::gripperPos>
 	("gripperPos"); 
 
     // Create Init Timer
@@ -101,7 +101,7 @@ void arm_controller::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
-    // timer: timer.name
+    // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(0.02),
