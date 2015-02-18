@@ -114,6 +114,8 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  /usr/include/opencv
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
@@ -194,9 +196,15 @@ add_dependencies(arm agse_package_generate_messages_cpp)
 add_executable( camera src/agse_package/camera_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/image_processor.cpp  
 		## Start camera CPP Marker
+		src/agse_package/Image_Processor.cpp
+		src/agse_package/Object_Tracker.cpp
 		## End camera CPP Marker
               )
-target_link_libraries(camera ${catkin_LIBRARIES})
+include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
+pkg_check_modules(OPENCV REQUIRED opencv)
+include_directories(${OPENCV_INCLUDE_DIRS})
+link_directories(${OPENCV_LIBRARY_DIRS})
+target_link_libraries(camera ${OPENCV_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(camera agse_package_generate_messages_cpp)
 add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/radial_actuator_controller.cpp  
