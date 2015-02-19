@@ -20,7 +20,7 @@
  */
  
 // Pull in our eQEP driver definitions
-#include "eqep.h"
+#include "agse_package/eqep.h"
  
 // Language dependencies
 #include <cstdint>

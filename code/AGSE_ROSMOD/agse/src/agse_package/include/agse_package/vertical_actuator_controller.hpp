@@ -9,6 +9,7 @@
 // --------------------------------
 //# Start User Includes Marker
 #include "agse_package/gpio.h"
+#include "agse_package/eqep.h"
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
@@ -74,10 +75,9 @@ class vertical_actuator_controller : public Component
   unsigned int motorForwardPin;
   // pin that motor backward is connected to
   unsigned int motorBackwardPin;
-  // pin that encoder pin 0 is connected to
-  unsigned int verticalEncoderPin0;
-  // pin that encoder pin 1 is connected to
-  unsigned int verticalEncoderPin1;
+  // enhanced Quadrature Encoder Pulse eQEP module for the vertical actuator
+  eQEP verticalMotoreQEP;
+  long vm_eqep_period;
         //# End User Private Variables Marker
 };
 

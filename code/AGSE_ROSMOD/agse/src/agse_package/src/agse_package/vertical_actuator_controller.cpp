@@ -19,19 +19,16 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   epsilon = 5;
   motorForwardPin = 57;  // GPIO1_25 = (1x32) + 25 = 57
   motorBackwardPin = 58;
-  verticalEncoderPin0 = 59;
-  verticalEncoderPin1 = 60;
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);
   gpio_export(motorBackwardPin);
   gpio_set_dir(motorForwardPin,OUTPUT_PIN);
   gpio_set_dir(motorBackwardPin,OUTPUT_PIN);
-  // set up the pins to read the encoder
-  gpio_export(verticalEncoderPin0);
-  gpio_export(verticalEncoderPin1);
-  gpio_set_dir(verticalEncoderPin0,INPUT_PIN);
-  gpio_set_dir(verticalEncoderPin1,INPUT_PIN);
+  // set up the encoder module
+  vm_eqep_period = 1000000000L;
+  verticalMotoreQEP = eQEP("/sys/devices/ocp.3/48304000.epwmss/48304180.eqep", eQEP::eQEP_Mode_Aboslute);
+  verticalMotoreQEP.set_period(vm_eqep_period);
   // initialize the goal position to 0
   verticalGoal = 0;
     // Stop Init Timer
@@ -72,6 +69,7 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
   if (!paused)
     {
       // read current value for vertical position (encoder)
+      verticalCurrent = verticalMotoreQEP.get_position();
       // update motor based on current value
       if ( abs(verticalGoal-verticalCurrent) > epsilon ) // if there's significant reason to move
 	{

@@ -19,19 +19,16 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   epsilon = 5;
   motorForwardPin = 57;
   motorBackwardPin = 58;
-  radialEncoderPin0 = 59;
-  radialEncoderPin1 = 60;
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);
   gpio_export(motorBackwardPin);
   gpio_set_dir(motorForwardPin,OUTPUT_PIN);
   gpio_set_dir(motorBackwardPin,OUTPUT_PIN);
-  // set up the pins to read the encoder
-  gpio_export(radialEncoderPin0);
-  gpio_export(radialEncoderPin1);
-  gpio_set_dir(radialEncoderPin0,INPUT_PIN);
-  gpio_set_dir(radialEncoderPin1,INPUT_PIN);
+  // set up the encoder module
+  rm_eqep_period = 1000000000L;
+  radialMotoreQEP = eQEP("/sys/devices/ocp.3/48304000.epwmss/48304180.eqep", eQEP::eQEP_Mode_Absolute);
+  radialMotoreQEP.set_period(rm_eqep_period);
   // initialize the goal position to 0
   radialGoal = 0;
     // Stop Init Timer
@@ -72,6 +69,7 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
   if (!paused)
     {
       // read current value for radial position (encoder)
+      radialCurrent = radialMotoreQEP.get_position();
       // update motor based on current value
       if ( abs(radialGoal-radialCurrent) > epsilon ) // if there's significant reason to move
 	{
