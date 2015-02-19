@@ -27,7 +27,7 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(motorBackwardPin,OUTPUT_PIN);
   // set up the encoder module
   vm_eqep_period = 1000000000L;
-  verticalMotoreQEP = eQEP("/sys/devices/ocp.3/48304000.epwmss/48304180.eqep", eQEP::eQEP_Mode_Aboslute);
+  verticalMotoreQEP.initialize("/sys/devices/ocp.3/48304000.epwmss/48304180.eqep", eQEP::eQEP_Mode_Absolute);
   verticalMotoreQEP.set_period(vm_eqep_period);
   // initialize the goal position to 0
   verticalGoal = 0;

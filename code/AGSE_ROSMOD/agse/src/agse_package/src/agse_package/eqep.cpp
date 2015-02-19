@@ -33,6 +33,10 @@
 #include <poll.h> 
 #include <sys/types.h> 
 #include <sys/stat.h> 
+
+eQEP::eQEP()
+{
+}
  
 // Constructor for eQEP driver interface object
 eQEP::eQEP(std::string _path, eQEP::eQEP_Mode _mode)
@@ -43,6 +47,13 @@ eQEP::eQEP(std::string _path, eQEP::eQEP_Mode _mode)
     
     // Reset the position
     this->set_position(0);
+}
+
+void eQEP::initialize(std::string _path, eQEP::eQEP_Mode _mode)
+{
+  this->path = _path;
+  this->set_mode(_mode);
+  this->set_position(0);
 }
 
 // Set the position of the eQEP hardware

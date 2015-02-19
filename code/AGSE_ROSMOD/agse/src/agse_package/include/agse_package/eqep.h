@@ -48,8 +48,14 @@ public:
         eQEP_Mode_Error = 2,
     } eQEP_Mode;
 
+    // base default constructor, for declaring an object in a header file
+    eQEP();
+
     // Default constructor for the eQEP interface driver
     eQEP(std::string _path, eQEP_Mode _mode);
+
+    // for initialization of default constructed object
+    void initialize(std::string _path, eQEP_Mode _mode);
 
     // Reset the value of the encoder
     void set_position(int32_t position);
