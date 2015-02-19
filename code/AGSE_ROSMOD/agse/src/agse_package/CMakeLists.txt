@@ -215,7 +215,7 @@ add_executable( positioning src/agse_package/positioning_main.cpp src/agse_packa
 		src/agse_package/Dynamixel.cpp
 		src/agse_package/SerialPort.cpp
 		src/agse_package/Utils.cpp
-		src/eqep.cpp
+		src/agse_package/eqep.cpp
                 ## End positioning CPP Marker
               )
 target_link_libraries(positioning ${catkin_LIBRARIES})
