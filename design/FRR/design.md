@@ -34,7 +34,7 @@
 	  * Camera & object detection code was not integrated
 	  * Code was split among jetson and arduino
 	  * Serial communications issues (servo & arduino) and noise issues (servo pwm)
-      	* Base:
+	* Base:
 	  * Unstable off the shelf turntable
 	  * Bad servo control
 	  * Horrible power consumption (~300 mA @ 12 V while doing literally nothing, not even hodling pos)
@@ -47,7 +47,7 @@
 	  * Analog (PWM) servo had issues with noise picked up by long cable from control board
 	  * Small servo couldn't be daisychained with larger (base rotation) servo
 	  * Small servo is not as well documented and not as well supported
-      	* Breadboard circuits for H-Bridges and serial buffers
+	* Breadboard circuits for H-Bridges and serial buffers
 	  * A few iterations of these circuits
 	  * Off the shelf h-bridges we had on hand were not powerful enough (magic blue smoke)
 	  * many different voltage levels required ( 5V, 12V, 1.8V, 7.2V )
