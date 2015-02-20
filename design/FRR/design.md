@@ -149,4 +149,21 @@
 	  * supports image processing code and camera image gathering
 	  * supports communications between system components to achieve overall system goals
     * Modeling Language / Code Generators
+      * support for describing the hardware configuration of the system
+      	* host names
+	* host ip addresses
+	* host architecture
+	* host login information
+	* host hardware configuration scripting
+      * support for describing deployment configuration for a specific hardware and software configuration
+      	* ROS Node (process) to Host (hardware) mapping with process identifier (name)
+      * Code generators preserve business logic 
+      	* developer generates baseline code from model -> adds some business logic code to function stubs -> changes model -> regenerates base code; business logic from before is preserved
+	* shortens iterative development time
+	* increases utility and decreases user or system errors
     * Editor with deployment
+      * specify system software model (component based)
+      * specify hardware configuration and hosts' attributes
+      * specify software to hardware mapping
+      * Deploy the software onto the system
+      * monitor status of deployed software
