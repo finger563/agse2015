@@ -70,6 +70,7 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
     {
       // read current value for vertical position (encoder)
       verticalCurrent = verticalMotoreQEP.get_position();
+      ROS_INFO("Vertical Actuator Encoder Reading: %d",verticalCurrent);
       // update motor based on current value
       if ( abs(verticalGoal-verticalCurrent) > epsilon ) // if there's significant reason to move
 	{

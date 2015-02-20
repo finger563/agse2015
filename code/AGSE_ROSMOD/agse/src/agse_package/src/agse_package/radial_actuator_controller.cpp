@@ -70,6 +70,7 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
     {
       // read current value for radial position (encoder)
       radialCurrent = radialMotoreQEP.get_position();
+      ROS_INFO("Raidal Actuator Encoder Reading: %d",radialCurrent);
       // update motor based on current value
       if ( abs(radialGoal-radialCurrent) > epsilon ) // if there's significant reason to move
 	{
