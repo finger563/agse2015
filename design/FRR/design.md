@@ -27,13 +27,6 @@
   * Started with prototype (AGSE v1):
     * AGSE system (shown in CDR)
       * Hardware
-      	* Code:
-	  * Prototyped in python
-	  * Grabbed sample from known (pre-programmed) position and orientation
-	  * Not very maintainable
-	  * Camera & object detection code was not integrated
-	  * Code was split among jetson and arduino
-	  * Serial communications issues (servo & arduino) and noise issues (servo pwm)
 	* Base:
 	  * Unstable off the shelf turntable
 	  * Bad servo control
@@ -61,7 +54,10 @@
 	  * Mounting
 	* Jetson
 	  * Could run the software
-	  * Couldn't interface with all of the hardware (not enough free GPIO)
+	  * Couldn't interface with all of the hardware
+	    * not enough free GPIO for user input switches
+	    * no analog input for motor potentiometer feedback
+	    * no encoder input for motor encoders (if we wanted)
 	* Overall:
 	  * Showed that we could get the system up and running
 	  * didn't have full camera integration
@@ -72,6 +68,12 @@
 	  * Code wasn't very maintainable and could not be distributed among nodes
 	  * Control code was split between arduino and jetson without clear delineation of responsibilities
       * Software
+      	* Prototyped in python
+	* Grabbed sample from known (pre-programmed) position and orientation
+	* Not very maintainable
+	* Camera & object detection code was not integrated
+	* Code was split among jetson and arduino
+	* Serial communications issues (servo & arduino) and noise issues (servo pwm)
     * Modeling Language / Code Generators
       * Component model and ROS concepts modeled (msg/srv/timer/pub/sub/client/server, component, nodes)
       * Code generated for build system, component model, and workspace
@@ -85,6 +87,39 @@
   * Second Phase (AGSE v2):
     * New version of AGSE:
       * Hardware
+      	* Base:
+	  * Custom-built turn-table / rotation control
+	  * Stable base with very small positioning error
+	  * Unification of system servos
+	    * same protocol
+	    * same voltage
+	    * daisychaining for wire management
+	    * mounted well to sturdy platform
+	* Linear Actuators:
+	  * Custom built
+	  * Reusing design principles and lessons from payload bay
+	  * Using encoders for positioning feedback
+	  * Same voltage level as servos
+	  * Lower power
+	  * No wasted space (i.e. volume and mass go down, work area goes up)
+	* Gripper:
+	  * Same servos as base (voltage / protocol)
+	  * Higher torque for better gripping
+	  * Better design for phalanges (w.r.t. consistently grabbing sample)
+	  * Integration of camera
+	* Circuitry:
+	  * H-Bridges for two linear actuators
+	  * Serial buffer for full-duplex uart @ 3.3V to half-duplex uart @ 5V
+	  * Resistor dividers for 5V QEP to 3.3V eQEP hardware
+	  * Power filtering and step-down from 12V ( Motors / Jetson ) to 5V (BBB & encoders)
+	  * Separate power conversion and isolation board for batteries (48V) to main system power (12V)
+	* Jetson:
+	  * Runs the image processing / object detection
+	  * Runs the overall high-level system planning
+	  * Runs ROSCORE discovery mechanism and ROS backbone
+	  * connects using USB to BBB (linux usb/ethernet driver for BBB)
+	* BeagleBoneBlack (BBB):
+	* Overall:
       * Software
     * Modeling Language / Code Generators
     * Editor with deployment
