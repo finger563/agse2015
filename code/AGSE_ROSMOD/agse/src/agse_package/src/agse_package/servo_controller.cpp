@@ -44,8 +44,8 @@ void servo_controller::controlInputs_sub_OnOneData(const agse_package::controlIn
 //# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
-//# Start armRotation_serverCallback Marker
-bool servo_controller::armRotation_serverCallback(agse_package::armRotation::Request  &req,
+//# Start armRotationCallback Marker
+bool servo_controller::armRotationCallback(agse_package::armRotation::Request  &req,
     agse_package::armRotation::Response &res)
 {
     // Business Logic for armRotation_server Server providing armRotation Service
@@ -56,10 +56,10 @@ bool servo_controller::armRotation_serverCallback(agse_package::armRotation::Req
   res.current = armRotationCurrent;
   return true;
 }
-//# End armRotation_serverCallback Marker
+//# End armRotationCallback Marker
 // Component Service Callback
-//# Start gripperPos_serverCallback Marker
-bool servo_controller::gripperPos_serverCallback(agse_package::gripperPos::Request  &req,
+//# Start gripperPosCallback Marker
+bool servo_controller::gripperPosCallback(agse_package::gripperPos::Request  &req,
     agse_package::gripperPos::Response &res)
 {
     // Business Logic for gripperPos_server Server providing gripperPos Service
@@ -70,10 +70,10 @@ bool servo_controller::gripperPos_serverCallback(agse_package::gripperPos::Reque
   res.current = gripperPosCurrent;
   return true;
 }
-//# End gripperPos_serverCallback Marker
+//# End gripperPosCallback Marker
 // Component Service Callback
-//# Start gripperRotation_serverCallback Marker
-bool servo_controller::gripperRotation_serverCallback(agse_package::gripperRotation::Request  &req,
+//# Start gripperRotationCallback Marker
+bool servo_controller::gripperRotationCallback(agse_package::gripperRotation::Request  &req,
     agse_package::gripperRotation::Response &res)
 {
     // Business Logic for gripperRotation_server Server providing gripperRotation Service
@@ -84,7 +84,7 @@ bool servo_controller::gripperRotation_serverCallback(agse_package::gripperRotat
   res.current = gripperRotationCurrent;
   return true;
 }
-//# End gripperRotation_serverCallback Marker
+//# End gripperRotationCallback Marker
 
 // Callback for servoTimer timer
 //# Start servoTimerCallback Marker
@@ -125,9 +125,9 @@ servo_controller::~servo_controller()
 {
     servoTimer.stop();
     controlInputs_sub.shutdown();
-    armRotation_server_server.shutdown();
-    gripperPos_server_server.shutdown();
-    gripperRotation_server_server.shutdown();
+    armRotation_server.shutdown();
+    gripperPos_server.shutdown();
+    gripperRotation_server.shutdown();
 }
 
 void servo_controller::startUp()
@@ -148,32 +148,32 @@ void servo_controller::startUp()
 
     // Configure all provided services associated with this component
     // server: armRotation_server
-    ros::AdvertiseServiceOptions armRotation_server_server_options;
-    armRotation_server_server_options = 
+    ros::AdvertiseServiceOptions armRotation_server_options;
+    armRotation_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::armRotation>
 	    ("armRotation",
-             boost::bind(&servo_controller::armRotation_serverCallback, this, _1, _2),
+             boost::bind(&servo_controller::armRotationCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
-    this->armRotation_server_server = nh.advertiseService(armRotation_server_server_options);
+    this->armRotation_server = nh.advertiseService(armRotation_server_options);
     // server: gripperPos_server
-    ros::AdvertiseServiceOptions gripperPos_server_server_options;
-    gripperPos_server_server_options = 
+    ros::AdvertiseServiceOptions gripperPos_server_options;
+    gripperPos_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::gripperPos>
 	    ("gripperPos",
-             boost::bind(&servo_controller::gripperPos_serverCallback, this, _1, _2),
+             boost::bind(&servo_controller::gripperPosCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
-    this->gripperPos_server_server = nh.advertiseService(gripperPos_server_server_options);
+    this->gripperPos_server = nh.advertiseService(gripperPos_server_options);
     // server: gripperRotation_server
-    ros::AdvertiseServiceOptions gripperRotation_server_server_options;
-    gripperRotation_server_server_options = 
+    ros::AdvertiseServiceOptions gripperRotation_server_options;
+    gripperRotation_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::gripperRotation>
 	    ("gripperRotation",
-             boost::bind(&servo_controller::gripperRotation_serverCallback, this, _1, _2),
+             boost::bind(&servo_controller::gripperRotationCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
-    this->gripperRotation_server_server = nh.advertiseService(gripperRotation_server_server_options);
+    this->gripperRotation_server = nh.advertiseService(gripperRotation_server_options);
  
     // Create Init Timer
     ros::TimerOptions timer_options;
@@ -186,7 +186,7 @@ void servo_controller::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
-    // timer: timer.name
+    // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(1.0),

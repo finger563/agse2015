@@ -9,6 +9,7 @@
 // --------------------------------
 //# Start User Includes Marker
 #include "agse_package/gpio.h"
+#include "agse_package/eqep.h"
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
@@ -32,7 +33,7 @@ class radial_actuator_controller : public Component
  
 
 	// Component Service Callback
-	bool radialPos_serverCallback(agse_package::radialPos::Request  &req,
+	bool radialPosCallback(agse_package::radialPos::Request  &req,
 		agse_package::radialPos::Response &res);
 
 
@@ -58,8 +59,8 @@ class radial_actuator_controller : public Component
 	ros::Subscriber controlInputs_sub; 
 
 
-	// ROS Service Server - radialPos_server_server
-	ros::ServiceServer radialPos_server_server;
+	// ROS Service Server - radialPos_server
+	ros::ServiceServer radialPos_server;
 
 
         //# Start User Private Variables Marker
@@ -75,10 +76,9 @@ class radial_actuator_controller : public Component
   unsigned int motorForwardPin;
   // pin that motor backward is connected to
   unsigned int motorBackwardPin;
-  // pin that encoder pin 0 is connected to
-  unsigned int radialEncoderPin0;
-  // pin that encoder pin 1 is connected to
-  unsigned int radialEncoderPin1;
+  // enhanced quadrature encoder pulse module for the radial actuator
+  eQEP radialMotoreQEP;
+  long rm_eqep_period;
         //# End User Private Variables Marker
 };
 

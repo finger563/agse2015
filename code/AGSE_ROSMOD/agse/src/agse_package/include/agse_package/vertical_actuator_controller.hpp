@@ -9,6 +9,7 @@
 // --------------------------------
 //# Start User Includes Marker
 #include "agse_package/gpio.h"
+#include "agse_package/eqep.h"
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
@@ -32,7 +33,7 @@ class vertical_actuator_controller : public Component
  
 
 	// Component Service Callback
-	bool verticalPos_serverCallback(agse_package::verticalPos::Request  &req,
+	bool verticalPosCallback(agse_package::verticalPos::Request  &req,
 		agse_package::verticalPos::Response &res);
 
 
@@ -58,8 +59,8 @@ class vertical_actuator_controller : public Component
 	ros::Subscriber controlInputs_sub; 
 
 
-	// ROS Service Server - verticalPos_server_server
-	ros::ServiceServer verticalPos_server_server;
+	// ROS Service Server - verticalPos_server
+	ros::ServiceServer verticalPos_server;
 
 
         //# Start User Private Variables Marker
@@ -74,10 +75,9 @@ class vertical_actuator_controller : public Component
   unsigned int motorForwardPin;
   // pin that motor backward is connected to
   unsigned int motorBackwardPin;
-  // pin that encoder pin 0 is connected to
-  unsigned int verticalEncoderPin0;
-  // pin that encoder pin 1 is connected to
-  unsigned int verticalEncoderPin1;
+  // enhanced Quadrature Encoder Pulse eQEP module for the vertical actuator
+  eQEP verticalMotoreQEP;
+  long vm_eqep_period;
         //# End User Private Variables Marker
 };
 

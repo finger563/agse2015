@@ -1,6 +1,18 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(agse_package)
 
+# check c++11 / c++0x
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "-std=c++11")
+elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "-std=c++0x")
+else()
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+endif()
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -114,6 +126,8 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  /usr/include/opencv
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
@@ -194,9 +208,15 @@ add_dependencies(arm agse_package_generate_messages_cpp)
 add_executable( camera src/agse_package/camera_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/image_processor.cpp  
 		## Start camera CPP Marker
+		src/agse_package/Image_Processor.cpp
+		src/agse_package/Object_Tracker.cpp
 		## End camera CPP Marker
               )
-target_link_libraries(camera ${catkin_LIBRARIES})
+include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
+pkg_check_modules(OPENCV REQUIRED opencv)
+include_directories(${OPENCV_INCLUDE_DIRS})
+link_directories(${OPENCV_LIBRARY_DIRS})
+target_link_libraries(camera ${OPENCV_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(camera agse_package_generate_messages_cpp)
 add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/radial_actuator_controller.cpp  
@@ -207,6 +227,7 @@ add_executable( positioning src/agse_package/positioning_main.cpp src/agse_packa
 		src/agse_package/Dynamixel.cpp
 		src/agse_package/SerialPort.cpp
 		src/agse_package/Utils.cpp
+		src/agse_package/eqep.cpp
                 ## End positioning CPP Marker
               )
 target_link_libraries(positioning ${catkin_LIBRARIES})

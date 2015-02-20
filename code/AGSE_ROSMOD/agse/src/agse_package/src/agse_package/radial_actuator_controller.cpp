@@ -19,19 +19,16 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   epsilon = 5;
   motorForwardPin = 57;
   motorBackwardPin = 58;
-  radialEncoderPin0 = 59;
-  radialEncoderPin1 = 60;
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);
   gpio_export(motorBackwardPin);
   gpio_set_dir(motorForwardPin,OUTPUT_PIN);
   gpio_set_dir(motorBackwardPin,OUTPUT_PIN);
-  // set up the pins to read the encoder
-  gpio_export(radialEncoderPin0);
-  gpio_export(radialEncoderPin1);
-  gpio_set_dir(radialEncoderPin0,INPUT_PIN);
-  gpio_set_dir(radialEncoderPin1,INPUT_PIN);
+  // set up the encoder module
+  rm_eqep_period = 1000000000L;
+  radialMotoreQEP.initialize("/sys/devices/ocp.3/48302000.epwmss/48302180.eqep", eQEP::eQEP_Mode_Absolute);
+  radialMotoreQEP.set_period(rm_eqep_period);
   // initialize the goal position to 0
   radialGoal = 0;
     // Stop Init Timer
@@ -50,8 +47,8 @@ void radial_actuator_controller::controlInputs_sub_OnOneData(const agse_package:
 //# End controlInputs_sub_OnOneData Marker
 
 // Component Service Callback
-//# Start radialPos_serverCallback Marker
-bool radial_actuator_controller::radialPos_serverCallback(agse_package::radialPos::Request  &req,
+//# Start radialPosCallback Marker
+bool radial_actuator_controller::radialPosCallback(agse_package::radialPos::Request  &req,
     agse_package::radialPos::Response &res)
 {
     // Business Logic for radialPos_server Server providing radialPos Service
@@ -62,7 +59,7 @@ bool radial_actuator_controller::radialPos_serverCallback(agse_package::radialPo
   res.current = radialCurrent;
   return true;
 }
-//# End radialPos_serverCallback Marker
+//# End radialPosCallback Marker
 
 // Callback for radialPosTimer timer
 //# Start radialPosTimerCallback Marker
@@ -72,6 +69,8 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
   if (!paused)
     {
       // read current value for radial position (encoder)
+      radialCurrent = radialMotoreQEP.get_position();
+      ROS_INFO("Raidal Actuator Encoder Reading: %d",radialCurrent);
       // update motor based on current value
       if ( abs(radialGoal-radialCurrent) > epsilon ) // if there's significant reason to move
 	{
@@ -99,7 +98,7 @@ radial_actuator_controller::~radial_actuator_controller()
 {
     radialPosTimer.stop();
     controlInputs_sub.shutdown();
-    radialPos_server_server.shutdown();
+    radialPos_server.shutdown();
 }
 
 void radial_actuator_controller::startUp()
@@ -120,14 +119,14 @@ void radial_actuator_controller::startUp()
 
     // Configure all provided services associated with this component
     // server: radialPos_server
-    ros::AdvertiseServiceOptions radialPos_server_server_options;
-    radialPos_server_server_options = 
+    ros::AdvertiseServiceOptions radialPos_server_options;
+    radialPos_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::radialPos>
 	    ("radialPos",
-             boost::bind(&radial_actuator_controller::radialPos_serverCallback, this, _1, _2),
+             boost::bind(&radial_actuator_controller::radialPosCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
-    this->radialPos_server_server = nh.advertiseService(radialPos_server_server_options);
+    this->radialPos_server = nh.advertiseService(radialPos_server_options);
  
     // Create Init Timer
     ros::TimerOptions timer_options;
@@ -140,7 +139,7 @@ void radial_actuator_controller::startUp()
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
     // Create all component timers
-    // timer: timer.name
+    // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
              (ros::Duration(0.01),
