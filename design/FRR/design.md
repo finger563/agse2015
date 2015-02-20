@@ -119,7 +119,34 @@
 	  * Runs ROSCORE discovery mechanism and ROS backbone
 	  * connects using USB to BBB (linux usb/ethernet driver for BBB)
 	* BeagleBoneBlack (BBB):
+	  * Many GPIO pins for motor control (to two H-bridges)
+	  * Servo control through serial buffer
+	  * eQEP (enhanced Quadrature Encoded Pulse) hardware integrated into processor for motor position feedback
+	  * usb camera connected to take images : sends the images to the jetson
+	  * connected to jetson using TCP
 	* Overall:
+	  * More space efficient
+	  * More power efficient
+	  * Better materials and better construction
+	  * unification and simplification of system hardware and software components
+	  * integration of image processing and camera for autonomous sample detection and retrieval from anywhere within the workspace of the AGSE
       * Software
+      	* ROS based
+	  * provides communications middlware between processes on the same node or on different nodes
+	  * Abstraction above TCP & socket level transfers
+	* Component Based Software (Our component model and implementation for ROS, ROSMOD)
+	  * threading model
+	  * interaction pattern model
+	  * separation of concerns between different subsystems
+	  * Scheduling model (timer and event based scheduling)
+	* Downgraded linux kernel version to support simple device tree overlay for switching GPIO mode and enabling subsystems of the processsor 
+	  * useful for the configuration of the hardware based quadrature encoder decoding (eQEP)
+	* Integrated all main subystem code into generated c++ ROS / ROSMOD code
+	  * supports reading linear actuator position through eQEP kernel driver
+	  * supports controlling linear actuators through GPIO
+	  * supports reading system switch states for propagation to rest of system
+	  * supports reading and writing to servo motors for control of the base rotation, gripper rotation, and gripper position
+	  * supports image processing code and camera image gathering
+	  * supports communications between system components to achieve overall system goals
     * Modeling Language / Code Generators
     * Editor with deployment
