@@ -1,6 +1,8 @@
 # AGSE 2015 FRR Design Document
 -------------------------------
 
+## Design Choice Reasoning:
+---------------------------
 * Model Driven design and development : iterative
 * Using ROS
   * provides networking infrastructure and inter-process communications
@@ -23,6 +25,8 @@
   * what is the deployment useful for
   * what is the monitoring useful for
 
+## Development Status:
+----------------------
 * Iterative Development Progress:
   * Started with prototype (AGSE v1):
     * AGSE system (shown in CDR)
