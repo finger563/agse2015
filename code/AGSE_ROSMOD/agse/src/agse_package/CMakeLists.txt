@@ -208,7 +208,7 @@ add_dependencies(arm agse_package_generate_messages_cpp)
 add_executable( camera src/agse_package/camera_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/image_processor.cpp  
 		## Start camera CPP Marker
-		src/agse_package/Image_Processor.cpp
+		src/agse_package/Image_Processor_Library.cpp
 		src/agse_package/Object_Tracker.cpp
 		## End camera CPP Marker
               )
