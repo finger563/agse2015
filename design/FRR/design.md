@@ -3,6 +3,33 @@
 
 ## Design Choice Reasoning:
 ---------------------------
+For the development of the hardware and software components of the AGSE sample capture system, we followed a model-driven iterative design and development.  This process ensured that at every step of the development, we had complete models of the system we were building (with respect to both hardware and software) as well as evaluations regarding the performance of the system and its effectiveness at meeting our design criteria.  Furthermore, by developing the system in a component-based fashion, we were able to iteratively address design concerns and improve subsystems of the AGSE without having to completely rebuild the entire AGSE.  
+
+Following this process, we developed the following subsystems of the AGSE for its first prototype (demoed in a video for CDR): 
+ * vertical linear actuator and carriage
+ * horizontal / radial linear actuator and carriage
+ * base servo motor for AGSE rotation with turntable and mounting plate
+ * gripper phalanges 
+ * gripper wrist servo motor for gripper rotation
+ * gripper actuation servo motor for gripper opening and closing
+ * image processing and object detection software component for sample detection
+ * linear actuator software control
+ * base servo software control
+ * gripper wrist software control
+ * gripper actuation software control
+
+Having already progressed further in the development cycle for the payload bay, we had developed a custom complete hardware solution for a linear actuator which provided us with a more robust and efficient solution than using an off the shelf linear actuator.  From the development of that system, we had determined not only that the custom linear actuator and drivetrain would be better for the AGSE with respect to weight, power, and size requirements, but also that we were capable of developing such a system in a relatively quick time-frame.
+
+However, the AGSE system is more complex than the payload bay since it requires one entire linear actuator and carriage plate / guide rod system to be mounted to another linear actuator and carriage plate / guide rod system to provide the horizontal and vertical axes translation.  Additionally, the system composed of these two linear actuators must be mounted to the top of a rotating base to provide us with the cylindrical workspace we determined would be best for the AGSE system.  All of these design complications led us to the conclusion that we should first build a prototype AGSE system using off the shelf linear actuators and grippers, so that we could ensure that the integration of these systems would work before spending the time and money on the development of the custom system.
+
+This prototype design process yielded beneficial information which were able to incorporate into the final AGSE design:
+  * The servo motor datasheets, design documents, and sample code (from manufacturer) were incorrect
+  * The dynamixel servo motors could not be daisychained as we had hoped, as they ran on different voltage levels (and used different communications protocols)
+  * The servo motor controlling the base rotation (turntable) consumed too much current during standby (300 mA at 12V)
+  * The servo motor controlling the gripper rotation, since it was controlled simply by using PWM, was susceptible to electrical noise. this caused jittering and some hysteresis in the gripper orientation
+  * The linear actuators chosen for off the shelf consumed a lot of current, wasted space (i.e. unextended they took up more space than we wanted to use), did not have a long enough throw, and provided only analog feedback about position
+  * The linear actuator's analog feedback could not be used by our main processor board (the Jetson TK1) since it had no on-board analog to digital converters (ADC).  
+
 * Model Driven design and development : iterative
 * Using ROS
   * provides networking infrastructure and inter-process communications
