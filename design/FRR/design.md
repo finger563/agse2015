@@ -71,6 +71,7 @@
           * had issues with jamming, noise, and power consumption
           * Code wasn't very maintainable and could not be distributed among nodes
           * Control code was split between arduino and jetson without clear delineation of responsibilities
+
       * Software
         * Prototyped in python
         * Grabbed sample from known (pre-programmed) position and orientation
@@ -78,16 +79,19 @@
         * Camera & object detection code was not integrated
         * Code was split among jetson and arduino
         * Serial communications issues (servo & arduino) and noise issues (servo pwm)
+
     * Modeling Language / Code Generators
       * Component model and ROS concepts modeled (msg/srv/timer/pub/sub/client/server, component, nodes)
       * Code generated for build system, component model, and workspace
       * No concepts of hardware or deployment
       * No code preservation -> made iterative development more difficult
       * Useful for designing the system and describing the interactions of the system components
+
     * Editor
       * Could describe system software and use the generator to create the code
       * Used for testing out the modeling of the AGSE system and generating code
       * No code deployment or hardware description/assignment
+
   * Second Phase (AGSE v2):
     * New version of AGSE:
       * Hardware
