@@ -1,6 +1,30 @@
 # AGSE 2015 FRR Design Document
 -------------------------------
 
+## Need to describe:
+--------------------
+* Model Driven design and development : iterative
+* Using ROS
+  * provides networking infrastructure and inter-process communications
+  * lightweight
+  * can deploy on heterogeneous sytems
+* Developed a ROS Component Model
+  * why is this good
+  * what is this useful for?
+  * How do we use it
+  * what has it done to our development cycle and development time?
+* Developed a ROS Modeling Language and code generators
+  * what is it?
+  * Why do we use it?
+  * how did we develop it?
+  * how do we use it?
+  * How the code generators work and how they DRASTICALLY shorten iterative development cycle
+* Developed a graphical editor for design, generation, deployment, and monitoring
+  * how did we do it : what were the stages
+  * how does it affect our development cycle : makes iterative development have shorter cycles and easier to do
+  * what is the deployment useful for
+  * what is the monitoring useful for
+
 ## Design Choice Reasoning:
 ---------------------------
 For the development of the hardware and software components of the AGSE sample capture system, we followed a model-driven iterative design and development.  This process ensured that at every step of the development, we had complete models of the system we were building (with respect to both hardware and software) as well as evaluations regarding the performance of the system and its effectiveness at meeting our design criteria.  Furthermore, by developing the system in a component-based fashion, we were able to iteratively address design concerns and improve subsystems of the AGSE without having to completely rebuild the entire AGSE.  
@@ -67,27 +91,13 @@ This prototype design process yielded beneficial information which were able to 
 ## Tests Performed:
 -------------------
 
-* Model Driven design and development : iterative
-* Using ROS
-  * provides networking infrastructure and inter-process communications
-  * lightweight
-  * can deploy on heterogeneous sytems
-* Developed a ROS Component Model
-  * why is this good
-  * what is this useful for?
-  * How do we use it
-  * what has it done to our development cycle and development time?
-* Developed a ROS Modeling Language and code generators
-  * what is it?
-  * Why do we use it?
-  * how did we develop it?
-  * how do we use it?
-  * How the code generators work and how they DRASTICALLY shorten iterative development cycle
-* Developed a graphical editor for design, generation, deployment, and monitoring
-  * how did we do it : what were the stages
-  * how does it affect our development cycle : makes iterative development have shorter cycles and easier to do
-  * what is the deployment useful for
-  * what is the monitoring useful for
+__DESCRIBE HERE THE TESTS THAT WE DID FOR__:
+* Prototype hardware : xl320, mx28T, lac12, gripper, camera, circuits
+* Prototype software : servo control, serial buffer, h-bridge control, analog feedback, NASA requirements (point to point)
+* Modeling language
+* Model Editor
+* Code Generators
+* ROS Code
 
 ## Development Status:
 ----------------------
