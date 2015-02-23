@@ -7778,9 +7778,9 @@ and height positions of the AGSE gripper</text>
 <attribute name="VALUE" x="182.245" y="15.24" size="1.778" layer="96" rot="R180"/>
 </instance>
 <instance part="GND9" gate="1" x="180.34" y="-60.96"/>
-<instance part="Q4" gate="G$1" x="165.1" y="-5.08"/>
-<instance part="Q1" gate="G$1" x="198.12" y="-10.16" rot="MR0"/>
-<instance part="Q3" gate="G$1" x="198.12" y="-43.18" rot="MR0"/>
+<instance part="Q4" gate="G$1" x="165.1" y="-5.08" rot="MR180"/>
+<instance part="Q1" gate="G$1" x="198.12" y="-10.16" rot="R180"/>
+<instance part="Q3" gate="G$1" x="198.12" y="-45.72" rot="MR0"/>
 <instance part="Q5" gate="G$1" x="165.1" y="-38.1"/>
 <instance part="R4" gate="G$1" x="152.4" y="0" rot="R90"/>
 <instance part="R5" gate="G$1" x="210.82" y="0" rot="R90"/>
@@ -7792,8 +7792,8 @@ and height positions of the AGSE gripper</text>
 <attribute name="VALUE" x="182.245" y="91.44" size="1.778" layer="96" rot="R180"/>
 </instance>
 <instance part="GND10" gate="1" x="180.34" y="20.32"/>
-<instance part="Q2" gate="G$1" x="165.1" y="76.2"/>
-<instance part="Q6" gate="G$1" x="198.12" y="71.12" rot="MR0"/>
+<instance part="Q2" gate="G$1" x="165.1" y="76.2" rot="MR180"/>
+<instance part="Q6" gate="G$1" x="198.12" y="71.12" rot="R180"/>
 <instance part="Q7" gate="G$1" x="198.12" y="40.64" rot="MR0"/>
 <instance part="Q8" gate="G$1" x="165.1" y="45.72"/>
 <instance part="R8" gate="G$1" x="152.4" y="81.28" rot="R90"/>
@@ -7919,7 +7919,7 @@ and height positions of the AGSE gripper</text>
 <junction x="180.34" y="-58.42"/>
 <junction x="165.1" y="-58.42"/>
 <pinref part="Q3" gate="G$1" pin="S"/>
-<wire x1="198.12" y1="-48.26" x2="198.12" y2="-58.42" width="0.1524" layer="91"/>
+<wire x1="198.12" y1="-50.8" x2="198.12" y2="-58.42" width="0.1524" layer="91"/>
 <junction x="198.12" y="-58.42"/>
 </segment>
 <segment>
@@ -8064,37 +8064,37 @@ and height positions of the AGSE gripper</text>
 </net>
 <net name="+5V" class="0">
 <segment>
-<pinref part="Q4" gate="G$1" pin="D"/>
-<wire x1="165.1" y1="0" x2="165.1" y2="5.08" width="0.1524" layer="91"/>
-<wire x1="165.1" y1="5.08" x2="180.34" y2="5.08" width="0.1524" layer="91"/>
+<wire x1="152.4" y1="5.08" x2="165.1" y2="5.08" width="0.1524" layer="91"/>
 <pinref part="P+2" gate="1" pin="+5V"/>
+<wire x1="165.1" y1="5.08" x2="180.34" y2="5.08" width="0.1524" layer="91"/>
 <wire x1="180.34" y1="5.08" x2="180.34" y2="10.16" width="0.1524" layer="91"/>
-<wire x1="210.82" y1="5.08" x2="198.12" y2="5.08" width="0.1524" layer="91"/>
-<pinref part="R4" gate="G$1" pin="2"/>
-<wire x1="198.12" y1="5.08" x2="180.34" y2="5.08" width="0.1524" layer="91"/>
-<wire x1="165.1" y1="5.08" x2="152.4" y2="5.08" width="0.1524" layer="91"/>
-<pinref part="R5" gate="G$1" pin="2"/>
-<junction x="165.1" y="5.08"/>
-<junction x="180.34" y="5.08"/>
-<pinref part="Q1" gate="G$1" pin="D"/>
+<pinref part="Q1" gate="G$1" pin="S"/>
 <wire x1="198.12" y1="-5.08" x2="198.12" y2="5.08" width="0.1524" layer="91"/>
+<wire x1="198.12" y1="5.08" x2="180.34" y2="5.08" width="0.1524" layer="91"/>
+<pinref part="R4" gate="G$1" pin="2"/>
+<pinref part="R5" gate="G$1" pin="2"/>
+<wire x1="198.12" y1="5.08" x2="210.82" y2="5.08" width="0.1524" layer="91"/>
+<junction x="180.34" y="5.08"/>
 <junction x="198.12" y="5.08"/>
+<pinref part="Q4" gate="G$1" pin="S"/>
+<wire x1="165.1" y1="0" x2="165.1" y2="5.08" width="0.1524" layer="91"/>
+<junction x="165.1" y="5.08"/>
 </segment>
 <segment>
-<pinref part="Q2" gate="G$1" pin="D"/>
-<wire x1="165.1" y1="81.28" x2="165.1" y2="86.36" width="0.1524" layer="91"/>
-<wire x1="165.1" y1="86.36" x2="180.34" y2="86.36" width="0.1524" layer="91"/>
+<wire x1="152.4" y1="86.36" x2="165.1" y2="86.36" width="0.1524" layer="91"/>
 <pinref part="P+1" gate="1" pin="+5V"/>
-<wire x1="210.82" y1="86.36" x2="198.12" y2="86.36" width="0.1524" layer="91"/>
-<pinref part="R8" gate="G$1" pin="2"/>
-<wire x1="198.12" y1="86.36" x2="180.34" y2="86.36" width="0.1524" layer="91"/>
-<wire x1="165.1" y1="86.36" x2="152.4" y2="86.36" width="0.1524" layer="91"/>
-<pinref part="R9" gate="G$1" pin="2"/>
-<junction x="165.1" y="86.36"/>
-<junction x="180.34" y="86.36"/>
-<pinref part="Q6" gate="G$1" pin="D"/>
+<pinref part="Q6" gate="G$1" pin="S"/>
+<wire x1="165.1" y1="86.36" x2="180.34" y2="86.36" width="0.1524" layer="91"/>
 <wire x1="198.12" y1="76.2" x2="198.12" y2="86.36" width="0.1524" layer="91"/>
+<wire x1="198.12" y1="86.36" x2="180.34" y2="86.36" width="0.1524" layer="91"/>
+<pinref part="R8" gate="G$1" pin="2"/>
+<pinref part="R9" gate="G$1" pin="2"/>
+<wire x1="198.12" y1="86.36" x2="210.82" y2="86.36" width="0.1524" layer="91"/>
 <junction x="198.12" y="86.36"/>
+<junction x="180.34" y="86.36"/>
+<pinref part="Q2" gate="G$1" pin="S"/>
+<wire x1="165.1" y1="81.28" x2="165.1" y2="86.36" width="0.1524" layer="91"/>
+<junction x="165.1" y="86.36"/>
 </segment>
 <segment>
 <pinref part="P+3" gate="1" pin="+5V"/>
@@ -8109,43 +8109,42 @@ and height positions of the AGSE gripper</text>
 </net>
 <net name="N$1" class="0">
 <segment>
+<pinref part="Q1" gate="G$1" pin="D"/>
+<wire x1="198.12" y1="-15.24" x2="198.12" y2="-17.78" width="0.1524" layer="91"/>
 <wire x1="180.34" y1="-17.78" x2="198.12" y2="-17.78" width="0.1524" layer="91"/>
 <pinref part="Z-AXIS" gate="G$1" pin="2"/>
 <wire x1="180.34" y1="-20.32" x2="180.34" y2="-17.78" width="0.1524" layer="91"/>
 <pinref part="Q3" gate="G$1" pin="D"/>
-<wire x1="198.12" y1="-38.1" x2="198.12" y2="-17.78" width="0.1524" layer="91"/>
-<pinref part="Q1" gate="G$1" pin="S"/>
-<wire x1="198.12" y1="-17.78" x2="198.12" y2="-15.24" width="0.1524" layer="91"/>
+<wire x1="198.12" y1="-17.78" x2="198.12" y2="-40.64" width="0.1524" layer="91"/>
 <junction x="198.12" y="-17.78"/>
 </segment>
 </net>
 <net name="N$7" class="0">
 <segment>
 <pinref part="R4" gate="G$1" pin="1"/>
-<pinref part="Q4" gate="G$1" pin="G"/>
-<wire x1="152.4" y1="-5.08" x2="157.48" y2="-5.08" width="0.1524" layer="91"/>
 <pinref part="Q5" gate="G$1" pin="G"/>
 <wire x1="152.4" y1="-5.08" x2="152.4" y2="-38.1" width="0.1524" layer="91"/>
 <wire x1="152.4" y1="-38.1" x2="157.48" y2="-38.1" width="0.1524" layer="91"/>
 <pinref part="T1" gate="G$1" pin="C"/>
 <wire x1="152.4" y1="-45.72" x2="152.4" y2="-38.1" width="0.1524" layer="91"/>
 <junction x="152.4" y="-38.1"/>
+<pinref part="Q4" gate="G$1" pin="G"/>
+<wire x1="157.48" y1="-5.08" x2="152.4" y2="-5.08" width="0.1524" layer="91"/>
 <junction x="152.4" y="-5.08"/>
 </segment>
 </net>
 <net name="N$8" class="0">
 <segment>
 <pinref part="R5" gate="G$1" pin="1"/>
-<wire x1="210.82" y1="-5.08" x2="210.82" y2="-10.16" width="0.1524" layer="91"/>
-<pinref part="T2" gate="G$1" pin="C"/>
-<pinref part="Q3" gate="G$1" pin="G"/>
-<wire x1="210.82" y1="-10.16" x2="210.82" y2="-43.18" width="0.1524" layer="91"/>
-<wire x1="210.82" y1="-43.18" x2="210.82" y2="-45.72" width="0.1524" layer="91"/>
-<wire x1="205.74" y1="-43.18" x2="210.82" y2="-43.18" width="0.1524" layer="91"/>
 <pinref part="Q1" gate="G$1" pin="G"/>
-<wire x1="205.74" y1="-10.16" x2="210.82" y2="-10.16" width="0.1524" layer="91"/>
-<junction x="210.82" y="-43.18"/>
+<wire x1="210.82" y1="-5.08" x2="210.82" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="210.82" y1="-10.16" x2="205.74" y2="-10.16" width="0.1524" layer="91"/>
+<wire x1="210.82" y1="-10.16" x2="210.82" y2="-45.72" width="0.1524" layer="91"/>
+<pinref part="T2" gate="G$1" pin="C"/>
 <junction x="210.82" y="-10.16"/>
+<pinref part="Q3" gate="G$1" pin="G"/>
+<wire x1="205.74" y1="-45.72" x2="210.82" y2="-45.72" width="0.1524" layer="91"/>
+<junction x="210.82" y="-45.72"/>
 </segment>
 </net>
 <net name="N$9" class="0">
@@ -8178,53 +8177,53 @@ and height positions of the AGSE gripper</text>
 </net>
 <net name="N$11" class="0">
 <segment>
+<pinref part="Q6" gate="G$1" pin="D"/>
+<wire x1="198.12" y1="66.04" x2="198.12" y2="63.5" width="0.1524" layer="91"/>
 <wire x1="180.34" y1="63.5" x2="198.12" y2="63.5" width="0.1524" layer="91"/>
 <pinref part="R-AXIS" gate="G$1" pin="2"/>
 <wire x1="180.34" y1="60.96" x2="180.34" y2="63.5" width="0.1524" layer="91"/>
-<pinref part="Q6" gate="G$1" pin="S"/>
-<wire x1="198.12" y1="66.04" x2="198.12" y2="63.5" width="0.1524" layer="91"/>
 <pinref part="Q7" gate="G$1" pin="D"/>
-<wire x1="198.12" y1="45.72" x2="198.12" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="198.12" y1="63.5" x2="198.12" y2="45.72" width="0.1524" layer="91"/>
 <junction x="198.12" y="63.5"/>
 </segment>
 </net>
 <net name="N$12" class="0">
 <segment>
 <pinref part="Q8" gate="G$1" pin="D"/>
-<pinref part="Q2" gate="G$1" pin="S"/>
 <wire x1="165.1" y1="50.8" x2="165.1" y2="53.34" width="0.1524" layer="91"/>
-<wire x1="165.1" y1="53.34" x2="165.1" y2="71.12" width="0.1524" layer="91"/>
 <wire x1="180.34" y1="53.34" x2="165.1" y2="53.34" width="0.1524" layer="91"/>
-<junction x="165.1" y="53.34"/>
 <pinref part="R-AXIS" gate="G$1" pin="1"/>
 <wire x1="180.34" y1="58.42" x2="180.34" y2="53.34" width="0.1524" layer="91"/>
+<pinref part="Q2" gate="G$1" pin="D"/>
+<wire x1="165.1" y1="71.12" x2="165.1" y2="53.34" width="0.1524" layer="91"/>
+<junction x="165.1" y="53.34"/>
 </segment>
 </net>
 <net name="N$13" class="0">
 <segment>
 <pinref part="R8" gate="G$1" pin="1"/>
-<pinref part="Q2" gate="G$1" pin="G"/>
-<wire x1="152.4" y1="76.2" x2="157.48" y2="76.2" width="0.1524" layer="91"/>
 <pinref part="Q8" gate="G$1" pin="G"/>
 <wire x1="152.4" y1="76.2" x2="152.4" y2="45.72" width="0.1524" layer="91"/>
 <wire x1="152.4" y1="45.72" x2="157.48" y2="45.72" width="0.1524" layer="91"/>
 <pinref part="T3" gate="G$1" pin="C"/>
 <wire x1="152.4" y1="35.56" x2="152.4" y2="45.72" width="0.1524" layer="91"/>
 <junction x="152.4" y="45.72"/>
+<pinref part="Q2" gate="G$1" pin="G"/>
+<wire x1="157.48" y1="76.2" x2="152.4" y2="76.2" width="0.1524" layer="91"/>
 <junction x="152.4" y="76.2"/>
 </segment>
 </net>
 <net name="N$14" class="0">
 <segment>
 <pinref part="R9" gate="G$1" pin="1"/>
+<pinref part="Q6" gate="G$1" pin="G"/>
 <wire x1="210.82" y1="76.2" x2="210.82" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="210.82" y1="71.12" x2="205.74" y2="71.12" width="0.1524" layer="91"/>
 <wire x1="210.82" y1="71.12" x2="210.82" y2="40.64" width="0.1524" layer="91"/>
 <pinref part="T4" gate="G$1" pin="C"/>
-<pinref part="Q6" gate="G$1" pin="G"/>
-<wire x1="210.82" y1="40.64" x2="210.82" y2="35.56" width="0.1524" layer="91"/>
-<wire x1="205.74" y1="71.12" x2="210.82" y2="71.12" width="0.1524" layer="91"/>
 <junction x="210.82" y="71.12"/>
 <pinref part="Q7" gate="G$1" pin="G"/>
+<wire x1="210.82" y1="40.64" x2="210.82" y2="35.56" width="0.1524" layer="91"/>
 <wire x1="205.74" y1="40.64" x2="210.82" y2="40.64" width="0.1524" layer="91"/>
 <junction x="210.82" y="40.64"/>
 </segment>
@@ -8376,14 +8375,14 @@ and height positions of the AGSE gripper</text>
 </net>
 <net name="N$6" class="0">
 <segment>
-<pinref part="Q4" gate="G$1" pin="S"/>
 <pinref part="Q5" gate="G$1" pin="D"/>
-<wire x1="165.1" y1="-10.16" x2="165.1" y2="-27.94" width="0.1524" layer="91"/>
 <wire x1="165.1" y1="-27.94" x2="165.1" y2="-33.02" width="0.1524" layer="91"/>
 <wire x1="180.34" y1="-27.94" x2="165.1" y2="-27.94" width="0.1524" layer="91"/>
-<junction x="165.1" y="-27.94"/>
 <pinref part="Z-AXIS" gate="G$1" pin="1"/>
 <wire x1="180.34" y1="-22.86" x2="180.34" y2="-27.94" width="0.1524" layer="91"/>
+<pinref part="Q4" gate="G$1" pin="D"/>
+<wire x1="165.1" y1="-10.16" x2="165.1" y2="-27.94" width="0.1524" layer="91"/>
+<junction x="165.1" y="-27.94"/>
 </segment>
 </net>
 </nets>
