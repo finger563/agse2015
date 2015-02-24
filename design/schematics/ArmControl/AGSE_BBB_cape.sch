@@ -9277,7 +9277,7 @@ and height positions of the AGSE gripper</text>
 <junction x="10.16" y="27.94"/>
 </segment>
 </net>
-<net name="N$1" class="0">
+<net name="Z-" class="0">
 <segment>
 <pinref part="Q6" gate="G$1" pin="D"/>
 <wire x1="198.12" y1="-17.78" x2="198.12" y2="-20.32" width="0.1524" layer="91"/>
@@ -9357,7 +9357,7 @@ and height positions of the AGSE gripper</text>
 <label x="340.36" y="160.02" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$11" class="0">
+<net name="R-" class="0">
 <segment>
 <pinref part="Q2" gate="G$1" pin="D"/>
 <wire x1="198.12" y1="63.5" x2="198.12" y2="60.96" width="0.1524" layer="91"/>
@@ -9369,7 +9369,7 @@ and height positions of the AGSE gripper</text>
 <junction x="198.12" y="60.96"/>
 </segment>
 </net>
-<net name="N$12" class="0">
+<net name="R+" class="0">
 <segment>
 <pinref part="Q3" gate="G$1" pin="D"/>
 <wire x1="165.1" y1="48.26" x2="165.1" y2="50.8" width="0.1524" layer="91"/>
@@ -9611,7 +9611,7 @@ and height positions of the AGSE gripper</text>
 <label x="327.66" y="-20.32" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$6" class="0">
+<net name="Z+" class="0">
 <segment>
 <pinref part="Q7" gate="G$1" pin="D"/>
 <wire x1="165.1" y1="-30.48" x2="165.1" y2="-33.02" width="0.1524" layer="91"/>
