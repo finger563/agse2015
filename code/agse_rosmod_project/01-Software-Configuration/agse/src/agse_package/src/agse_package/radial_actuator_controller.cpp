@@ -17,8 +17,8 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
 
   // THESE NEED TO BE UPDATED
   epsilon = 5;
-  motorForwardPin = 57;
-  motorBackwardPin = 58;
+  motorForwardPin = 88;     // connected to GPIO2_24
+  motorBackwardPin = 89;    // connected to GPIO2_25
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);

@@ -17,8 +17,8 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
 
   // THESE NEED TO BE UPDATED
   epsilon = 5;
-  motorForwardPin = 57;  // GPIO1_25 = (1x32) + 25 = 57
-  motorBackwardPin = 58;
+  motorForwardPin = 86;  // connected to GPIO2_22
+  motorBackwardPin = 87; // connected to GPIO2_23
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);
