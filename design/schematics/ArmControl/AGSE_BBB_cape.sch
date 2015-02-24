@@ -7720,6 +7720,10 @@ rfk_1850.pdf</description>
 </symbols>
 <devicesets>
 <deviceset name="AX-12A">
+<description>Dynamixel AX-12A female connection package.
+This part uses the molex spox 2.5mm 3-pin connector
+part number: 22-43-6030
+datasheet: http://www.molex.com/pdm_docs/sd/022436030_sd.pdf</description>
 <gates>
 <gate name="G$1" symbol="DYNAMIXEL-AX12A" x="0" y="0"/>
 </gates>
