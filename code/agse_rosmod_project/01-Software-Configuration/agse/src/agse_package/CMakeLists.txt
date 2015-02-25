@@ -126,7 +126,7 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  /usr/include/opencv
+  /usr/include/opencv2
   ${OpenCV_INCLUDE_DIRS}
 )
 
@@ -216,7 +216,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
 pkg_check_modules(OPENCV REQUIRED opencv)
 include_directories(${OPENCV_INCLUDE_DIRS})
 link_directories(${OPENCV_LIBRARY_DIRS})
-target_link_libraries(camera ${OPENCV_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(camera ${OPENCV_LIBRARIES} ${CUDA_LIBRARIES} ${catkin_LIBRARIES} /usr/local/cuda-6.5/lib cuda )
 add_dependencies(camera agse_package_generate_messages_cpp)
 add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/radial_actuator_controller.cpp  
