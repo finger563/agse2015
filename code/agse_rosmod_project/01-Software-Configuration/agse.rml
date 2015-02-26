@@ -1,40 +1,58 @@
+/*
+ * ROS Workspace Model
+ */
+
+// ROS Package - agse_package
 package agse_package
 {
-    messages
+    // Set of ROS Messages
+    messages 
     {
+        // ROS msg - sampleState
         msg sampleState
         {
             agse_package/samplePosition pos;
             agse_package/sampleOrientation orientation;
-        }
+        } 
+        // ROS msg - samplePosition
         msg samplePosition
         {
             float32 r;
             float32 theta;
             float32 z;
-        }
+        } 
+        // ROS msg - sampleOrientation
         msg sampleOrientation
         {
             float32 theta;
             float32 phi;
-        }
+        } 
+        // ROS msg - controlInputs
         msg controlInputs
         {
             bool paused;
             bool start;
             bool stop;
-        }
+        } 
     }
+
+    // Set of ROS Services
     services
     {
+        // ROS srv - sampleStateFromImage
         srv sampleStateFromImage
         {
+            request
+            {
+            }
+
             response
             {
                 bool foundSample;
                 agse_package/sampleState sample;
             }
         }
+        // ROS srv - verticalPos
         srv verticalPos
         {
             request
@@ -42,11 +60,13 @@ package agse_package
                 int64 goal;
                 bool update;
             }
+
             response
             {
                 int64 current;
             }
         }
+        // ROS srv - armRotation
         srv armRotation
         {
             request
@@ -54,11 +74,13 @@ package agse_package
                 int64 goal;
                 bool update;
             }
+
             response
             {
                 int64 current;
             }
         }
+        // ROS srv - radialPos
         srv radialPos
         {
             request
@@ -66,11 +88,13 @@ package agse_package
                 int64 goal;
                 bool update;
             }
+
             response
             {
                 int64 current;
             }
         }
+        // ROS srv - gripperPos
         srv gripperPos
         {
             request
@@ -78,11 +102,13 @@ package agse_package
                 int64 goal;
                 bool update;
             }
+
             response
             {
                 int64 current;
             }
         }
+        // ROS srv - gripperRotation
         srv gripperRotation
         {
             request
@@ -90,94 +116,132 @@ package agse_package
                 int64 goal;
                 bool update;
             }
+
             response
             {
                 int64 current;
             }
         }
+        // ROS srv - captureImage
+        srv captureImage
+        {
+            request
+            {
+            }
+
+            response
+            {
+                int8[] imgVector;
+            }
+        }
     }
+
+    // Set of ROS Components
     components
     {
-        component radial_actuator_controller
-        {
+        // ROS Component - radial_actuator_controller
+	component radial_actuator_controller
+	{
             provides radialPos;
-            subscriber<controlInputs> controlInputs_sub;
-            timer radialPosTimer
-            {
-                period = 0.01s;
-            }
-        }
-        component vertical_actuator_controller
-        {
+     	    subscriber<controlInputs> controlInputs_sub;
+	    timer radialPosTimer
+	    {
+	        period = 0.01s;
+	    }
+	}
+        // ROS Component - vertical_actuator_controller
+	component vertical_actuator_controller
+	{
             provides verticalPos;
-            subscriber<controlInputs> controlInputs_sub;
-            timer verticalPosTimer
-            {
-                period = 0.01s;
-            }
-        }
-        component arm_controller
-        {
-            requires sampleStateFromImage;
-            requires radialPos;
-            requires armRotation;
-            requires gripperRotation;
-            requires verticalPos;
-            requires gripperPos;
-            subscriber<controlInputs> controlInputs_sub;
-            timer armTimer
-            {
-                period = 0.02s;
-            }
-        }
-        component image_processor
-        {
+     	    subscriber<controlInputs> controlInputs_sub;
+	    timer verticalPosTimer
+	    {
+	        period = 0.01s;
+	    }
+	}
+        // ROS Component - arm_controller
+	component arm_controller
+	{
+	    requires sampleStateFromImage;
+	    requires radialPos;
+	    requires armRotation;
+	    requires gripperRotation;
+	    requires verticalPos;
+	    requires gripperPos;
+     	    subscriber<controlInputs> controlInputs_sub;
+	    timer armTimer
+	    {
+	        period = 0.02s;
+	    }
+	}
+        // ROS Component - image_processor
+	component image_processor
+	{
             provides sampleStateFromImage;
-            subscriber<controlInputs> controlInputs_sub;
-            timer imageTimer
-            {
-                period = 0.04s;
-            }
-        }
-        component user_input_controller
-        {
-            publisher<controlInputs> controlInputs_pub;
-            timer userInputTimer
-            {
-                period = 0.01s;
-            }
-        }
-        component servo_controller
-        {
+	    requires captureImage;
+     	    subscriber<controlInputs> controlInputs_sub;
+	    timer imageTimer
+	    {
+	        period = 0.04s;
+	    }
+	}
+        // ROS Component - user_input_controller
+	component user_input_controller
+	{
+	    publisher<controlInputs> controlInputs_pub;
+	    timer userInputTimer
+	    {
+	        period = 0.01s;
+	    }
+	}
+        // ROS Component - servo_controller
+	component servo_controller
+	{
             provides armRotation;
             provides gripperPos;
             provides gripperRotation;
-            subscriber<controlInputs> controlInputs_sub;
-            timer servoTimer
-            {
-                period = 1.0s;
-            }
-        }
+     	    subscriber<controlInputs> controlInputs_sub;
+	    timer servoTimer
+	    {
+	        period = 1.0s;
+	    }
+	}
+        // ROS Component - image_sensor
+	component image_sensor
+	{
+            provides captureImage;
+	}
     }
+
+    // Set of ROS Nodes in this package
     nodes
     {
-        node arm
-        {
-            component<arm_controller> arm_controller_i;
-        }
-        node camera
-        {
-            component<image_processor> image_processor_i;
-        }
-        node positioning
-        {
-            component<radial_actuator_controller> radial_controller_i;
-            component<vertical_actuator_controller> vertical_controller_i;
-            component<servo_controller> servo_controller_i;
-        }
-        node user_input
-        {
-            component<user_input_controller> user_intput_controller_i;
-        }
+        node arm 
+	{
+            // Instantiating components in ROS node
+     	    component<arm_controller> arm_controller_i;
+	}
+        node positioning 
+	{
+            // Instantiating components in ROS node
+     	    component<radial_actuator_controller> radial_controller_i;
+     	    component<vertical_actuator_controller> vertical_controller_i;
+     	    component<servo_controller> servo_controller_i;
+	}
+        node user_input 
+	{
+            // Instantiating components in ROS node
+     	    component<user_input_controller> user_intput_controller_i;
+	}
+        node imager 
+	{
+            // Instantiating components in ROS node
+     	    component<image_sensor> image_sensor_i;
+	}
+        node detector 
+	{
+            // Instantiating components in ROS node
+     	    component<image_processor> image_processor_i;
+	}
     }
 }

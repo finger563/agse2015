@@ -12,6 +12,7 @@
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
+#include "agse_package/captureImage.h"
 #include "agse_package/sampleStateFromImage.h"
 
 //# Start User Globals Marker
@@ -61,6 +62,9 @@ class image_processor : public Component
 	// ROS Service Server - sampleStateFromImage_server
 	ros::ServiceServer sampleStateFromImage_server;
 
+
+	// ROS Service Client - captureImage_client
+	ros::ServiceClient captureImage_client;
 
         //# Start User Private Variables Marker
 
