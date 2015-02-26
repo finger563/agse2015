@@ -33,7 +33,7 @@ class vertical_actuator_controller : public Component
  
 
 	// Component Service Callback
-	bool verticalPosCallback(agse_package::verticalPos::Request  &req,
+	bool verticalPosCallback(agse_package::verticalPos::Request &req,
 		agse_package::verticalPos::Response &res);
 
 

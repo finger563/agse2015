@@ -35,15 +35,15 @@ class servo_controller : public Component
  
 
 	// Component Service Callback
-	bool armRotationCallback(agse_package::armRotation::Request  &req,
+	bool armRotationCallback(agse_package::armRotation::Request &req,
 		agse_package::armRotation::Response &res);
 
 	// Component Service Callback
-	bool gripperPosCallback(agse_package::gripperPos::Request  &req,
+	bool gripperPosCallback(agse_package::gripperPos::Request &req,
 		agse_package::gripperPos::Response &res);
 
 	// Component Service Callback
-	bool gripperRotationCallback(agse_package::gripperRotation::Request  &req,
+	bool gripperRotationCallback(agse_package::gripperRotation::Request &req,
 		agse_package::gripperRotation::Response &res);
 
 

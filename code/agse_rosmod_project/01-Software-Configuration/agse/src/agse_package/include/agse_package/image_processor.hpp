@@ -32,7 +32,7 @@ class image_processor : public Component
  
 
 	// Component Service Callback
-	bool sampleStateFromImageCallback(agse_package::sampleStateFromImage::Request  &req,
+	bool sampleStateFromImageCallback(agse_package::sampleStateFromImage::Request &req,
 		agse_package::sampleStateFromImage::Response &res);
 
 

@@ -9515,14 +9515,9 @@ and height positions of the AGSE gripper</text>
 <label x="142.24" y="129.54" size="1.778" layer="95" rot="R180"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="UART2_RXD"/>
-<wire x1="330.2" y1="104.14" x2="342.9" y2="104.14" width="0.1524" layer="91"/>
-<label x="342.9" y="104.14" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="U$1" gate="G$1" pin="UART1_RXD"/>
-<wire x1="330.2" y1="99.06" x2="342.9" y2="99.06" width="0.1524" layer="91"/>
-<label x="342.9" y="99.06" size="1.778" layer="95"/>
+<pinref part="U$1" gate="G$1" pin="UART5_RXD"/>
+<wire x1="330.2" y1="149.86" x2="342.9" y2="149.86" width="0.1524" layer="91"/>
+<label x="342.9" y="149.86" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="BBB_TX" class="0">
@@ -9532,14 +9527,9 @@ and height positions of the AGSE gripper</text>
 <label x="142.24" y="144.78" size="1.778" layer="95" rot="R180"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="UART2_TXD"/>
-<wire x1="274.32" y1="104.14" x2="264.16" y2="104.14" width="0.1524" layer="91"/>
-<label x="264.16" y="104.14" size="1.778" layer="95" rot="R180"/>
-</segment>
-<segment>
-<pinref part="U$1" gate="G$1" pin="UART1_TXD"/>
-<wire x1="330.2" y1="101.6" x2="342.9" y2="101.6" width="0.1524" layer="91"/>
-<label x="342.9" y="101.6" size="1.778" layer="95"/>
+<pinref part="U$1" gate="G$1" pin="UART5_TXD"/>
+<wire x1="274.32" y1="149.86" x2="264.16" y2="149.86" width="0.1524" layer="91"/>
+<label x="264.16" y="149.86" size="1.778" layer="95" rot="R180"/>
 </segment>
 </net>
 <net name="BBB_EQEP2A" class="0">

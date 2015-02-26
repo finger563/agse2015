@@ -33,7 +33,7 @@ class radial_actuator_controller : public Component
  
 
 	// Component Service Callback
-	bool radialPosCallback(agse_package::radialPos::Request  &req,
+	bool radialPosCallback(agse_package::radialPos::Request &req,
 		agse_package::radialPos::Response &res);
 
 

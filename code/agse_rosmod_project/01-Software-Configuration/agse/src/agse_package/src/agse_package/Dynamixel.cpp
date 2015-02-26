@@ -275,8 +275,6 @@ int Dynamixel::getPosition(SerialPort *serialPort, int idAX12)
 
   memset(bufferIn,0,BufferSize);
   n=serialPort->getArray(bufferIn, 8);
-  memset(bufferIn,0,BufferSize);
-  n=serialPort->getArray(bufferIn, 8);
   //bf(bufferIn,8);
 
   short pos = -1;
@@ -304,11 +302,8 @@ int Dynamixel::setPosition(SerialPort *serialPort, int idAX12, int position)
 
   memset(bufferIn,0,BufferSize);
   n=serialPort->getArray(bufferIn, 8);
-  memset(bufferIn,0,BufferSize);
-  n=serialPort->getArray(bufferIn, 8);
-  //bf(bufferIn,n);
 
-  if (n>4 && bufferIn[5] == 0)
+  if (n>4 && bufferIn[4] == 0)
     printf("setPosition: id=<%i> set at pos=<%i>\n", idAX12, position);
   else {
     error=-1;

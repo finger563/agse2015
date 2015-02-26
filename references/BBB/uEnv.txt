@@ -1,0 +1,17 @@
+#Docs: http://elinux.org/Beagleboard:U-boot_partitioning_layout_2.0
+
+uname_r=3.8.13-bone68
+
+#dtb=
+
+cmdline=quiet 
+
+##Example
+cape_disable=capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
+cape_enable=capemgr.enable_partno=BB-UART1,BB-UART2,BB-UART5,bone_eqep1,bone_eqep2
+#cape_enable=capemgr.enable_partno=ADAFRUIT-UART1,ADAFRUIT-UART2,bone_eqep1,bone_eqep2b
+
+##enable BBB: eMMC Flasher:
+##make sure, these tools are installed: dosfstools rsync
+#cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh
+
