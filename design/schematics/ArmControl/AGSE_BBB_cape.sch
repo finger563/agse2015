@@ -9947,13 +9947,25 @@ Standard schematic elements and footprints for 5mm, 3mm, 1206, and 0603 sized LE
 <sheets>
 <sheet>
 <plain>
-<text x="-58.42" y="187.96" size="6.4516" layer="91">Vanderbilt Aerospace Club : AGSE
-Linear Actuator Motor Controller</text>
-<text x="-30.48" y="160.02" size="2.54" layer="91">This schematic encompasses the electrical design of
-the AGSE Radial and Height motor control circuits  
-These electronics meet the following goals:
-(*) Motor actuation to increase and decrease the radial
-and height positions of the AGSE gripper</text>
+<text x="-58.42" y="187.96" size="6.4516" layer="91">Vanderbilt Aerospace Club :
+AGSE Motor Control Board</text>
+<text x="-58.42" y="182.88" size="3.81" layer="91" align="top-left">This schematic encompasses the electrical design of
+the AGSE motor control board.  These circuits meet the following goals:
+1. Vertical DC linear actuator motor control
+2. Radial DC linear actuator motor control
+3. Encoder Feedback for vertical motor encoder
+4. Encoder Feedback for radial motor encoder
+5. 12 V to 5 V power regulation for BeagleBone Black
+6. Serial Buffer for controlling daisychained servos:
+     * Main gripper servo motor
+     * Gripper wrist rotation servo motor
+     * AGSE arm base rotation servo motor
+
+This board mounts as a cape on the BeagleBone Black, 
+providing it power and handling the associated
+connections for motor feedback and control.</text>
+<text x="-43.18" y="-60.96" size="5.08" layer="94">William Emfinger</text>
+<text x="33.02" y="-60.96" size="3.81" layer="94">A</text>
 </plain>
 <instances>
 <instance part="U$1" gate="G$1" x="302.26" y="134.62"/>
