@@ -14,7 +14,7 @@ void servo_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
   paused = true;
-  sprintf(portName,"//dev//ttyTHS0");
+  sprintf(portName,"//dev//ttyO5");
   armServoID = 1;
   gripperRotationID = 10;
   gripperPositionID = 11;
@@ -91,7 +91,11 @@ bool servo_controller::gripperRotationCallback(agse_package::gripperRotation::Re
 void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for servoTimer 
-  if (!paused) {
+  if (paused) {
+
+    armRotationGoal = Dynamixel::posToAngle( rand() % 1023 );
+    gripperRotationGoal = Dynamixel::posToAngle( rand() % 1023 );
+    gripperPosGoal = Dynamixel::posToAngle( rand() % 1023 );
 
     int pos; // temp value to store position from servo
     

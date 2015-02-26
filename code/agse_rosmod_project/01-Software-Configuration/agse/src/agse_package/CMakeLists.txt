@@ -212,11 +212,13 @@ add_executable( camera src/agse_package/camera_main.cpp src/agse_package/Compone
 		src/agse_package/Object_Tracker.cpp
 		## End camera CPP Marker
               )
-include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
-pkg_check_modules(OPENCV REQUIRED opencv)
-include_directories(${OPENCV_INCLUDE_DIRS})
-link_directories(${OPENCV_LIBRARY_DIRS})
-target_link_libraries(camera ${OPENCV_LIBRARIES} ${CUDA_LIBRARIES} ${catkin_LIBRARIES} /usr/local/cuda-6.5/lib cuda )
+#include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
+#pkg_check_modules(OPENCV REQUIRED opencv4tegra cuda)
+#include_directories(${OPENCV_INCLUDE_DIRS})
+#link_directories(/usr/local/cuda/lib ${OPENCV_LIBRARY_DIRS})
+#target_link_libraries(camera ${OPENCV_LIBRARIES} ${catkin_LIBRARIES} cuda)
+include_directories(include ${OPENCV_INCLUDE_DIRS} ${cakin_INCLUDE_DIRS})
+target_link_libraries(camera ${catkin_LIBRARIES} opencv_core opencv_imgproc opencv_highgui opencv_contrib opencv_legacy opencv_photo opencv_video opencv_videostab)
 add_dependencies(camera agse_package_generate_messages_cpp)
 add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/radial_actuator_controller.cpp  
