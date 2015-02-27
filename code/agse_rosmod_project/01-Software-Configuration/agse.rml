@@ -131,7 +131,9 @@ package agse_package
 
             response
             {
-                int8[] imgVector;
+                uint8[] imgVector;
+                int16 width;
+                int16 height;
             }
         }
     }
