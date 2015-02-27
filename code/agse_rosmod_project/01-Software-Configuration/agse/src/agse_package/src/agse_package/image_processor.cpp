@@ -12,8 +12,7 @@
 //# Start Init Marker
 void image_processor::Init(const ros::TimerEvent& event)
 {
-    // Initialize Component
-    Image_Processor imgproc_instance;
+    // Initialize 
     imgproc_instance.init();
     // Stop Init Timer
     initOneShotTimer.stop();
@@ -39,7 +38,9 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 
   if(!paused) {
 
-    if (this->captureImage_client.call()) {
+    agse_package::captureImage arg;
+
+    if (this->captureImage_client.call(arg)) {
       ROS_INFO("Obtaining new image frame!");
     }
    

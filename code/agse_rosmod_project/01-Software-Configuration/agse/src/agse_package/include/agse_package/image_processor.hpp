@@ -70,6 +70,7 @@ class image_processor : public Component
 
         //# Start User Private Variables Marker
   bool paused;
+  Image_Processor imgproc_instance;
         //# End User Private Variables Marker
 };
 
