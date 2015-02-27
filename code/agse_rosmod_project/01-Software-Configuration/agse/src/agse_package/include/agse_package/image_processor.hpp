@@ -8,7 +8,7 @@
 //      USER INCLUDES GO HERE
 // --------------------------------
 //# Start User Includes Marker
-
+#include "agse_package/Image_Processor.h"
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"

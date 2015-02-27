@@ -1,7 +1,7 @@
 #include "agse_package/image_processor.hpp"
 
 //# Start User Globals Marker
-#include "agse_package/Image_Processor.h"
+
 //# End User Globals Marker
 
 // -------------------------------------------------------
