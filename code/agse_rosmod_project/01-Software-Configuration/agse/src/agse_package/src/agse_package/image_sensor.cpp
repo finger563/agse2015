@@ -13,6 +13,35 @@
 void image_sensor::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
+  paused = true;
+  sprintf(videoDevice,"/dev/video0");
+  format = V4L2_PIX_FMT_MJPEG;
+  width = 640;
+  height = 480;
+  brightness = contrast = saturation = gain = 0;
+  quality = 95;
+  grabMethod = 1;
+  videoIn = (struct vdIn *) calloc (1, sizeof (struct vdIn));
+  if (init_videoIn(videoIn, (char *) videoDevice, width, height, format, grabMethod) < 0)
+    ROS_INFO("ERROR RUNNING INIT_VIDEOIN");
+  v4l2ResetControl (videoIn, V4L2_CID_BRIGHTNESS);
+  v4l2ResetControl (videoIn, V4L2_CID_CONTRAST);
+  v4l2ResetControl (videoIn, V4L2_CID_SATURATION);
+  v4l2ResetControl (videoIn, V4L2_CID_GAIN);
+
+  //Setup Camera Parameters
+  if (brightness != 0) {
+    v4l2SetControl (videoIn, V4L2_CID_BRIGHTNESS, brightness);
+  } 
+  if (contrast != 0) {
+    v4l2SetControl (videoIn, V4L2_CID_CONTRAST, contrast);
+  } 
+  if (saturation != 0) {
+    v4l2SetControl (videoIn, V4L2_CID_SATURATION, saturation);
+  } 
+  if (gain != 0) {
+    v4l2SetControl (videoIn, V4L2_CID_GAIN, gain);
+  } 
 
     // Stop Init Timer
     initOneShotTimer.stop();
@@ -25,7 +54,14 @@ bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &re
     agse_package::captureImage::Response &res)
 {
     // Business Logic for captureImage_server Server providing captureImage Service
-
+  if (uvcGrab (videoIn) < 0) 
+    {
+      ROS_INFO("ERROR GRABBING VIDEO");
+    }
+  res.imgVector.reserve(videoIn->buf.bytesused);
+  //res.imgVector.insert(res.imgVector.end(), &videoIn->tmpbuffer[0], videoIn->buf.bytesused + DHT_SIZE);
+  std::copy(&videoIn->tmpbuffer[0], &videoIn->tmpbuffer[0] + videoIn->buf.bytesused + DHT_SIZE, back_inserter(res.imgVector));
+  return true;
 }
 //# End captureImageCallback Marker
 
