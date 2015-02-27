@@ -35,19 +35,6 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
     agse_package::sampleStateFromImage::Response &res)
 {
     // Business Logic for sampleStateFromImage_server Server providing sampleStateFromImage Service
-
-  if(!paused) {
-    agse_package::captureImage arg;
-    if (this->captureImage_client.call(arg)) {
-      ROS_INFO("Obtaining new image frame!");
-    }
-   
-    else {
-      ROS_INFO("ERROE!!~!!!@R");
-    }
-    imgproc_instance.run(arg.response.imgVector); 
-
-  }      
 }
 //# End sampleStateFromImageCallback Marker
 
@@ -56,7 +43,18 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 void image_processor::imageTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for imageTimer 
-
+  ROS_INFO("CALLING IMAGER SERVER");
+    agse_package::captureImage arg;
+    if (this->captureImage_client.call(arg)) {
+      // FILE *file = fopen("tmp.jpg","wb");
+      // fwrite(arg.response.imgVector.data(),arg.response.imgVector.size(),1,file);
+      // fclose(file);
+      // ROS_INFO("Obtaining new image frame!");
+      imgproc_instance.run(arg.response.imageVector); 
+    }
+    else {
+      ROS_INFO("ERROE!!~!!!@R");
+    }
 }
 //# End imageTimerCallback Marker
 

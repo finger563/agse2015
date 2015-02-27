@@ -67,12 +67,21 @@ void Image_Processor::run(std::vector<unsigned char> & camera_image){
   
   // Obtain Webcam Feed
   // webcam.read(webcam_feed);
-  
-  Mat image = Mat(640, 480, CV_UC3, camera_image.data());
-    //image = imread(camera_image.data(), CV_LOAD_IMAGE_COLOR);
 
-  // Convert from RGB TO HSV space
+  // std::cout << "Before Imread" << std::endl;
+  //  std::cout << "Filename: " << fname << std::endl;
+  
+  Mat image = Mat(640, 480, CV_8UC3, camera_image.data());
+  // Mat image = imread(fname);
+
+  // std::cout << "After Imread" << std::endl;
+
+  std::cout << "Before BGR to HSV Translation" << std::endl;
+
+   // Convert from RGB TO HSV space
   cvtColor(image, HSV, COLOR_BGR2HSV);
+
+  std::cout << "After BGR TO HSV Translation" << std::endl;
 	
   // Filter HSV Image based on slider values
   inRange(HSV,
