@@ -50,7 +50,7 @@ void image_processor::imageTimerCallback(const ros::TimerEvent& event)
       // fwrite(arg.response.imgVector.data(),arg.response.imgVector.size(),1,file);
       // fclose(file);
       // ROS_INFO("Obtaining new image frame!");
-      imgproc_instance.run(arg.response.imageVector); 
+      imgproc_instance.run(arg.response.imgVector); 
     }
     else {
       ROS_INFO("ERROE!!~!!!@R");
