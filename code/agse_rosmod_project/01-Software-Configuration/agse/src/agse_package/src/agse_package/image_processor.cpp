@@ -1,7 +1,7 @@
 #include "agse_package/image_processor.hpp"
 
 //# Start User Globals Marker
-
+#include "agse_package/Image_Processor.h"
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -13,7 +13,9 @@
 void image_processor::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-
+Image_Processor instance;
+ instance.init();
+ instance.run(); 
     // Stop Init Timer
     initOneShotTimer.stop();
 }
