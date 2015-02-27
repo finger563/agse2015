@@ -56,6 +56,9 @@ user_input_controller::~user_input_controller()
 {
     userInputTimer.stop();
     controlInputs_pub.shutdown();
+//# Start Destructor Marker
+
+//# End Destructor Marker
 }
 
 void user_input_controller::startUp()

@@ -99,6 +99,9 @@ vertical_actuator_controller::~vertical_actuator_controller()
     verticalPosTimer.stop();
     controlInputs_sub.shutdown();
     verticalPos_server.shutdown();
+//# Start Destructor Marker
+
+//# End Destructor Marker
 }
 
 void vertical_actuator_controller::startUp()

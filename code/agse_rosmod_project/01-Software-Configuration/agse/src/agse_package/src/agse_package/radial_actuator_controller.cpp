@@ -99,6 +99,9 @@ radial_actuator_controller::~radial_actuator_controller()
     radialPosTimer.stop();
     controlInputs_sub.shutdown();
     radialPos_server.shutdown();
+//# Start Destructor Marker
+
+//# End Destructor Marker
 }
 
 void radial_actuator_controller::startUp()

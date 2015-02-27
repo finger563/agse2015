@@ -52,6 +52,9 @@ arm_controller::~arm_controller()
     gripperRotation_client.shutdown();
     verticalPos_client.shutdown();
     gripperPos_client.shutdown();
+//# Start Destructor Marker
+
+//# End Destructor Marker
 }
 
 void arm_controller::startUp()

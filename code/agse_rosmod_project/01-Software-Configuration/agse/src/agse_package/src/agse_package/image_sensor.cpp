@@ -169,14 +169,15 @@ bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &re
 // Destructor - required for clean shutdown when process is killed
 image_sensor::~image_sensor()
 {
+    controlInputs_sub.shutdown();
+    captureImage_server.shutdown();
+//# Start Destructor Marker
   type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   xioctl(fd, VIDIOC_STREAMOFF, &type);
   for (i = 0; i < n_buffers; ++i)
     v4l2_munmap(buffers[i].start, buffers[i].length);
   v4l2_close(fd);
-
-    controlInputs_sub.shutdown();
-    captureImage_server.shutdown();
+//# End Destructor Marker
 }
 
 void image_sensor::startUp()

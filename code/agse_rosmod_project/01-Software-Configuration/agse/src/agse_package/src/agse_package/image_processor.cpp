@@ -71,6 +71,9 @@ image_processor::~image_processor()
     controlInputs_sub.shutdown();
     sampleStateFromImage_server.shutdown();
     captureImage_client.shutdown();
+//# Start Destructor Marker
+
+//# End Destructor Marker
 }
 
 void image_processor::startUp()
