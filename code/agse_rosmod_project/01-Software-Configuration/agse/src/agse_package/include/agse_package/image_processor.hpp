@@ -22,6 +22,8 @@
 class image_processor : public Component
 {
     public:
+        // Component image_processor Constructor
+        image_processor(std::string nodeName, int argc, char **argv) : Component(nodeName, argc, argv) {}
 
         // These functions' business logic will be filled in by the user:
 

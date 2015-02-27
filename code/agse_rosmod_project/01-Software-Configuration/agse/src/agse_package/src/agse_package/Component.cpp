@@ -1,5 +1,11 @@
 #include "agse_package/Component.hpp"
 
+// Component constructor - Obtaining node arguments
+Component::Component(std::string node, int argc, char **argv) {
+    node_argc = argc;
+    node_argv = argv;
+}
+
 // required for clean shutdown when process is killed
 Component::~Component()
 {

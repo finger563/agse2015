@@ -9,6 +9,9 @@
 class Component
 {
     public:
+        // Component Constructor
+        Component(std::string nodeName, int argc, char **argv);
+
 	// StartUp will be completely generated
 	virtual void startUp() = 0;
 
@@ -22,6 +25,9 @@ class Component
 	~Component();
 
     protected:
+        std::string nodeName;
+        int node_argc;
+        char **node_argv;
 	ros::Timer initOneShotTimer;  // timer for calling init
 	ros::CallbackQueue compQueue; // single callbackQueue for the component
 };

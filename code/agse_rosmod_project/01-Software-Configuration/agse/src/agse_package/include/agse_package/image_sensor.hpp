@@ -33,6 +33,8 @@ extern "C" {
 class image_sensor : public Component
 {
     public:
+        // Component image_sensor Constructor
+        image_sensor(std::string nodeName, int argc, char **argv) : Component(nodeName, argc, argv) {}
 
         // These functions' business logic will be filled in by the user:
 

@@ -1,5 +1,6 @@
 #include "ros/ros.h"
 #include <cstdlib>
+#include <string.h>
 
 // Required for boost::thread
 #include <boost/thread.hpp>
@@ -19,15 +20,20 @@ void componentThread(Component* compPtr)
 int main(int argc, char **argv)
 {
     std::string nodeName = "positioning";
+
+    for(int i = 0; i < argc; i++)
+        if(!strcmp(argv[i], "-nodename"))
+            nodeName = argv[i+1];
+
     ros::init(argc, argv, nodeName.c_str());
 
     // Create Node Handle
     ros::NodeHandle n;
 
     // Create Component Objects
-    radial_actuator_controller radial_controller_i; 
-    vertical_actuator_controller vertical_controller_i; 
-    servo_controller servo_controller_i; 
+    radial_actuator_controller radial_controller_i(nodeName, argc, argv); 
+    vertical_actuator_controller vertical_controller_i(nodeName, argc, argv); 
+    servo_controller servo_controller_i(nodeName, argc, argv); 
 
     // Create Component Threads
     boost::thread radial_controller_i_thread(componentThread, &radial_controller_i);
