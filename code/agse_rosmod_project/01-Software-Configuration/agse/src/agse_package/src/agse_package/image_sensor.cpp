@@ -54,7 +54,7 @@ void image_sensor::controlInputs_sub_OnOneData(const agse_package::controlInputs
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
     paused = received_data->paused;
-    ROS_INFO( paused ? "Image Sensor paused!" : "Image Sensor Unpaused!" ):
+    ROS_INFO( paused ? "Image Sensor paused!" : "Image Sensor Unpaused!" );
 }
 //# End controlInputs_sub_OnOneData Marker
 
