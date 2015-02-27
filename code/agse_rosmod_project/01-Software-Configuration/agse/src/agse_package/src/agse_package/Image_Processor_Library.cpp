@@ -71,10 +71,16 @@ void Image_Processor::run(std::vector<unsigned char> & camera_image){
   // std::cout << "Before Imread" << std::endl;
   //  std::cout << "Filename: " << fname << std::endl;
   
-  Mat image = Mat(640, 480, CV_8UC3, camera_image.data());
+  Mat image_rgb = Mat(480, 640, CV_8UC3, camera_image.data());
+  Mat image = Mat(image_rgb.rows, image_rgb.cols, CV_8UC3);
+  int from_to[] = {0, 2, 1, 1, 2, 0};
+  mixChannels(&image_rgb, 1, &image, 1, from_to, 3);
+  imwrite("whatever.jpg", image);
   // Mat image = imread(fname);
 
   // std::cout << "After Imread" << std::endl;
+ 
+  
 
   std::cout << "Before BGR to HSV Translation" << std::endl;
 
@@ -96,7 +102,7 @@ void Image_Processor::run(std::vector<unsigned char> & camera_image){
   tracker_output = object_tracker.track(image, filtered_output);
 	
   // Show all output windows
-  show_windows();
+  // show_windows();
 	
   // Handle user input
   handle_user_input();

@@ -46,8 +46,10 @@ void image_processor::imageTimerCallback(const ros::TimerEvent& event)
   ROS_INFO("CALLING IMAGER SERVER");
     agse_package::captureImage arg;
     if (this->captureImage_client.call(arg)) {
-      // FILE *file = fopen("tmp.jpg","wb");
-      // fwrite(arg.response.imgVector.data(),arg.response.imgVector.size(),1,file);
+      ROS_INFO("Image Size: %d", arg.response.imgVector.size());
+      FILE *file = fopen("tmp.ppm","wb");
+      fprintf(file, "P6\n640 480 255\n");
+      fwrite(arg.response.imgVector.data(),arg.response.imgVector.size(),1,file);
       // fclose(file);
       // ROS_INFO("Obtaining new image frame!");
       imgproc_instance.run(arg.response.imgVector); 
