@@ -1,6 +1,38 @@
 #include "agse_package/image_sensor.hpp"
 
 //# Start User Globals Marker
+#define CLEAR(x) memset(&(x), 0, sizeof(x))
+
+struct buffer {
+        void   *start;
+        size_t length;
+};
+
+static void xioctl(int fh, int request, void *arg)
+{
+        int r;
+
+        do {
+                r = v4l2_ioctl(fh, request, arg);
+        } while (r == -1 && ((errno == EINTR) || (errno == EAGAIN)));
+
+        if (r == -1) {
+                fprintf(stderr, "error %d, %s\n", errno, strerror(errno));
+                exit(EXIT_FAILURE);
+        }
+}
+
+  struct v4l2_format              fmt;
+  struct v4l2_buffer              buf;
+  struct v4l2_requestbuffers      req;
+  enum v4l2_buf_type              type;
+  fd_set                          fds;
+  struct timeval                  tv;
+  int                             r, fd = -1;
+  unsigned int                    i, n_buffers;
+  struct buffer                   *buffers;
+
+
 
 //# End User Globals Marker
 
@@ -15,33 +47,67 @@ void image_sensor::Init(const ros::TimerEvent& event)
     // Initialize Component
   paused = true;
   sprintf(videoDevice,"/dev/video0");
-  format = V4L2_PIX_FMT_MJPEG;
   width = 640;
   height = 480;
-  brightness = contrast = saturation = gain = 0;
-  quality = 95;
-  grabMethod = 1;
-  videoIn = (struct vdIn *) calloc (1, sizeof (struct vdIn));
-  if (init_videoIn(videoIn, (char *) videoDevice, width, height, format, grabMethod) < 0)
-    ROS_INFO("ERROR RUNNING INIT_VIDEOIN");
-  v4l2ResetControl (videoIn, V4L2_CID_BRIGHTNESS);
-  v4l2ResetControl (videoIn, V4L2_CID_CONTRAST);
-  v4l2ResetControl (videoIn, V4L2_CID_SATURATION);
-  v4l2ResetControl (videoIn, V4L2_CID_GAIN);
 
-  //Setup Camera Parameters
-  if (brightness != 0) {
-    v4l2SetControl (videoIn, V4L2_CID_BRIGHTNESS, brightness);
-  } 
-  if (contrast != 0) {
-    v4l2SetControl (videoIn, V4L2_CID_CONTRAST, contrast);
-  } 
-  if (saturation != 0) {
-    v4l2SetControl (videoIn, V4L2_CID_SATURATION, saturation);
-  } 
-  if (gain != 0) {
-    v4l2SetControl (videoIn, V4L2_CID_GAIN, gain);
-  } 
+  fd = v4l2_open(videoDevice, O_RDWR | O_NONBLOCK, 0);
+        if (fd < 0) {
+                perror("Cannot open device");
+                exit(EXIT_FAILURE);
+        }
+
+        CLEAR(fmt);
+        fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        fmt.fmt.pix.width       = width;
+        fmt.fmt.pix.height      = height;
+        fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
+        fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
+        xioctl(fd, VIDIOC_S_FMT, &fmt);
+        if (fmt.fmt.pix.pixelformat != V4L2_PIX_FMT_RGB24) {
+                printf("Libv4l didn't accept RGB24 format. Can't proceed.\n");
+                exit(EXIT_FAILURE);
+        }
+        if ((fmt.fmt.pix.width != width) || (fmt.fmt.pix.height != height))
+                printf("Warning: driver is sending image at %dx%d\n",
+                        fmt.fmt.pix.width, fmt.fmt.pix.height);
+
+        CLEAR(req);
+        req.count = 2;
+        req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        req.memory = V4L2_MEMORY_MMAP;
+        xioctl(fd, VIDIOC_REQBUFS, &req);
+
+        buffers = (buffer *)calloc(req.count, sizeof(*buffers));
+        for (n_buffers = 0; n_buffers < req.count; ++n_buffers) {
+                CLEAR(buf);
+
+                buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+                buf.memory      = V4L2_MEMORY_MMAP;
+                buf.index       = n_buffers;
+
+                xioctl(fd, VIDIOC_QUERYBUF, &buf);
+
+                buffers[n_buffers].length = buf.length;
+                buffers[n_buffers].start = v4l2_mmap(NULL, buf.length,
+                              PROT_READ | PROT_WRITE, MAP_SHARED,
+                              fd, buf.m.offset);
+
+                if (MAP_FAILED == buffers[n_buffers].start) {
+                        perror("mmap");
+                        exit(EXIT_FAILURE);
+                }
+        }
+
+        for (i = 0; i < n_buffers; ++i) {
+                CLEAR(buf);
+                buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+                buf.memory = V4L2_MEMORY_MMAP;
+                buf.index = i;
+                xioctl(fd, VIDIOC_QBUF, &buf);
+        }
+        type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+        xioctl(fd, VIDIOC_STREAMON, &type);
 
     // Stop Init Timer
     initOneShotTimer.stop();
@@ -63,17 +129,35 @@ void image_sensor::controlInputs_sub_OnOneData(const agse_package::controlInputs
 bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &req,
     agse_package::captureImage::Response &res)
 {
-    // Business Logic for captureImage_server Server providing captureImage Service
-  if (!paused)
-    {
-      if (uvcGrab (videoIn) < 0) 
-	{
-	  ROS_INFO("ERROR GRABBING VIDEO");
-	}
-      res.imgVector.reserve(videoIn->buf.bytesused);
-      //res.imgVector.insert(res.imgVector.end(), &videoIn->tmpbuffer[0], videoIn->buf.bytesused + DHT_SIZE);
-      std::copy(&videoIn->tmpbuffer[0], &videoIn->tmpbuffer[0] + videoIn->buf.bytesused + DHT_SIZE, back_inserter(res.imgVector));
-    }
+  ROS_INFO("CAPTURE IMAGE CALLBACK SERVICE INVOKED");
+  // Business Logic for captureImage_server Server providing captureImage Service
+                do {
+                        FD_ZERO(&fds);
+                        FD_SET(fd, &fds);
+
+                        /* Timeout. */
+                        tv.tv_sec = 2;
+                        tv.tv_usec = 0;
+
+                        r = select(fd + 1, &fds, NULL, NULL, &tv);
+                } while ((r == -1 && (errno = EINTR)));
+                if (r == -1) {
+                        perror("select");
+                        return errno;
+                }
+
+                CLEAR(buf);
+                buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+                buf.memory = V4L2_MEMORY_MMAP;
+                xioctl(fd, VIDIOC_DQBUF, &buf);
+
+
+  res.imgVector.reserve(buf.bytesused);
+  
+  std::copy(&((unsigned char *)buffers[buf.index].start)[0], &((unsigned char *)buffers[buf.index].start)[0] + buf.bytesused, back_inserter(res.imgVector));
+
+                xioctl(fd, VIDIOC_QBUF, &buf);
+		
   return true;
 }
 //# End captureImageCallback Marker
@@ -85,6 +169,12 @@ bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &re
 // Destructor - required for clean shutdown when process is killed
 image_sensor::~image_sensor()
 {
+  type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  xioctl(fd, VIDIOC_STREAMOFF, &type);
+  for (i = 0; i < n_buffers; ++i)
+    v4l2_munmap(buffers[i].start, buffers[i].length);
+  v4l2_close(fd);
+
     controlInputs_sub.shutdown();
     captureImage_server.shutdown();
 }

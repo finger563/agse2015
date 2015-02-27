@@ -232,10 +232,9 @@ add_dependencies(user_input agse_package_generate_messages_cpp)
 add_executable( imager src/agse_package/imager_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/image_sensor.cpp  
 		## Start imager CPP Marker
-		src/agse_package/v4l2uvc.c
 		## End imager CPP Marker
               )
-target_link_libraries(imager ${catkin_LIBRARIES})
+target_link_libraries(imager v4l2 ${catkin_LIBRARIES})
 add_dependencies(imager agse_package_generate_messages_cpp)
 add_executable( detector src/agse_package/detector_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/image_processor.cpp  
