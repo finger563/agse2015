@@ -50,7 +50,7 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 
   }
 
-    imgproc_instance.run(image_byte_array); 
+    imgproc_instance.run(arg.response.imgVector); 
       
 }
 //# End sampleStateFromImageCallback Marker
