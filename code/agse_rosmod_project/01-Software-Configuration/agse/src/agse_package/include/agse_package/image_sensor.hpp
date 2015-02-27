@@ -23,6 +23,7 @@ extern "C" {
 }
 //# End User Includes Marker
 
+#include "agse_package/controlInputs.h"
 #include "agse_package/captureImage.h"
 
 //# Start User Globals Marker
@@ -38,6 +39,10 @@ class image_sensor : public Component
 	// Init() is always generated
 	void Init(const ros::TimerEvent& event);
 
+	// OnOneData Subscription handler for controlInputs_sub subscriber 
+	void controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data); 
+ 
+
 	// Component Service Callback
 	bool captureImageCallback(agse_package::captureImage::Request &req,
 		agse_package::captureImage::Response &res);
@@ -52,6 +57,10 @@ class image_sensor : public Component
 	~image_sensor();
 
     private:
+
+	// ROS Subscriber - controlInputs_sub
+	ros::Subscriber controlInputs_sub; 
+
 
 	// ROS Service Server - captureImage_server
 	ros::ServiceServer captureImage_server;

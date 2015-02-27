@@ -48,19 +48,32 @@ void image_sensor::Init(const ros::TimerEvent& event)
 }
 //# End Init Marker
 
+// OnOneData Subscription handler for controlInputs_sub subscriber
+//# Start controlInputs_sub_OnOneData Marker
+void image_sensor::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
+{
+    // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
+    paused = received_data->paused;
+    ROS_INFO( paused ? "Image Sensor paused!" : "Image Sensor Unpaused!" ):
+}
+//# End controlInputs_sub_OnOneData Marker
+
 // Component Service Callback
 //# Start captureImageCallback Marker
 bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &req,
     agse_package::captureImage::Response &res)
 {
     // Business Logic for captureImage_server Server providing captureImage Service
-  if (uvcGrab (videoIn) < 0) 
+  if (!paused)
     {
-      ROS_INFO("ERROR GRABBING VIDEO");
+      if (uvcGrab (videoIn) < 0) 
+	{
+	  ROS_INFO("ERROR GRABBING VIDEO");
+	}
+      res.imgVector.reserve(videoIn->buf.bytesused);
+      //res.imgVector.insert(res.imgVector.end(), &videoIn->tmpbuffer[0], videoIn->buf.bytesused + DHT_SIZE);
+      std::copy(&videoIn->tmpbuffer[0], &videoIn->tmpbuffer[0] + videoIn->buf.bytesused + DHT_SIZE, back_inserter(res.imgVector));
     }
-  res.imgVector.reserve(videoIn->buf.bytesused);
-  //res.imgVector.insert(res.imgVector.end(), &videoIn->tmpbuffer[0], videoIn->buf.bytesused + DHT_SIZE);
-  std::copy(&videoIn->tmpbuffer[0], &videoIn->tmpbuffer[0] + videoIn->buf.bytesused + DHT_SIZE, back_inserter(res.imgVector));
   return true;
 }
 //# End captureImageCallback Marker
@@ -72,12 +85,25 @@ bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &re
 // Destructor - required for clean shutdown when process is killed
 image_sensor::~image_sensor()
 {
+    controlInputs_sub.shutdown();
     captureImage_server.shutdown();
 }
 
 void image_sensor::startUp()
 {
     ros::NodeHandle nh;
+
+    // Configure all subscribers associated with this component
+    // subscriber: controlInputs_sub
+    ros::SubscribeOptions controlInputs_sub_options;
+    controlInputs_sub_options = 
+	ros::SubscribeOptions::create<agse_package::controlInputs>
+	    ("controlInputs",
+	     1000,
+	     boost::bind(&image_sensor::controlInputs_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
 
     // Configure all provided services associated with this component
     // server: captureImage_server
