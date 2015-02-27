@@ -37,9 +37,7 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
     // Business Logic for sampleStateFromImage_server Server providing sampleStateFromImage Service
 
   if(!paused) {
-
     agse_package::captureImage arg;
-
     if (this->captureImage_client.call(arg)) {
       ROS_INFO("Obtaining new image frame!");
     }
@@ -47,11 +45,9 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
     else {
       ROS_INFO("ERROE!!~!!!@R");
     }
-
-  }
-
     imgproc_instance.run(arg.response.imgVector); 
-      
+
+  }      
 }
 //# End sampleStateFromImageCallback Marker
 
