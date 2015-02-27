@@ -85,6 +85,8 @@ add_service_files(
 
   gripperRotation.srv
 
+  captureImage.srv
+
 )
 
 ## Generate actions in the 'action' folder
@@ -205,21 +207,6 @@ add_executable( arm src/agse_package/arm_main.cpp src/agse_package/Component.cpp
               )
 target_link_libraries(arm ${catkin_LIBRARIES})
 add_dependencies(arm agse_package_generate_messages_cpp)
-add_executable( camera src/agse_package/camera_main.cpp src/agse_package/Component.cpp 
-                src/agse_package/image_processor.cpp  
-		## Start camera CPP Marker
-		src/agse_package/Image_Processor_Library.cpp
-		src/agse_package/Object_Tracker.cpp
-		## End camera CPP Marker
-              )
-#include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
-#pkg_check_modules(OPENCV REQUIRED opencv4tegra cuda)
-#include_directories(${OPENCV_INCLUDE_DIRS})
-#link_directories(/usr/local/cuda/lib ${OPENCV_LIBRARY_DIRS})
-#target_link_libraries(camera ${OPENCV_LIBRARIES} ${catkin_LIBRARIES} cuda)
-include_directories(include ${OPENCV_INCLUDE_DIRS} ${cakin_INCLUDE_DIRS})
-target_link_libraries(camera ${catkin_LIBRARIES} opencv_core opencv_imgproc opencv_highgui opencv_contrib opencv_legacy opencv_photo opencv_video opencv_videostab)
-add_dependencies(camera agse_package_generate_messages_cpp)
 add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/radial_actuator_controller.cpp  
                 src/agse_package/vertical_actuator_controller.cpp  
@@ -242,6 +229,24 @@ add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package
               )
 target_link_libraries(user_input ${catkin_LIBRARIES})
 add_dependencies(user_input agse_package_generate_messages_cpp)
+add_executable( imager src/agse_package/imager_main.cpp src/agse_package/Component.cpp 
+                src/agse_package/image_sensor.cpp  
+		## Start imager CPP Marker
+		## End imager CPP Marker
+              )
+target_link_libraries(imager ${catkin_LIBRARIES})
+add_dependencies(imager agse_package_generate_messages_cpp)
+add_executable( detector src/agse_package/detector_main.cpp src/agse_package/Component.cpp 
+                src/agse_package/image_processor.cpp  
+		## Start detector CPP Marker
+		src/agse_package/Image_Processor_Library.cpp
+		src/agse_package/Object_Tracker.cpp
+		## End detector CPP Marker
+              )
+include_directories(include ${OPENCV_INCLUDE_DIRS} ${cakin_INCLUDE_DIRS})
+target_link_libraries(detector ${catkin_LIBRARIES} opencv_core opencv_imgproc opencv_highgui opencv_contrib opencv_legacy opencv_photo opencv_video opencv_videostab)
+add_dependencies(detector agse_package_generate_messages_cpp)
+
 
 
 

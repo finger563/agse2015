@@ -1,0 +1,62 @@
+Partlist exported from C:/Users/Pranav/Downloads/agse2015/design/schematics/ArmControl/AGSE_BBB_cape.sch at 2/26/2015 3:21:17 PM
+
+Part             Value              Device                   Package               Description                                               MANEX        PROD_ID    
+C1               100uf, 50V         CAP_POLD                 PANASONIC_D           Capacitor Polarized                                       123-0004264             
+C2               10uf,10V           CAP_POL1206              EIA3216               Capacitor Polarized                                       123-0001192             
+C3               .1uf,10V           CAP0402-CAP              0402-CAP              Capacitor                                                 123-0001047             
+D1                                  DIODESMA                 SMA-DIODE             Diode                                                     130-0001388             
+D2                                  DIODE1N4148              DIODE-1N4148          Diode                                                     130-0002546             
+D3                                  LED-FKIT-1206            FKIT-LED-1206         LEDs                                                                              
+D4                                  LED-FKIT-1206            FKIT-LED-1206         LEDs                                                                              
+D5                                  LED-FKIT-1206            FKIT-LED-1206         LEDs                                                                              
+D6                                  LED-FKIT-1206            FKIT-LED-1206         LEDs                                                                              
+FRAME1           FRAME-LEDGER       FRAME-LEDGER             CREATIVE_COMMONS      Schematic Frame                                                                   
+JP1              M023.5MM           M023.5MM                 SCREWTERMINAL-3.5MM-2 Standard 2-pin 0.1" header. Use with                      257-0004040  CONN-08399 
+Q1               PFET-FQP27P06      MOSFET-PCHANNELFQP27P06  TO220V                Generic PMOSFET                                                                   
+Q2               PFET-FQP27P06      MOSFET-PCHANNELFQP27P06  TO220V                Generic PMOSFET                                                                   
+Q3               NFET-FQP30N06L     MOSFET-NCHANNELFQP30N06L TO220V                Common NMOSFET Parts                                                   TRANS-10060
+Q4               NFET-FQP30N06L     MOSFET-NCHANNELFQP30N06L TO220V                Common NMOSFET Parts                                                   TRANS-10060
+Q5               PFET-FQP27P06      MOSFET-PCHANNELFQP27P06  TO220V                Generic PMOSFET                                                                   
+Q6               PFET-FQP27P06      MOSFET-PCHANNELFQP27P06  TO220V                Generic PMOSFET                                                                   
+Q7               NFET-FQP30N06L     MOSFET-NCHANNELFQP30N06L TO220V                Common NMOSFET Parts                                                   TRANS-10060
+Q8               NFET-FQP30N06L     MOSFET-NCHANNELFQP30N06L TO220V                Common NMOSFET Parts                                                   TRANS-10060
+R-AXIS           M023.5MM           M023.5MM                 SCREWTERMINAL-3.5MM-2 Standard 2-pin 0.1" header. Use with                      257-0004040  CONN-08399 
+R1               370                RESISTOR0402-RES         0402-RES              Resistor                                                  110-0003316             
+R2               1.5k               RESISTOR0402-RES         0402-RES              Resistor                                                  110-0001936             
+R3               50                 R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R4               10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R5               10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R6               10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R7               10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R8               10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R9               10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R10              10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R11              10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R12              10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R13              7K                 R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R14              10K                R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R15              1.7K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R16              3.3K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R17              1.7K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R18              3.3K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R19              3.3K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R20              1.7K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R21              1.7K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R22              3.3K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R23              3.3K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R24              1.7K               R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R25              50                 R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R26              50                 R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+R27              50                 R-EU_M0805               M0805                 RESISTOR, European symbol                                                         
+RADIAL_ENCODER                      M04POLAR                 MOLEX-1X4             Header 4                                                                          
+SERVO            AX-12A             AX-12A                   SPOX-3                Dynamixel AX-12A female connection package.                                       
+T1                                  BF820-NPN-SOT23-BEC      SOT23-BEC             NPN Transistror                                                                   
+T2                                  BF820-NPN-SOT23-BEC      SOT23-BEC             NPN Transistror                                                                   
+T3                                  BF820-NPN-SOT23-BEC      SOT23-BEC             NPN Transistror                                                                   
+T4                                  BF820-NPN-SOT23-BEC      SOT23-BEC             NPN Transistror                                                                   
+T5                                  BF820-NPN-SOT23-BEC      SOT23-BEC             NPN Transistror                                                                   
+T6                                  BF820-NPN-SOT23-BEC      SOT23-BEC             NPN Transistror                                                                   
+U$1              BEAGLEBONE_OUTLINE BEAGLEBONE_OUTLINE       BEAGLEBONE_SHIELD     Should match A3 pinout - but not completely tested                                
+U1               V_REG_LD1085D2     V_REG_LD1085D2           D2PACK/A              LD1085 3A low-drop positive voltage regulator, adjustable 140-0004281             
+VERTICAL_ENCODER                    M04POLAR                 MOLEX-1X4             Header 4                                                                          
+Z-AXIS           M023.5MM           M023.5MM                 SCREWTERMINAL-3.5MM-2 Standard 2-pin 0.1" header. Use with                      257-0004040  CONN-08399 

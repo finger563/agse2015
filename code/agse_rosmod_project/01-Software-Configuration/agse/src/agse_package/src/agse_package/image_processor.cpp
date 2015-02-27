@@ -59,6 +59,7 @@ image_processor::~image_processor()
     imageTimer.stop();
     controlInputs_sub.shutdown();
     sampleStateFromImage_server.shutdown();
+    captureImage_client.shutdown();
 }
 
 void image_processor::startUp()
@@ -88,6 +89,11 @@ void image_processor::startUp()
              &this->compQueue);
     this->sampleStateFromImage_server = nh.advertiseService(sampleStateFromImage_server_options);
  
+    // Configure all required services associated with this component
+    // client: captureImage_client
+    this->captureImage_client = nh.serviceClient<agse_package::captureImage>
+	("captureImage"); 
+
     // Create Init Timer
     ros::TimerOptions timer_options;
     timer_options = 
