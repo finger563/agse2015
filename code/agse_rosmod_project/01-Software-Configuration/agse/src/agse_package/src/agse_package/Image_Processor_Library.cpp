@@ -68,8 +68,8 @@ void Image_Processor::run(std::vector<int> & camera_image){
   // Obtain Webcam Feed
   // webcam.read(webcam_feed);
   
-  Mat image;
-  image = imread(camera_image.data(), CV_LOAD_IMAGE_COLOR);
+  Mat image = Mat(640, 480, CV_UC3, camera_image.data());
+    //image = imread(camera_image.data(), CV_LOAD_IMAGE_COLOR);
 
   // Convert from RGB TO HSV space
   cvtColor(image, HSV, COLOR_BGR2HSV);
