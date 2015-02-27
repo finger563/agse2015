@@ -63,7 +63,7 @@ void Image_Processor::init(){
 }
 
 // Main Real-Time Loop
-void Image_Processor::run(std::vector<int> & camera_image){
+void Image_Processor::run(std::vector<unsigned char> & camera_image){
   
   // Obtain Webcam Feed
   // webcam.read(webcam_feed);

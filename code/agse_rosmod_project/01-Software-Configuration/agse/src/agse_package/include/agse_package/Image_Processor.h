@@ -36,7 +36,7 @@ public:
 	void init();
 
 	// Main Real-Time Loop
-	void run(std::vector<int> & camera_image);
+	void run(std::vector<unsigned char> & camera_image);
 
 private:
 	// Webcam feed
