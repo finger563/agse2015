@@ -265,7 +265,14 @@ add_executable( detector src/agse_package/detector_main.cpp src/agse_package/Com
               )
 target_link_libraries(detector 
                       ## Start detector Target Link Libraries Marker
-
+		      opencv_core 
+		      opencv_imgproc 
+		      opencv_highgui 
+		      opencv_contrib
+		      opencv_legacy
+		      opencv_photo
+		      opencv_video
+		      opencv_videostab
                       ## End detector Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(detector agse_package_generate_messages_cpp)
