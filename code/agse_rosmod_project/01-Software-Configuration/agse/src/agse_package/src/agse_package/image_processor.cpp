@@ -13,9 +13,8 @@
 void image_processor::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-Image_Processor instance;
- instance.init();
- instance.run(); 
+    Image_Processor imgproc_instance;
+    imgproc_instance.init();
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -26,7 +25,8 @@ Image_Processor instance;
 void image_processor::controlInputs_sub_OnOneData(const agse_package::controlInputs::ConstPtr& received_data)
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
-
+    paused = received_data->paused;
+    ROS_INFO( paused ? "Image Processor paused!" : "Image Processor Unpaused" );
 }
 //# End controlInputs_sub_OnOneData Marker
 
@@ -37,6 +37,20 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 {
     // Business Logic for sampleStateFromImage_server Server providing sampleStateFromImage Service
 
+  if(!paused) {
+
+    if (this->captureImage_client.call()) {
+      ROS_INFO("Obtaining new image frame!");
+    }
+   
+    else {
+      ROS_INFO("ERROE!!~!!!@R");
+    }
+
+  }
+
+    imgproc_instance.run(image_byte_array); 
+      
 }
 //# End sampleStateFromImageCallback Marker
 

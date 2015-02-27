@@ -67,7 +67,7 @@ class image_processor : public Component
 	ros::ServiceClient captureImage_client;
 
         //# Start User Private Variables Marker
-
+  bool paused;
         //# End User Private Variables Marker
 };
 
