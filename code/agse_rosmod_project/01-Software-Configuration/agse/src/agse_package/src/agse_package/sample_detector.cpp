@@ -8,11 +8,11 @@
 #include "agse_package/sample_detector.hpp"
 
 // Filter Global Variables
-int hue_min = 0;
+int hue_min = 20;
 int hue_max = 255;
 int saturation_min = 0;
-int saturation_max = 255;
-int value_min = 0;
+int saturation_max = 59;
+int value_min = 150;
 int value_max = 255;
 
 // Global callback function for sliders
@@ -59,7 +59,7 @@ void Sample_Detector::handle_user_input(){
 // Main Initialize Function
 void Sample_Detector::init(){
   setup_webcam_feed(0);
-  create_filter_knobs_slider();
+  //  create_filter_knobs_slider();
 }
 
 // Main Real-Time Loop
