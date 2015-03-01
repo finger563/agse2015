@@ -6,7 +6,7 @@ void PayloadBay_Detector::init(float msize, const char* camParamFileName)
   CamParam.readFromXMLFile(camParamFileName);
 }
 
-std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & rawImage, 
+std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & raw_image_data, 
 					     int width, 
 					     int height, 
 					     const char* fname)
