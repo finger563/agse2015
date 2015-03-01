@@ -1,4 +1,4 @@
-1/*
+/*
  * Image Processor Class Definition
  * 
  * Author: Pranav Srinivas Kumar
