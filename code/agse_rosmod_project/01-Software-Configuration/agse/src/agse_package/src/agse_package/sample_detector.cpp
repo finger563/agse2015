@@ -63,15 +63,15 @@ void Sample_Detector::init(){
 }
 
 // Main Real-Time Loop
-void Sample_Detector::run(std::vector<unsigned char> & camera_image, 
+void Sample_Detector::run(std::vector<unsigned char> & image, 
 			  int width, 
 			  int height,
 			  const char* fname)
 {
-  Mat image_rgb = Mat(height, width, CV_8UC3, camera_image.data());
-  Mat image = Mat(image_rgb.rows, image_rgb.cols, CV_8UC3);
-  int from_to[] = {0, 2, 1, 1, 2, 0};
-  mixChannels(&image_rgb, 1, &image, 1, from_to, 3);
+  // Mat image_rgb = Mat(height, width, CV_8UC3, camera_image.data());
+  // Mat image = Mat(image_rgb.rows, image_rgb.cols, CV_8UC3);
+  // int from_to[] = {0, 2, 1, 1, 2, 0};
+  // mixChannels(&image_rgb, 1, &image, 1, from_to, 3);
 
   std::cout << "Before BGR to HSV Translation" << std::endl;
 
