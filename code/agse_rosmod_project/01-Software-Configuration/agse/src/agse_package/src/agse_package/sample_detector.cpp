@@ -64,7 +64,7 @@ void Sample_Detector::init(){
 
 // Main Real-Time Loop
 void Sample_Detector::run(std::vector<unsigned char> & camera_image, 
-			  int widht, 
+			  int width, 
 			  int height,
 			  const char* fname)
 {
