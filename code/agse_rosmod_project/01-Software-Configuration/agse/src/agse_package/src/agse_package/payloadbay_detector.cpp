@@ -6,7 +6,7 @@ void PayloadBay_Detector::init(float msize, const char* camParamFileName)
   CamParam.readFromXMLFile(camParamFileName);
 }
 
-std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & image, 
+std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & rawImage, 
 					     int width, 
 					     int height, 
 					     const char* fname)
@@ -15,7 +15,7 @@ std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & image,
 
   try {
     CamParam.resize(Size(height,width));
-    // Mat rawImage = Mat(height,width, CV_8UC3, raw_image_data.data());
+    Mat image = Mat(height,width, CV_8UC3, raw_image_data.data());
     // Mat image = Mat(rawImage.rows, rawImage.cols, CV_8UC3);
     // int from_to[] = { 0,2, 1,1, 2,0};
     // mixChannels(&rawImage, 1, &image, 1, from_to, 3);
