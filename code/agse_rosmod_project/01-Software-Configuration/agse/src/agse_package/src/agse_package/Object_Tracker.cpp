@@ -14,7 +14,27 @@ Object_Tracker::Object_Tracker(){
 	max_objects = 50;
 	min_area = 20*20;
 	max_area = 640*480;
+        object_angle = 0.0;
 }
+
+// Getters
+float Object_Tracker::get_object_angle(){
+        return object_angle;
+}
+
+// Setters
+int Object_Tracker::set_min_area(int this_area){
+        min_area = this_area;
+}
+
+int Object_Tracker::set_max_area(int this_area){
+        max_area = this_area;
+}
+
+int Object_Tracker::set_max_objects(int this_number){
+        max_objects = this_number;
+}
+
 
 // Helper Function INT to STRING
 string intToString(int number){
@@ -87,7 +107,9 @@ Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
 	// Approximate contour to polygons + get bounding rects and circles
 	vector<vector<Point> > contours_poly(contours.size());
 	vector<Rect> boundRect(contours.size());
+        // CALCULATE OBJECT_ANGLE HERE
 	vector<Point2f> center(contours.size());
+        object_center = center
 	vector<float> radius(contours.size());
 
 	for(int i = 0; i < contours.size(); i++){
@@ -108,3 +130,4 @@ Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
 	}
 	return tracker_output;
 }
+
