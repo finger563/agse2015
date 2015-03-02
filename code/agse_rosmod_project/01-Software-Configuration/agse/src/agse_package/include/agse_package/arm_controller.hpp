@@ -79,7 +79,47 @@ class arm_controller : public Component
 	ros::ServiceClient gripperPos_client;
 
         //# Start User Private Variables Marker
+  bool paused;
+  
+  enum ArmState
+    {
+      INIT,
+      FINDING_PB,
+      OPENING_PB,
+      FINDING_SAMPLE,
+      GRABBING_SAMPLE,
+      CARRYING_SAMPLE,
+      INSERTING_SAMPLE,
+      CLOSING_PB,
+      MOVING_AWAY
+    };
 
+  void UpdateSensorData();
+  void UpdateArmPosition();
+
+  ArmState currentState;
+
+  void Init_StateFunc();
+  void Finding_PB_StateFunc();
+  void Opening_PB_StateFunc();
+  void Finding_Sample_StateFunc();
+  void Grabbing_Sample_StateFunc();
+  void Carrying_Sample_StateFunc();
+  void Inserting_Sample_StateFunc();
+  void Closing_PB_StateFunc();
+  void Moving_Away_StateFunc();
+  
+  float currentRadialPos;
+  float currentVerticalPos;
+  float currentArmRotation;
+  float currentGripperRotation;
+  float currentGripperPos;
+
+  float goalRadialPos;
+  float goalVerticalPos;
+  float goalArmRotation;
+  float goalGripperRotation;
+  float goalGripperPos;
         //# End User Private Variables Marker
 };
 
