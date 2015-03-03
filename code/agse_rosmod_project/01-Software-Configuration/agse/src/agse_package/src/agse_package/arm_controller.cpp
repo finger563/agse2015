@@ -232,6 +232,7 @@ arm_controller::~arm_controller()
     gripperRotation_client.shutdown();
     verticalPos_client.shutdown();
     gripperPos_client.shutdown();
+    payloadBayStateFromImage_client.shutdown();
 //# Start Destructor Marker
 
 //# End Destructor Marker
@@ -272,6 +273,9 @@ void arm_controller::startUp()
     // client: gripperPos_client
     this->gripperPos_client = nh.serviceClient<agse_package::gripperPos>
 	("gripperPos"); 
+    // client: payloadBayStateFromImage_client
+    this->payloadBayStateFromImage_client = nh.serviceClient<agse_package::payloadBayStateFromImage>
+	("payloadBayStateFromImage"); 
 
     // Create Init Timer
     ros::TimerOptions timer_options;

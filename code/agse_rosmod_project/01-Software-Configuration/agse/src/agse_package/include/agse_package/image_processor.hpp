@@ -14,6 +14,7 @@
 #include "agse_package/controlInputs.h"
 #include "agse_package/captureImage.h"
 #include "agse_package/sampleStateFromImage.h"
+#include "agse_package/payloadBayStateFromImage.h"
 
 //# Start User Globals Marker
 
@@ -37,6 +38,10 @@ class image_processor : public Component
 	// Component Service Callback
 	bool sampleStateFromImageCallback(agse_package::sampleStateFromImage::Request &req,
 		agse_package::sampleStateFromImage::Response &res);
+
+	// Component Service Callback
+	bool payloadBayStateFromImageCallback(agse_package::payloadBayStateFromImage::Request &req,
+		agse_package::payloadBayStateFromImage::Response &res);
 
 
 	// Callback for imageTimer timer
@@ -63,6 +68,9 @@ class image_processor : public Component
 
 	// ROS Service Server - sampleStateFromImage_server
 	ros::ServiceServer sampleStateFromImage_server;
+
+	// ROS Service Server - payloadBayStateFromImage_server
+	ros::ServiceServer payloadBayStateFromImage_server;
 
 
 	// ROS Service Client - captureImage_client

@@ -18,6 +18,7 @@
 #include "agse_package/gripperRotation.h"
 #include "agse_package/verticalPos.h"
 #include "agse_package/gripperPos.h"
+#include "agse_package/payloadBayStateFromImage.h"
 
 //# Start User Globals Marker
 
@@ -77,6 +78,9 @@ class arm_controller : public Component
 
 	// ROS Service Client - gripperPos_client
 	ros::ServiceClient gripperPos_client;
+
+	// ROS Service Client - payloadBayStateFromImage_client
+	ros::ServiceClient payloadBayStateFromImage_client;
 
         //# Start User Private Variables Marker
   bool paused;

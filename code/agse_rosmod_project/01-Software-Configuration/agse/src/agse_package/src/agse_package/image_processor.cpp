@@ -37,6 +37,16 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
     // Business Logic for sampleStateFromImage_server Server providing sampleStateFromImage Service
 }
 //# End sampleStateFromImageCallback Marker
+// Component Service Callback
+//# Start payloadBayStateFromImageCallback Marker
+bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayStateFromImage::Request  &req,
+    agse_package::payloadBayStateFromImage::Response &res)
+{
+    // Business Logic for payloadBayStateFromImage_server Server providing payloadBayStateFromImage Service
+
+    return true;
+}
+//# End payloadBayStateFromImageCallback Marker
 
 // Callback for imageTimer timer
 //# Start imageTimerCallback Marker
@@ -70,6 +80,7 @@ image_processor::~image_processor()
     imageTimer.stop();
     controlInputs_sub.shutdown();
     sampleStateFromImage_server.shutdown();
+    payloadBayStateFromImage_server.shutdown();
     captureImage_client.shutdown();
 //# Start Destructor Marker
 
@@ -102,6 +113,15 @@ void image_processor::startUp()
 	     ros::VoidPtr(),
              &this->compQueue);
     this->sampleStateFromImage_server = nh.advertiseService(sampleStateFromImage_server_options);
+    // server: payloadBayStateFromImage_server
+    ros::AdvertiseServiceOptions payloadBayStateFromImage_server_options;
+    payloadBayStateFromImage_server_options = 
+	ros::AdvertiseServiceOptions::create<agse_package::payloadBayStateFromImage>
+	    ("payloadBayStateFromImage",
+             boost::bind(&image_processor::payloadBayStateFromImageCallback, this, _1, _2),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->payloadBayStateFromImage_server = nh.advertiseService(payloadBayStateFromImage_server_options);
  
     // Configure all required services associated with this component
     // client: captureImage_client

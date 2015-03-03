@@ -70,6 +70,12 @@ add_message_files(
 
   controlInputs.msg
 
+  payloadBayState.msg
+
+  payloadBayPosition.msg
+
+  payloadBayOrientation.msg
+
 )
 
 # Generate services in the 'srv' folder
@@ -88,6 +94,8 @@ add_service_files(
   gripperRotation.srv
 
   captureImage.srv
+
+  payloadBayStateFromImage.srv
 
 )
 
@@ -252,7 +260,7 @@ add_executable( imager src/agse_package/imager_main.cpp src/agse_package/Compone
               )
 target_link_libraries(imager 
                       ## Start imager Target Link Libraries Marker
-                      v4l2
+		      v4l2
                       ## End imager Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(imager agse_package_generate_messages_cpp)
@@ -265,14 +273,14 @@ add_executable( detector src/agse_package/detector_main.cpp src/agse_package/Com
               )
 target_link_libraries(detector 
                       ## Start detector Target Link Libraries Marker
-		      opencv_core 
-		      opencv_imgproc 
-		      opencv_highgui 
-		      opencv_contrib
-		      opencv_legacy
-		      opencv_photo
-		      opencv_video
-		      opencv_videostab
+                      opencv_core 
+                      opencv_imgproc 
+                      opencv_highgui 
+                      opencv_contrib
+                      opencv_legacy
+                      opencv_photo
+                      opencv_video
+                      opencv_videostab
                       ## End detector Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(detector agse_package_generate_messages_cpp)

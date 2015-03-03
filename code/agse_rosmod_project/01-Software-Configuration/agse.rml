@@ -34,6 +34,23 @@ package agse_package
             bool start;
             bool stop;
         } 
+        // ROS msg - payloadBayState
+        msg payloadBayState
+        {
+        } 
+        // ROS msg - payloadBayPosition
+        msg payloadBayPosition
+        {
+            float64 r;
+            float64 theta;
+            float64 z;
+        } 
+        // ROS msg - payloadBayOrientation
+        msg payloadBayOrientation
+        {
+            float64 theta;
+            float64 phi;
+        } 
     }
 
     // Set of ROS Services
@@ -136,6 +153,19 @@ package agse_package
                 int16 height;
             }
         }
+        // ROS srv - payloadBayStateFromImage
+        srv payloadBayStateFromImage
+        {
+            request
+            {
+            }
+
+            response
+            {
+                bool foundPayloadBay;
+                agse_package/payloadBayState payloadBay;
+            }
+        }
     }
 
     // Set of ROS Components
@@ -170,6 +200,7 @@ package agse_package
 	    requires gripperRotation;
 	    requires verticalPos;
 	    requires gripperPos;
+	    requires payloadBayStateFromImage;
      	    subscriber<controlInputs> controlInputs_sub;
 	    timer armTimer
 	    {
@@ -180,6 +211,7 @@ package agse_package
 	component image_processor
 	{
             provides sampleStateFromImage;
+            provides payloadBayStateFromImage;
 	    requires captureImage;
      	    subscriber<controlInputs> controlInputs_sub;
 	    timer imageTimer
