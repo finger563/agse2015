@@ -37,6 +37,8 @@ package agse_package
         // ROS msg - payloadBayState
         msg payloadBayState
         {
+            agse_package/payloadBayPosition pos;
+            agse_package/payloadBayOrientation orientation;
         } 
         // ROS msg - payloadBayPosition
         msg payloadBayPosition
