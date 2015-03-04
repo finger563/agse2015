@@ -23,15 +23,15 @@ float Object_Tracker::get_object_angle(){
 }
 
 // Setters
-int Object_Tracker::set_min_area(int this_area){
+void Object_Tracker::set_min_area(int this_area){
         min_area = this_area;
 }
 
-int Object_Tracker::set_max_area(int this_area){
+void Object_Tracker::set_max_area(int this_area){
         max_area = this_area;
 }
 
-int Object_Tracker::set_max_objects(int this_number){
+void Object_Tracker::set_max_objects(int this_number){
         max_objects = this_number;
 }
 
@@ -109,7 +109,7 @@ Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
 	vector<Rect> boundRect(contours.size());
         // CALCULATE OBJECT_ANGLE HERE
 	vector<Point2f> center(contours.size());
-        object_center = center
+        object_center = center;
 	vector<float> radius(contours.size());
 
 	for(int i = 0; i < contours.size(); i++){

@@ -269,6 +269,17 @@ add_executable( detector src/agse_package/detector_main.cpp src/agse_package/Com
 		## Start detector CPP Marker
 		src/agse_package/Image_Processor_Library.cpp
 		src/agse_package/Object_Tracker.cpp
+		src/aruco/ar_omp.cpp
+		src/aruco/arucofidmarkers.cpp
+		src/aruco/board.cpp
+		src/aruco/boarddetector.cpp
+		src/aruco/cameraparameters.cpp
+		src/aruco/chromaticmask.cpp
+		src/aruco/cvdrawingutils.cpp
+		src/aruco/highlyreliablemarkers.cpp
+		src/aruco/marker.cpp
+		src/aruco/markerdetector.cpp
+		src/aruco/subpixelcorner.cpp
                 ## End detector CPP Marker
               )
 target_link_libraries(detector 
@@ -281,6 +292,8 @@ target_link_libraries(detector
                       opencv_photo
                       opencv_video
                       opencv_videostab
+		      opencv_calib3d
+		      opencv_ml
                       ## End detector Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(detector agse_package_generate_messages_cpp)
