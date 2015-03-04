@@ -69,18 +69,66 @@ void arm_controller::UpdateArmPosition()
   currentGripperPos = gPos.response.current;
 }
 
+bool arm_controller::CheckGoals()
+{
+  if ( abs(goalRadialPos - currentRadialPos) > radialEpsilon )
+    return false;
+  if ( abs(goalVerticalPos - currentVerticalPos) > verticalEpsilon )
+    return false;
+  if ( abs(goalArmRotation - currentArmRotation) > armRotationEpsilon )
+    return false;
+  if ( abs(goalGripperRotation - currentGripperRotation) > gripperRotationEpsilon )
+    return false;
+  if ( abs(goalGripperPos - currentGripperPos) > gripperPosEpsilon )
+    return false;
+  return true;
+}
+
 void arm_controller::Init_StateFunc()
 {
   // Whatever should be here, not quite sure if this is needed.
+  // perhaps do calibration (hit limit switches) of linear actuators
+  currentState = FINDING_PB;
 }
 
 void arm_controller::Finding_PB_StateFunc()
 {
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
+  static float initRadialPos       = 1.0f;
+  static float initVerticalPos     = 1.0f;
+  static float initArmRotation     = 1.0f;
+  static float initGripperRotation = 1.0f;
+  static float initGripperPos      = 1.0f;
+
+  static float maxSearchTime = 300.0f; // seconds we are allowed to search
+
+  static float armRotationStep = 30.0f; // degrees between steps of the state search
+
+  static float centerPayloadBayPositionRadius = 10.0f; // once center of PB is in this radius, we are done
+  
+  static bool foundPB = false;
+  static agse_package::payloadBayState internalPBState; // used within this state; global state set when done
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+
+  // starting with:
+  // * possibly calibration data, but that's it.
+
+  // State logic:
+  // go to max height & median radius & 0 degrees
+  // while !foundPB and internalPBState.pos.{r,z} not within radius
+  //   get image Processor result
+  //   if result has no detection:
+  //     if never found PB:
+  //       increment arm rotation by arm rotation step
+  //     else if found previously:
+  //       go half way between previous find location and current location
+  //   else if result has detection:
+  //     move to detected position (i.e. set goals to detected position)
+  // once done with while, set component's PBState and currentState
+  // transition to next state (OPENING_PB)
 }
 
 void arm_controller::Opening_PB_StateFunc()
@@ -90,15 +138,55 @@ void arm_controller::Opening_PB_StateFunc()
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+
+  // starting with:
+  // * known PB position
+  // * directly above PB
+
+  // State logic:
+  // send the command to the PB through UART to open the PB,
+  // OPTIONAL : use image based detection to confirm PB opens
+  // transition to next state (FINDING_SAMPLE) if PB responds well
 }
 
 void arm_controller::Finding_Sample_StateFunc()
 {
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
+  static float initRadialPos       = 1.0f;
+  static float initVerticalPos     = 1.0f;
+  static float initArmRotation     = 1.0f;
+  static float initGripperRotation = 1.0f;
+  static float initGripperPos      = 1.0f;
+
+  static float maxSearchTime = 300.0f; // seconds we are allowed to search
+
+  static float armRotationStep = 30.0f; // degrees between steps of the state search
+
+  static float centerSamplePositionRadius = 10.0f; // once center of sample is in this radius, we are done
+  
+  static bool foundSample = false;
+  static agse_package::sampleState internalSampleState; // used within this state; global state set when done
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+
+  // starting with:
+  // * known payload bay position and orientation (not relevant to this state)
+
+  // State logic:
+  // go to max height & median radius & 0 degrees
+  // while !foundSample and internalSampleState.pos.{r,z} not within radius
+  //   get image Processor result
+  //   if result has no detection:
+  //     if never found sample:
+  //       increment arm rotation by arm rotation step
+  //     else if found previously:
+  //       go half way between previous find location and current location
+  //   else if result has detection:
+  //     move to detected position (i.e. set goals to detected position)
+  // once done with while, set component's sampleState and currentState
+  // transition to next state (GRABBING_SAMPLE)
 }
 
 void arm_controller::Grabbing_Sample_StateFunc()
@@ -108,6 +196,17 @@ void arm_controller::Grabbing_Sample_StateFunc()
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+
+  // starting with:
+  // * known sample position
+  // * directly above sample
+
+  // State logic:
+  // Orient gripper to sample (based on sample.orientation.theta)
+  // Go down to proper Z level for the sample (HOW DO WE DETERMINE THIS)
+  // close gripper
+  // move up some amount
+  // transition to next state (CARRYING_SAMPLE)
 }
 
 void arm_controller::Carrying_Sample_StateFunc()
@@ -117,6 +216,17 @@ void arm_controller::Carrying_Sample_StateFunc()
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+
+  // starting with:
+  // * already have the sample
+  // * already know the position & orientation of the PB
+
+  // State Logic:
+  // move up to max height (to not hit anything when rotating
+  // move R,Theta to payloadBay's R,Theta
+  // change gripper rotation to payloadBay's orientation (payloadBay.orientation.theta)
+  // move down in Z to proper height for PB (HOW DO WE DETERMINE THIS? FROM MARKERS?)
+  // transition to next state (INSERTING_SAMPLE)
 }
 
 void arm_controller::Inserting_Sample_StateFunc()
@@ -126,6 +236,14 @@ void arm_controller::Inserting_Sample_StateFunc()
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+
+  // starting with:
+  // * payload is in gripper
+  // * directly above PB at appropriate height and orientation
+
+  // State Logic:
+  // Open Gripper (set gripper pos to open pos)
+  // transition to next state (CLOSING_PB)
 }
 
 void arm_controller::Closing_PB_StateFunc()
@@ -135,6 +253,16 @@ void arm_controller::Closing_PB_StateFunc()
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+
+  // starting with:
+  // * sample is in PB
+  // * directly above PB
+
+  // State logic:
+  // move up some amount (to max height)
+  // send the command to the PB through UART to close the PB,
+  // OPTIONAL : use image based detection to confirm PB closes
+  // transition to next state (MOVING_AWAY) if PB responds well
 }
 
 void arm_controller::Moving_Away_StateFunc()
@@ -144,6 +272,15 @@ void arm_controller::Moving_Away_StateFunc()
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+
+  // starting with:
+  // * sample is in PB
+  // * PB is closed
+  // * directly above PB at max height
+
+  // State logic:
+  // determine safe zone for arm (based on PB position)
+  // move to safe zone
 }
 
 //# End User Globals Marker
@@ -158,7 +295,49 @@ void arm_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
   paused = true;
+
   currentState = INIT;
+
+  // need to properly initialize the current sensor readings
+  currentRadialPos        = -1.0f;
+  currentVerticalPos      = -1.0f;
+  currentArmRotation      = -1.0f;
+  currentGripperRotation  = -1.0f;
+  currentGripperPos       = -1.0f;
+
+  // need to properly initialize the current actuator goals
+  goalRadialPos        = -1.0f;
+  goalVerticalPos      = -1.0f;
+  goalArmRotation      = -1.0f;
+  goalGripperRotation  = -1.0f;
+  goalGripperPos       = -1.0f;
+
+  // need to properly initialize the sample and payloadBay
+  sample.pos.r     = -1.0f;
+  sample.pos.theta = -1.0f;
+  sample.pos.z     = -1.0f;
+  sample.orientation.theta = -1.0f;
+  sample.orientation.phi   = -1.0f;
+
+  payloadBay.pos.r     = -1.0f;
+  payloadBay.pos.theta = -1.0f;
+  payloadBay.pos.z     = -1.0f;
+  payloadBay.orientation.theta = -1.0f;
+  payloadBay.orientation.phi   = -1.0f;
+
+  // need to initialize the epsilons for the goal/current feedback loops
+  radialEpsilon          = -1.0f;
+  verticalEpsilon        = -1.0f;
+  armRotationEpsilon     = -1.0f;
+  gripperRotationEpsilon = -1.0f;
+  gripperPosEpsilon      = -1.0f;
+  // need to initialize the offsets with measurements from the system
+  radialOffset          = -1.0f;
+  verticalOffset        = -1.0f;
+  armRotationOffset     = -1.0f;
+  gripperRotationOffset = -1.0f;
+  gripperPosOffset      = -1.0f;
+
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -182,6 +361,9 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
   if (!paused)
     {
       UpdateSensorData();
+      // If we haven't gotten where the state said we should go, return
+      if ( !CheckGoals() )
+	return;
       switch (currentState)
 	{
 	case INIT:
@@ -210,6 +392,8 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
 	  break;
 	case MOVING_AWAY:
 	  Moving_Away_StateFunc();
+	  break;
+	default:
 	  break;
 	}
       UpdateArmPosition();
