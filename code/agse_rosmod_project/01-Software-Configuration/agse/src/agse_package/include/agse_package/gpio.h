@@ -42,6 +42,7 @@
  ****************************************************************/
 
 #define SYSFS_GPIO_DIR "/sys/class/gpio"
+#define SYSFS_ADC_DIR "/sys/bus/iio/devices/iio:device0"
 #define POLL_TIMEOUT (3 * 1000) /* 3 seconds */
 #define MAX_BUF 64
 
@@ -56,7 +57,7 @@ enum PIN_VALUE{
 };
 
 /****************************************************************
- * gpio_export
+ * GPIO RELATED FUNCTIONS (DIGITAL)
  ****************************************************************/
 int gpio_export(unsigned int gpio);
 int gpio_unexport(unsigned int gpio);
@@ -66,5 +67,12 @@ int gpio_get_value(unsigned int gpio, unsigned int *value);
 int gpio_set_edge(unsigned int gpio, char *edge);
 int gpio_fd_open(unsigned int gpio);
 int gpio_fd_close(int fd);
+
+/****************************************************************
+ * ADC RELATED FUNCTIONS (ANALOG)
+ ****************************************************************/
+int adc_get_value(unsigned int adc, unsigned int *value);
+int adc_fd_open(unsigned int adc);
+int adc_fd_close(int fd);
 
 #endif /* SIMPLEGPIO_H_ */

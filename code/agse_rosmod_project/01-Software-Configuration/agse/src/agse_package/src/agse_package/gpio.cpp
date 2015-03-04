@@ -212,3 +212,63 @@ int gpio_fd_close(int fd)
 {
 	return close(fd);
 }
+
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+// 
+//            ANALOG INPUT RELATED FUNCTIONS:
+// 
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+
+/****************************************************************
+ * adc_get_value
+ ****************************************************************/
+int adc_get_value(unsigned int adc, unsigned int *value)
+{
+	int fd;
+	char buf[MAX_BUF];
+	char retChars[5];
+
+	snprintf(buf, sizeof(buf), SYSFS_ADC_DIR "/in_voltage%d_raw", adc);
+
+	fd = open(buf, O_RDONLY);
+	if (fd < 0) {
+		perror("adc/get-value");
+		return fd;
+	}
+
+	read(fd, retChars, 6);
+
+	*value = strtol(retChars,NULL,0);
+
+	close(fd);
+	return 0;
+}
+
+/****************************************************************
+ * adc_fd_open
+ ****************************************************************/
+
+int adc_fd_open(unsigned int adc)
+{
+	int fd;
+	char buf[MAX_BUF];
+
+	snprintf(buf, sizeof(buf), SYSFS_ADC_DIR "/in_voltage%d_raw", adc);
+
+	fd = open(buf, O_RDONLY | O_NONBLOCK );
+	if (fd < 0) {
+		perror("adc/fd_open");
+	}
+	return fd;
+}
+
+/****************************************************************
+ * adc_fd_close
+ ****************************************************************/
+
+int adc_fd_close(int fd)
+{
+	return close(fd);
+}

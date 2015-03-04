@@ -19,6 +19,11 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   epsilon = 5;
   motorForwardPin = 88;     // connected to GPIO2_24
   motorBackwardPin = 89;    // connected to GPIO2_25
+  
+  int adc=0;
+  unsigned int adcVal = 0;
+  adc_get_value(adc,&adcVal);
+  ROS_INFO("Got ADC %d value : %d",adc,adcVal);
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);
