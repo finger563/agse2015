@@ -5,7 +5,7 @@
  * Date: 2014.11.26
  */
 
-#include "agse_package/Image_Processor.h"
+#include "agse_package/Object_Tracker.h"
 
 RNG rng(12345);
 

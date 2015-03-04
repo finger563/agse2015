@@ -5,6 +5,9 @@
  * Date: 2014.11.26
  */
 
+#include "opencv/cv.h"
+#include "opencv/highgui.h"
+
 using namespace cv;
 
 class Object_Tracker{

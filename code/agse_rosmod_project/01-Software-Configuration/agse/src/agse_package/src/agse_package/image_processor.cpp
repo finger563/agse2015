@@ -15,7 +15,8 @@ void image_processor::Init(const ros::TimerEvent& event)
     // Initialize 
   // initialize both the sample detector code
   // and the payload bay (marker) detector code
-    imgproc_instance.init();
+    sampleDetector.init();
+    payloadBayDetector.init( 1.0f, "camera.yml");
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -45,12 +46,8 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 		 arg.response.width,
 		 arg.response.height,
 		 arg.response.imgVector.size());
-	// FILE *file = fopen("tmp.ppm","wb");
-	// fprintf(file, "P6\n%d %d 255\n",arg.response.width, arg.response.height);
-	// fwrite(arg.response.imgVector.data(),arg.response.imgVector.size(),1,file);
-	// fclose(file);
 	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
-	imgproc_instance.run(arg.response.imgVector); 
+	sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
 	// NEED TO SET REAL RESPONSE HERE
 	res.foundSample = false;
 	res.sample.pos.r     = 0.0f;
@@ -82,7 +79,8 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 		 arg.response.height,
 		 arg.response.imgVector.size());
 	// NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
-	imgproc_instance.run(arg.response.imgVector); 
+	std::vector<aruco::Marker> markers = 
+	  payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
 	// NEED TO SET REAL RESPONSE HERE
 	res.foundPayloadBay = false;
 	res.payloadBay.pos.r     = 0.0f;

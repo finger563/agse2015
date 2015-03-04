@@ -5,7 +5,7 @@
  * Date: 2014.11.26
  */
 
-#include "agse_package/Image_Processor.h"
+#include "agse_package/sample_detector.hpp"
 
 // Filter Global Variables
 int hue_min = 0;
@@ -18,7 +18,7 @@ int value_max = 255;
 // Global callback function for sliders
 void slider_update(int, void*){}
 
-void Image_Processor::create_filter_knobs_slider(){
+void Sample_Detector::create_filter_knobs_slider(){
   namedWindow("Filter Knobs", 0);    
   createTrackbar( "Hue_MIN", "Filter Knobs", &hue_min, hue_max, slider_update);
   createTrackbar( "Hue_MAX", "Filter Knobs", &hue_max, hue_max, slider_update);
@@ -29,7 +29,7 @@ void Image_Processor::create_filter_knobs_slider(){
 }
 
 // Setup Webcam Feed
-void Image_Processor::setup_webcam_feed(int cam_id){
+void Sample_Detector::setup_webcam_feed(int cam_id){
   // Start up webcam
   webcam.open(cam_id);
 
@@ -39,7 +39,7 @@ void Image_Processor::setup_webcam_feed(int cam_id){
 }
 
 // Show Output Windows
-void Image_Processor::show_windows(){
+void Sample_Detector::show_windows(){
   imshow("Webcam", webcam_feed);
   imshow("HSV", HSV);
   imshow("Filter", filtered_output);
@@ -47,7 +47,7 @@ void Image_Processor::show_windows(){
 }
 
 // Check for User Input
-void Image_Processor::handle_user_input(){
+void Sample_Detector::handle_user_input(){
   // Briefly wait for key press
   key_press = cvWaitKey(20);
 
@@ -57,30 +57,21 @@ void Image_Processor::handle_user_input(){
 }
 
 // Main Initialize Function
-void Image_Processor::init(){
+void Sample_Detector::init(){
   setup_webcam_feed(0);
   create_filter_knobs_slider();
 }
 
 // Main Real-Time Loop
-void Image_Processor::run(std::vector<unsigned char> & camera_image){
-  
-  // Obtain Webcam Feed
-  // webcam.read(webcam_feed);
-
-  // std::cout << "Before Imread" << std::endl;
-  //  std::cout << "Filename: " << fname << std::endl;
-  
+void Sample_Detector::run(std::vector<unsigned char> & camera_image, 
+			  int widht, 
+			  int height,
+			  const char* fname)
+{
   Mat image_rgb = Mat(480, 640, CV_8UC3, camera_image.data());
   Mat image = Mat(image_rgb.rows, image_rgb.cols, CV_8UC3);
   int from_to[] = {0, 2, 1, 1, 2, 0};
   mixChannels(&image_rgb, 1, &image, 1, from_to, 3);
-  imwrite("whatever.jpg", image);
-  // Mat image = imread(fname);
-
-  // std::cout << "After Imread" << std::endl;
- 
-  
 
   std::cout << "Before BGR to HSV Translation" << std::endl;
 
@@ -101,6 +92,17 @@ void Image_Processor::run(std::vector<unsigned char> & camera_image){
   // Track Object
   tracker_output = object_tracker.track(image, filtered_output);
 	
+  int nameLen = 0;
+  if ( (nameLen = strlen(fname)) > 0 )
+    {
+      char rawName[nameLen + 10];
+      char filteredName[nameLen + 20];
+      sprintf(rawName,"%s.png",fname);
+      sprintf(filteredName,"%s_filtered.png",fname);
+      cv::imwrite(rawName,image);
+      cv::imwrite(filteredName, filtered_output);
+    }
+
   // Show all output windows
   // show_windows();
 	

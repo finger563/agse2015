@@ -267,7 +267,9 @@ add_dependencies(imager agse_package_generate_messages_cpp)
 add_executable( detector src/agse_package/detector_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/image_processor.cpp  
 		## Start detector CPP Marker
-		src/agse_package/Image_Processor_Library.cpp
+		src/agse_package/sample_detector.cpp
+		src/agse_package/payloadbay_detector.cpp
+		# everything below here is required by either sample detector or PB detector
 		src/agse_package/Object_Tracker.cpp
 		src/aruco/ar_omp.cpp
 		src/aruco/arucofidmarkers.cpp

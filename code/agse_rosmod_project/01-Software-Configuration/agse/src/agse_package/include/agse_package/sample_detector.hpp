@@ -5,6 +5,9 @@
  * Date: 2014.11.26
  */
 
+#ifndef SAMPLE_DETECTOR_H
+#define SAMPLE_DETGECTOR_H
+
 #include <stdio.h>
 #include <sstream>
 #include <string>
@@ -17,7 +20,7 @@
 
 using namespace cv;
 
-class Image_Processor{
+class Sample_Detector {
 
 public:
 	// Setup Webcam feed variable
@@ -36,7 +39,7 @@ public:
 	void init();
 
 	// Main Real-Time Loop
-	void run(std::vector<unsigned char> & camera_image);
+        void run(std::vector<unsigned char> & camera_image, int width, int height, const char* fname = "");
 
 private:
 	// Webcam feed
@@ -61,3 +64,5 @@ private:
 	char key_press;
 	bool quit;
 };
+
+#endif

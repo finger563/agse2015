@@ -8,7 +8,8 @@
 //      USER INCLUDES GO HERE
 // --------------------------------
 //# Start User Includes Marker
-#include "agse_package/Image_Processor.h"
+#include "agse_package/sample_detector.hpp"
+#include "agse_package/payloadbay_detector.hpp"
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
@@ -70,7 +71,8 @@ class image_processor : public Component
 
         //# Start User Private Variables Marker
   bool paused;
-  Image_Processor imgproc_instance;
+  Sample_Detector sampleDetector;
+  PayloadBay_Detector payloadBayDetector;
         //# End User Private Variables Marker
 };
 
