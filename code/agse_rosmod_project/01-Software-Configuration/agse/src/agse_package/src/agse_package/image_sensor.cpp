@@ -176,52 +176,52 @@ bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &re
 // Destructor - required for clean shutdown when process is killed
 image_sensor::~image_sensor()
 {
-  controlInputs_sub.shutdown();
-  captureImage_server.shutdown();
-  //# Start Destructor Marker
+    controlInputs_sub.shutdown();
+    captureImage_server.shutdown();
+//# Start Destructor Marker
   type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   xioctl(fd, VIDIOC_STREAMOFF, &type);
   for (i = 0; i < n_buffers; ++i)
     v4l2_munmap(buffers[i].start, buffers[i].length);
   v4l2_close(fd);
-  //# End Destructor Marker
+//# End Destructor Marker
 }
 
 void image_sensor::startUp()
 {
-  ros::NodeHandle nh;
+    ros::NodeHandle nh;
 
-  // Configure all subscribers associated with this component
-  // subscriber: controlInputs_sub
-  ros::SubscribeOptions controlInputs_sub_options;
-  controlInputs_sub_options = 
-    ros::SubscribeOptions::create<agse_package::controlInputs>
-    ("controlInputs",
-     1000,
-     boost::bind(&image_sensor::controlInputs_sub_OnOneData, this, _1),
-     ros::VoidPtr(),
-     &this->compQueue);
-  this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
+    // Configure all subscribers associated with this component
+    // subscriber: controlInputs_sub
+    ros::SubscribeOptions controlInputs_sub_options;
+    controlInputs_sub_options = 
+	ros::SubscribeOptions::create<agse_package::controlInputs>
+	    ("controlInputs",
+	     1000,
+	     boost::bind(&image_sensor::controlInputs_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
 
-  // Configure all provided services associated with this component
-  // server: captureImage_server
-  ros::AdvertiseServiceOptions captureImage_server_options;
-  captureImage_server_options = 
-    ros::AdvertiseServiceOptions::create<agse_package::captureImage>
-    ("captureImage",
-     boost::bind(&image_sensor::captureImageCallback, this, _1, _2),
-     ros::VoidPtr(),
-     &this->compQueue);
-  this->captureImage_server = nh.advertiseService(captureImage_server_options);
+    // Configure all provided services associated with this component
+    // server: captureImage_server
+    ros::AdvertiseServiceOptions captureImage_server_options;
+    captureImage_server_options = 
+	ros::AdvertiseServiceOptions::create<agse_package::captureImage>
+	    ("captureImage",
+             boost::bind(&image_sensor::captureImageCallback, this, _1, _2),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->captureImage_server = nh.advertiseService(captureImage_server_options);
  
-  // Create Init Timer
-  ros::TimerOptions timer_options;
-  timer_options = 
-    ros::TimerOptions
-    (ros::Duration(-1),
-     boost::bind(&image_sensor::Init, this, _1),
-     &this->compQueue,
-     true);
-  this->initOneShotTimer = nh.createTimer(timer_options);  
+    // Create Init Timer
+    ros::TimerOptions timer_options;
+    timer_options = 
+	ros::TimerOptions
+	    (ros::Duration(-1),
+	     boost::bind(&image_sensor::Init, this, _1),
+	     &this->compQueue,
+             true);
+    this->initOneShotTimer = nh.createTimer(timer_options);  
   
 }
