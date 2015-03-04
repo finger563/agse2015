@@ -74,6 +74,7 @@ class image_sensor : public Component
         //# Start User Private Variables Marker
         bool paused;
         char videoDevice[50];
+        int videoFD;
         int width;
         int height;
         //# End User Private Variables Marker
