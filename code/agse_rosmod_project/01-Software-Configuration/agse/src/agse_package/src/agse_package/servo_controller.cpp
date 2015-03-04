@@ -91,7 +91,7 @@ bool servo_controller::gripperRotationCallback(agse_package::gripperRotation::Re
 void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for servoTimer 
-  if (paused) {
+  if (!paused) {
 
     armRotationGoal = Dynamixel::posToAngle( rand() % 1023 );
     gripperRotationGoal = Dynamixel::posToAngle( rand() % 1023 );

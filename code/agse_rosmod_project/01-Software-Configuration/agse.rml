@@ -216,10 +216,6 @@ package agse_package
             provides payloadBayStateFromImage;
 	    requires captureImage;
      	    subscriber<controlInputs> controlInputs_sub;
-	    timer imageTimer
-	    {
-	        period = 0.04s;
-	    }
 	}
         // ROS Component - user_input_controller
 	component user_input_controller

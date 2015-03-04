@@ -13,6 +13,8 @@
 void image_processor::Init(const ros::TimerEvent& event)
 {
     // Initialize 
+  // initialize both the sample detector code
+  // and the payload bay (marker) detector code
     imgproc_instance.init();
     // Stop Init Timer
     initOneShotTimer.stop();
@@ -35,6 +37,34 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
     agse_package::sampleStateFromImage::Response &res)
 {
     // Business Logic for sampleStateFromImage_server Server providing sampleStateFromImage Service
+  if (!paused)
+    {
+      agse_package::captureImage arg;
+      if (this->captureImage_client.call(arg)) {
+	ROS_INFO("Image width: %d, height: %d, size: %d", 
+		 arg.response.width,
+		 arg.response.height,
+		 arg.response.imgVector.size());
+	// FILE *file = fopen("tmp.ppm","wb");
+	// fprintf(file, "P6\n%d %d 255\n",arg.response.width, arg.response.height);
+	// fwrite(arg.response.imgVector.data(),arg.response.imgVector.size(),1,file);
+	// fclose(file);
+	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
+	imgproc_instance.run(arg.response.imgVector); 
+	// NEED TO SET REAL RESPONSE HERE
+	res.foundSample = false;
+	res.sample.pos.r     = 0.0f;
+	res.sample.pos.theta = 0.0f;
+	res.sample.pos.z     = 0.0f;
+	res.sample.orientation.theta = 0.0f;
+	res.sample.orientation.phi   = 0.0f;
+	return true;
+      }
+      else {
+	ROS_INFO("ERROR: Client call failed; couldn't get image.");
+      }
+    }
+  return false;
 }
 //# End sampleStateFromImageCallback Marker
 // Component Service Callback
@@ -43,8 +73,30 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
     agse_package::payloadBayStateFromImage::Response &res)
 {
     // Business Logic for payloadBayStateFromImage_server Server providing payloadBayStateFromImage Service
-
-    return true;
+  if (!paused)
+    {
+      agse_package::captureImage arg;
+      if (this->captureImage_client.call(arg)) {
+	ROS_INFO("Image width: %d, height: %d, size: %d", 
+		 arg.response.width,
+		 arg.response.height,
+		 arg.response.imgVector.size());
+	// NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
+	imgproc_instance.run(arg.response.imgVector); 
+	// NEED TO SET REAL RESPONSE HERE
+	res.foundPayloadBay = false;
+	res.payloadBay.pos.r     = 0.0f;
+	res.payloadBay.pos.theta = 0.0f;
+	res.payloadBay.pos.z     = 0.0f;
+	res.payloadBay.orientation.theta = 0.0f;
+	res.payloadBay.orientation.phi   = 0.0f;
+	return true;
+      }
+      else {
+	ROS_INFO("ERROR: Client call failed; couldn't get image.");
+      }
+    }
+  return false;
 }
 //# End payloadBayStateFromImageCallback Marker
 
@@ -52,21 +104,7 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 //# Start imageTimerCallback Marker
 void image_processor::imageTimerCallback(const ros::TimerEvent& event)
 {
-    // Business Logic for imageTimer 
-  ROS_INFO("CALLING IMAGER SERVER");
-    agse_package::captureImage arg;
-    if (this->captureImage_client.call(arg)) {
-      ROS_INFO("Image Size: %d", arg.response.imgVector.size());
-      FILE *file = fopen("tmp.ppm","wb");
-      fprintf(file, "P6\n640 480 255\n");
-      fwrite(arg.response.imgVector.data(),arg.response.imgVector.size(),1,file);
-      // fclose(file);
-      // ROS_INFO("Obtaining new image frame!");
-      imgproc_instance.run(arg.response.imgVector); 
-    }
-    else {
-      ROS_INFO("ERROE!!~!!!@R");
-    }
+  // Business Logic for imageTimer 
 }
 //# End imageTimerCallback Marker
 
