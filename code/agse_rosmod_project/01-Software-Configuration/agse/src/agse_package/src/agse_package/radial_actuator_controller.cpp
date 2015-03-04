@@ -17,13 +17,10 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
 
   // THESE NEED TO BE UPDATED
   epsilon = 5;
-  motorForwardPin = 88;     // connected to GPIO2_24
-  motorBackwardPin = 89;    // connected to GPIO2_25
+  motorForwardPin = 88;     // connected to GPIO2_24, pin P8_28
+  motorBackwardPin = 89;    // connected to GPIO2_25, pin P8_30
   
-  int adc=0;
-  unsigned int adcVal = 0;
-  adc_get_value(adc,&adcVal);
-  ROS_INFO("Got ADC %d value : %d",adc,adcVal);
+  adcPin = 0;  // connected to ADC0, pin P9_39
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);
@@ -76,6 +73,11 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
       // read current value for radial position (encoder)
       radialCurrent = radialMotoreQEP.get_position();
       ROS_INFO("Raidal Actuator Encoder Reading: %d",radialCurrent);
+
+      unsigned int adcVal = 0;
+      adc_get_value(adcPin,&adcVal);
+      ROS_INFO("Got ADC %d value : %d",adc,adcVal);
+
       // update motor based on current value
       if ( abs(radialGoal-radialCurrent) > epsilon ) // if there's significant reason to move
 	{

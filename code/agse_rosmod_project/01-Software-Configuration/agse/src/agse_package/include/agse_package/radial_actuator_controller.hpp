@@ -78,6 +78,8 @@ class radial_actuator_controller : public Component
   unsigned int motorForwardPin;
   // pin that motor backward is connected to
   unsigned int motorBackwardPin;
+  // ADC the motor potentiometer is connected to (for the prototype)
+  int adcPin;
   // enhanced quadrature encoder pulse module for the radial actuator
   eQEP radialMotoreQEP;
   long rm_eqep_period;

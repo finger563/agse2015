@@ -17,8 +17,10 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
 
   // THESE NEED TO BE UPDATED
   epsilon = 5;
-  motorForwardPin = 86;  // connected to GPIO2_22
-  motorBackwardPin = 87; // connected to GPIO2_23
+  motorForwardPin = 86;  // connected to GPIO2_22, pin P8_27
+  motorBackwardPin = 87; // connected to GPIO2_23, pin P8_29
+  
+  adcPin = 1;  // connected to ADC1, pin P9_40
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);
@@ -71,6 +73,11 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
       // read current value for vertical position (encoder)
       verticalCurrent = verticalMotoreQEP.get_position();
       ROS_INFO("Vertical Actuator Encoder Reading: %d",verticalCurrent);
+
+      unsigned int adcVal = 0;
+      adc_get_value(adcPin,&adcVal);
+      ROS_INFO("Got ADC %d value : %d",adc,adcVal);
+
       // update motor based on current value
       if ( abs(verticalGoal-verticalCurrent) > epsilon ) // if there's significant reason to move
 	{
