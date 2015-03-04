@@ -100,8 +100,11 @@ class arm_controller : public Component
 
   void UpdateSensorData();
   void UpdateArmPosition();
+  bool CheckGoals();
 
   ArmState currentState;
+  agse_package::sampleState sample;
+  agse_package::payloadBayState payloadBay;
 
   void Init_StateFunc();
   void Finding_PB_StateFunc();
@@ -124,6 +127,18 @@ class arm_controller : public Component
   float goalArmRotation;
   float goalGripperRotation;
   float goalGripperPos;
+
+  float radialEpsilon;
+  float verticalEpsilon;
+  float armRotationEpsilon;
+  float gripperRotationEpsilon;
+  float gripperPosEpsilon;
+
+  float radialOffset;   // should be 0
+  float verticalOffset; // should be 0
+  float armRotationOffset; // difference between our 0 angle (arm frame) and servo's 0 angle
+  float gripperRotationOffset; // difference between our 0 angle (plane of radius) and servo's 0 angle
+  float gripperPosOffset; // difference between our 0 angle (open) and the servo's 0 angle
         //# End User Private Variables Marker
 };
 
