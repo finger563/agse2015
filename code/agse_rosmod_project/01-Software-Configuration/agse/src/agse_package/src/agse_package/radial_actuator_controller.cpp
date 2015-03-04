@@ -76,7 +76,7 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
 
       unsigned int adcVal = 0;
       adc_get_value(adcPin,&adcVal);
-      ROS_INFO("Got ADC %d value : %d",adc,adcVal);
+      ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
 
       // update motor based on current value
       if ( abs(radialGoal-radialCurrent) > epsilon ) // if there's significant reason to move

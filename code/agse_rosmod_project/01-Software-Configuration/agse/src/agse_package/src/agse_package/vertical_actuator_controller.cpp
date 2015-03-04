@@ -76,7 +76,7 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
 
       unsigned int adcVal = 0;
       adc_get_value(adcPin,&adcVal);
-      ROS_INFO("Got ADC %d value : %d",adc,adcVal);
+      ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
 
       // update motor based on current value
       if ( abs(verticalGoal-verticalCurrent) > epsilon ) // if there's significant reason to move
