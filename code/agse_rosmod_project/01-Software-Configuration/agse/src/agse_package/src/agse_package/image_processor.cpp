@@ -100,14 +100,6 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 }
 //# End payloadBayStateFromImageCallback Marker
 
-// Callback for imageTimer timer
-//# Start imageTimerCallback Marker
-void image_processor::imageTimerCallback(const ros::TimerEvent& event)
-{
-  // Business Logic for imageTimer 
-}
-//# End imageTimerCallback Marker
-
 // ---------------------------------------------
 // EVERYTHING BELOW HERE IS COMPLETELY GENERATED
 // ---------------------------------------------
@@ -115,7 +107,6 @@ void image_processor::imageTimerCallback(const ros::TimerEvent& event)
 // Destructor - required for clean shutdown when process is killed
 image_processor::~image_processor()
 {
-    imageTimer.stop();
     controlInputs_sub.shutdown();
     sampleStateFromImage_server.shutdown();
     payloadBayStateFromImage_server.shutdown();
@@ -176,13 +167,4 @@ void image_processor::startUp()
              true);
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
-    // Create all component timers
-    // timer: timer.properties["name"]
-    timer_options = 
-	ros::TimerOptions
-             (ros::Duration(0.04),
-	     boost::bind(&image_processor::imageTimerCallback, this, _1),
-	     &this->compQueue);
-    this->imageTimer = nh.createTimer(timer_options);
-
 }

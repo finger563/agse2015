@@ -44,10 +44,6 @@ class image_processor : public Component
 		agse_package::payloadBayStateFromImage::Response &res);
 
 
-	// Callback for imageTimer timer
-	void imageTimerCallback(const ros::TimerEvent& event);
-
-
 	// these functions' business logic will be auto-generated:
 
 	// startUp() is used to configure timers, publishers, & service providers
@@ -57,10 +53,6 @@ class image_processor : public Component
 	~image_processor();
 
     private:
-
-	// ROS Timer - imageTimer
-	ros::Timer imageTimer;
-
 
 	// ROS Subscriber - controlInputs_sub
 	ros::Subscriber controlInputs_sub; 
