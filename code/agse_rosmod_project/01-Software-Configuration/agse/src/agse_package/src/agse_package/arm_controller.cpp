@@ -71,15 +71,15 @@ void arm_controller::UpdateArmPosition()
 
 bool arm_controller::CheckGoals()
 {
-  if ( abs(goalRadialPos - currentRadialPos) > radialEpsilon )
+  if ( abs(goalRadialPos - currentRadialPos) > radialEpsilon && goalRadialPos >= 0.0f )
     return false;
-  if ( abs(goalVerticalPos - currentVerticalPos) > verticalEpsilon )
+  if ( abs(goalVerticalPos - currentVerticalPos) > verticalEpsilon && goalVerticalPos >= 0.0f  )
     return false;
-  if ( abs(goalArmRotation - currentArmRotation) > armRotationEpsilon )
+  if ( abs(goalArmRotation - currentArmRotation) > armRotationEpsilon && goalArmRotation >= 0.0f )
     return false;
-  if ( abs(goalGripperRotation - currentGripperRotation) > gripperRotationEpsilon )
+  if ( abs(goalGripperRotation - currentGripperRotation) > gripperRotationEpsilon && goalGripperRotation >= 0.0f )
     return false;
-  if ( abs(goalGripperPos - currentGripperPos) > gripperPosEpsilon )
+  if ( abs(goalGripperPos - currentGripperPos) > gripperPosEpsilon && goalGripperPos >= 0.0f )
     return false;
   return true;
 }
@@ -104,6 +104,7 @@ void arm_controller::Finding_PB_StateFunc()
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
   static float armRotationStep = 30.0f; // degrees between steps of the state search
+  static float radialPosStep = 1.0f;    // amount to move by in radius
 
   static float positionRadius = 100.0f; // once center of PB is in this radius, we are done
   
@@ -179,7 +180,21 @@ void arm_controller::Finding_PB_StateFunc()
 		{
 		  // move to detected position (i.e. set goals to detected position)
 		  // if pbY > 0 : extend radius, else if pbY < 0 retract radius
+		  if ( pbY > 0 )
+		    {
+		      initRadialPos += radialPosStep;
+		    } else
+		    {
+		      initRadialPos -= radialPosStep;
+		    }
 		  // if pbX > 0 : rotate CW, else if pbX < 0 rotate CCW
+		  if ( pbX > 0 )
+		    {
+		      initArmRotation -= armRotationStep / 2.0f;
+		    } else
+		    {
+		      initArmRotation += armRotationStep / 2.0f;
+		    }
 		}
 	    }
 	}
@@ -223,6 +238,7 @@ void arm_controller::Finding_Sample_StateFunc()
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
   static float armRotationStep = 30.0f; // degrees between steps of the state search
+  static float radialPosStep = 1.0f;    // amount to move by in radius
 
   static float positionRadius = 100.0f; // once center of sample is in this radius, we are done
   
@@ -298,7 +314,21 @@ void arm_controller::Finding_Sample_StateFunc()
 		{
 		  // move to detected position (i.e. set goals to detected position)
 		  // if sY > 0 : extend radius, else if sY < 0 retract radius
+		  if ( sY > 0 )
+		    {
+		      initRadialPos += radialPosStep;
+		    } else
+		    {
+		      initRadialPos -= radialPosStep;
+		    }
 		  // if sX > 0 : rotate CW, else if sX < 0 rotate CCW
+		  if ( sX > 0 )
+		    {
+		      initArmRotation -= armRotationStep / 2.0f;
+		    } else
+		    {
+		      initArmRotation += armRotationStep / 2.0f;
+		    }
 		}
 	    }
 	}
@@ -318,17 +348,35 @@ void arm_controller::Grabbing_Sample_StateFunc()
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+  static float sampleZPlane = minVerticalPos;
+  static bool atSample = false;
+  static bool grabbedSample = false;
 
   // starting with:
   // * known sample position
   // * directly above sample
 
   // State logic:
-  // Orient gripper to sample (based on sample.orientation.theta)
-  // Go down to proper Z level for the sample (HOW DO WE DETERMINE THIS)
-  // close gripper
-  // move up some amount
-  // transition to next state (CARRYING_SAMPLE)
+  if ( !atSample )
+    {
+      // Orient gripper to sample (based on sample.orientation.theta)
+      goalGripperRotation = sample.orientation.theta;
+      // Go down to proper Z level for the sample (HOW DO WE DETERMINE THIS)
+      goalVerticalPos = sampleZPlane;
+      atSample = true;
+    } else if ( !grabbedSample )
+    {
+      // close gripper
+      goalGripperPos = gripperPosClosed;
+      grabbedSample = true;
+    } else
+    {
+      // move up some amount
+      goalVerticalPos = maxVerticalPos;
+      // transition to next state (CARRYING_SAMPLE)
+      currentState = CARRYING_SAMPLE;
+    }
+
 }
 
 void arm_controller::Carrying_Sample_StateFunc()
@@ -338,17 +386,27 @@ void arm_controller::Carrying_Sample_StateFunc()
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
+  static bool atPayloadBay = false;
 
   // starting with:
   // * already have the sample
+  // * at max height
   // * already know the position & orientation of the PB
 
   // State Logic:
-  // move up to max height (to not hit anything when rotating
-  // move R,Theta to payloadBay's R,Theta
-  // change gripper rotation to payloadBay's orientation (payloadBay.orientation.theta)
-  // move down in Z to proper height for PB (HOW DO WE DETERMINE THIS? FROM MARKERS?)
-  // transition to next state (INSERTING_SAMPLE)
+  if ( !atPayloadBay )
+    {
+      // move R,Theta to payloadBay's R,Theta
+      goalArmRotation = payloadBay.pos.theta;
+      goalRadialPos = payloadBay.pos.r;
+      // change gripper rotation to payloadBay's orientation (payloadBay.orientation.theta)
+      goalGripperRotation = payloadBay.orientation.theta;
+    } else
+    {
+      // move down in Z to proper height for PB (HOW DO WE DETERMINE THIS? FROM MARKERS?)
+      // transition to next state (INSERTING_SAMPLE)
+      currentState = INSERTING_SAMPLE;
+    }
 }
 
 void arm_controller::Inserting_Sample_StateFunc()
@@ -365,7 +423,9 @@ void arm_controller::Inserting_Sample_StateFunc()
 
   // State Logic:
   // Open Gripper (set gripper pos to open pos)
+  goalGripperPos = gripperPosOpened;
   // transition to next state (CLOSING_PB)
+  currentState = CLOSING_PB;
 }
 
 void arm_controller::Closing_PB_StateFunc()
@@ -382,9 +442,11 @@ void arm_controller::Closing_PB_StateFunc()
 
   // State logic:
   // move up some amount (to max height)
+  goalVerticalPos = maxVerticalPos;
   // send the command to the PB through UART to close the PB,
   // OPTIONAL : use image based detection to confirm PB closes
   // transition to next state (MOVING_AWAY) if PB responds well
+  currentState = MOVING_AWAY;
 }
 
 void arm_controller::Moving_Away_StateFunc()
@@ -402,7 +464,12 @@ void arm_controller::Moving_Away_StateFunc()
 
   // State logic:
   // determine safe zone for arm (based on PB position)
+  float safeRotation;
+  safeRotation = payloadBay.pos.theta - 90.0f;
+  if ( safeRotation < minArmRotation || safeRotation > maxArmRotation )
+    safeRotation += 180.0f;
   // move to safe zone
+  goalArmRotation = safeRotation;
 }
 
 //# End User Globals Marker
@@ -419,6 +486,23 @@ void arm_controller::Init(const ros::TimerEvent& event)
   paused = true;
 
   currentState = INIT;
+
+  // need to initialize the min and max sensor values
+  maxRadialPos       = -1.0f;
+  maxVerticalPos     = -1.0f;
+  maxArmRotation     = 330.0f;
+  maxGripperRotation = 330.0f;
+  maxGripperPos      = 330.0f;
+
+  minRadialPos       = -1.0f;
+  minVerticalPos     = -1.0f;
+  minArmRotation     = 0.0f;
+  minGripperRotation = 0.0f;
+  minGripperPos      = 0.0f;
+
+  // need to initialize the gripper's state sensor values
+  gripperPosOpened = 180.0f;
+  gripperPosClosed = 0.0f;
 
   // need to properly initialize the current sensor readings
   currentRadialPos        = -1.0f;
