@@ -230,7 +230,16 @@ image_sensor::~image_sensor()
     controlInputs_sub.shutdown();
     captureImage_server.shutdown();
 //# Start Destructor Marker
-  v4l2_close(videoFD);
+    struct v4l2_buffer buf = {0};
+    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.memory = V4L2_MEMORY_MMAP;
+    buf.index = 0;
+    if(-1 == xioctl(videoFD, VIDIOC_QBUF, &buf))
+      {
+	perror("Query Buffer");
+      }
+    v4l2_munmap(buffer,buf.length);
+    v4l2_close(videoFD);
 //# End Destructor Marker
 }
 
