@@ -78,6 +78,20 @@ int init_mmap(int fd)
  
   return 0;
 }
+
+int tear_down(int fd)
+{
+  struct v4l2_buffer buf = {0};
+  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  buf.memory = V4L2_MEMORY_MMAP;
+  buf.index = 0;
+  if(-1 == xioctl(fd, VIDIOC_QBUF, &buf))
+    {
+      perror("Query Buffer");
+    }
+  v4l2_munmap(buffer,buf.length);
+  v4l2_close(fd);
+}
  
 int capture_image(int fd)
 {
@@ -114,7 +128,6 @@ int capture_image(int fd)
       perror("Retrieving Frame");
       return 1;
     }
-  printf ("saving image\n");
  
   return 0;
 }
@@ -205,6 +218,12 @@ bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &re
 	  perror("Retrieving Frame");
 	  return false;
 	}
+
+      if(-1 == xioctl(videoFD, VIDIOC_STREAMOFF, &buf.type))
+	{
+	  perror("Stop Capture");
+	  return false;
+	}
     
       std::copy(buffer, buffer + buf.bytesused, back_inserter(res.imgVector));
 
@@ -230,16 +249,7 @@ image_sensor::~image_sensor()
     controlInputs_sub.shutdown();
     captureImage_server.shutdown();
 //# Start Destructor Marker
-    struct v4l2_buffer buf = {0};
-    buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    buf.memory = V4L2_MEMORY_MMAP;
-    buf.index = 0;
-    if(-1 == xioctl(videoFD, VIDIOC_QBUF, &buf))
-      {
-	perror("Query Buffer");
-      }
-    v4l2_munmap(buffer,buf.length);
-    v4l2_close(videoFD);
+    tear_down(videoFD);
 //# End Destructor Marker
 }
 
