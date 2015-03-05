@@ -119,7 +119,7 @@ Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
 	for(int i = 0; i < contours.size(); i++){
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
 		boundRect[i] = minAreaRect(Mat (contours_poly[i]));
-		objectAngle[i] = max(boundRect[i].angle;
+		objectAngle[i] = boundRect[i].angle;
 		minEnclosingCircle((Mat)contours_poly[i], center[i], radius[i]);
 	}
 

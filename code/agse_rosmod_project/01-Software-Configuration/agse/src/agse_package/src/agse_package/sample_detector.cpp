@@ -98,9 +98,9 @@ void Sample_Detector::run(std::vector<unsigned char> & camera_image,
       char rawName[nameLen + 10];
       char filteredName[nameLen + 20];
       sprintf(rawName,"%s.png",fname);
-      sprintf(filteredName,"%s_filtered.png",fname);
+      sprintf(filteredName,"%s_tracker.png",fname);
       cv::imwrite(rawName,image);
-      cv::imwrite(filteredName, filtered_output);
+      cv::imwrite(filteredName, tracker_output);
     }
 
   // Show all output windows
