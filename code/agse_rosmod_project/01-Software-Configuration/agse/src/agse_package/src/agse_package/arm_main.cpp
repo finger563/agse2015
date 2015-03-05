@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     // Create Component Objects
-    arm_controller arm_controller_i(nodeName, argc, argv); 
+    arm_controller arm_controller_i(nodeName, "arm_controller_i", argc, argv); 
 
     // Create Component Threads
     boost::thread arm_controller_i_thread(componentThread, &arm_controller_i);

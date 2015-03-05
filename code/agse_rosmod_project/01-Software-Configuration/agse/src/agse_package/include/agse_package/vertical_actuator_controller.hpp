@@ -23,7 +23,7 @@ class vertical_actuator_controller : public Component
 {
     public:
         // Component vertical_actuator_controller Constructor
-        vertical_actuator_controller(std::string nodeName, int argc, char **argv) : Component(nodeName, argc, argv) {}
+        vertical_actuator_controller(std::string nodeName, std::string compName, int argc, char **argv) : Component(nodeName, compName, argc, argv) {}
 
         // These functions' business logic will be filled in by the user:
 

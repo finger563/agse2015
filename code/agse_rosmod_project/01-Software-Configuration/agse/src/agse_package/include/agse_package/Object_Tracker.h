@@ -19,6 +19,9 @@ public:
 	// Image Filter 
 	void filter(Mat &filter_matrix);
 
+	// Try to approximate the detected sample as a polygon
+	Mat PolygonApproximate(Mat filtered_output);
+
 	// Main Object Tracker Function
 	Mat track(Mat webcam_feed, Mat filterd_output);
 

@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     // Create Component Objects
-    user_input_controller user_intput_controller_i(nodeName, argc, argv); 
+    user_input_controller user_intput_controller_i(nodeName, "user_intput_controller_i", argc, argv); 
 
     // Create Component Threads
     boost::thread user_intput_controller_i_thread(componentThread, &user_intput_controller_i);

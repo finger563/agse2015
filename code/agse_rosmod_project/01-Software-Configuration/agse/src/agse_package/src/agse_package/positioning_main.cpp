@@ -31,9 +31,9 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     // Create Component Objects
-    radial_actuator_controller radial_controller_i(nodeName, argc, argv); 
-    vertical_actuator_controller vertical_controller_i(nodeName, argc, argv); 
-    servo_controller servo_controller_i(nodeName, argc, argv); 
+    radial_actuator_controller radial_controller_i(nodeName, "radial_controller_i", argc, argv); 
+    vertical_actuator_controller vertical_controller_i(nodeName, "vertical_controller_i", argc, argv); 
+    servo_controller servo_controller_i(nodeName, "servo_controller_i", argc, argv); 
 
     // Create Component Threads
     boost::thread radial_controller_i_thread(componentThread, &radial_controller_i);

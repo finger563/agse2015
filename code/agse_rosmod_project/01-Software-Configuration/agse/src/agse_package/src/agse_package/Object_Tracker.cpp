@@ -59,6 +59,10 @@ void Object_Tracker::filter(Mat &filtered_output){
 	dilate(filtered_output, filtered_output, dilateElement);
 }
 
+Mat Object_Tracker::PolygonApproximate(Mat filtered_output)
+{
+}
+
 // Track Object
 Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
 
@@ -106,15 +110,16 @@ Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
 
 	// Approximate contour to polygons + get bounding rects and circles
 	vector<vector<Point> > contours_poly(contours.size());
-	vector<Rect> boundRect(contours.size());
-        // CALCULATE OBJECT_ANGLE HERE
+	vector<RotatedRect> boundRect(contours.size());
+	vector<float> objectAngle(contours.size());
 	vector<Point2f> center(contours.size());
         object_center = center;
 	vector<float> radius(contours.size());
 
 	for(int i = 0; i < contours.size(); i++){
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
-		boundRect[i] = boundingRect(Mat (contours_poly[i]));
+		boundRect[i] = minAreaRect(Mat (contours_poly[i]));
+		objectAngle[i] = max(boundRect[i].angle;
 		minEnclosingCircle((Mat)contours_poly[i], center[i], radius[i]);
 	}
 
@@ -125,7 +130,11 @@ Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
 				      rng.uniform(0, 255), 
                                       rng.uniform(0,255));
 		drawContours(tracker_output, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point());
-		rectangle(tracker_output, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0);
+		Point2f rectPoints[4];
+		boundRect[i].points(rectPoints);
+		for (int j=0;j<4;j++) {
+		  line(tracker_output, rectPoints[j], rectPoints[(j+1)%4], color, 2, 8, 0);
+		}
 		circle(tracker_output, center[i], (int)radius[i], color, 2, 8, 0);
 	}
 	return tracker_output;

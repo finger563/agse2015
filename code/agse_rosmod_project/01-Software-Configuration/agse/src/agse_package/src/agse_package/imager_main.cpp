@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     // Create Component Objects
-    image_sensor image_sensor_i(nodeName, argc, argv); 
+    image_sensor image_sensor_i(nodeName, "image_sensor_i", argc, argv); 
 
     // Create Component Threads
     boost::thread image_sensor_i_thread(componentThread, &image_sensor_i);

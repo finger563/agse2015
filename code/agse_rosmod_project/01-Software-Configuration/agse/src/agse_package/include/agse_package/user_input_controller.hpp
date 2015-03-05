@@ -21,7 +21,7 @@ class user_input_controller : public Component
 {
     public:
         // Component user_input_controller Constructor
-        user_input_controller(std::string nodeName, int argc, char **argv) : Component(nodeName, argc, argv) {}
+        user_input_controller(std::string nodeName, std::string compName, int argc, char **argv) : Component(nodeName, compName, argc, argv) {}
 
         // These functions' business logic will be filled in by the user:
 
