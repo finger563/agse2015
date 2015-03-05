@@ -61,7 +61,7 @@ public:
     void set_position(int32_t position);
 
     // Get the position of the encoder, pass poll as true to poll the pin, whereas passing false reads the immediate value
-    int32_t get_position(bool _poll = true);
+    int32_t get_position(bool _poll = false);
 
     // Set the polling period
     void set_period(uint64_t period);
