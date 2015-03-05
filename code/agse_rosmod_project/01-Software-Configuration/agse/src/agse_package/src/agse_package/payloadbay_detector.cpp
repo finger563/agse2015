@@ -9,6 +9,7 @@ void PayloadBay_Detector::init(float msize, const char* camParamFileName)
 std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & raw_image_data, 
 					     int width, 
 					     int height, 
+					     agse_package::payloadBayStateFromImage::Response& response,
 					     const char* fname)
 {
   std::vector<Marker> Markers;
@@ -31,6 +32,14 @@ std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & raw_im
       for (unsigned int i=0;i<Markers.size();i++) {
 	CvDrawingUtils::draw3dCube(image,Markers[i],CamParam);
       }
+
+    // NEED TO SET REAL RESPONSE HERE
+    response.foundSample = false;
+    response.sample.pos.r     = 0.0f;
+    response.sample.pos.theta = 0.0f;
+    response.sample.pos.z     = 0.0f;
+    response.sample.orientation.theta = 0.0f;
+    response.sample.orientation.phi   = 0.0f;
 
     int nameLen = 0;
     if ( (nameLen = strlen(fname)) > 0 )

@@ -6,13 +6,19 @@
 #include "aruco/cvdrawingutils.h"
 #include <opencv2/highgui/highgui.hpp>
 
+#include "agse_package/payloadBayStateFromImage.h"
+
 using namespace cv;
 using namespace aruco;
 
 class PayloadBay_Detector {
 public:
   void init(float msize, const char* camParamFileName);
-  std::vector<Marker> run(std::vector<unsigned char> & raw_image_data, int width, int height, const char* fname = "");
+  std::vector<Marker> run( std::vector<unsigned char> & raw_image_data, 
+			   int width, 
+			   int height, 
+			   agse_package::payloadBayStateFromImage::Response& response,
+			   const char* fname = "");
 private:
   MarkerDetector MDetector;
   // real-world size of the markers

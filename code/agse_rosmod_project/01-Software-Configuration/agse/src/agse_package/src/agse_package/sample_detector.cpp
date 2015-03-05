@@ -66,6 +66,7 @@ void Sample_Detector::init(){
 void Sample_Detector::run(std::vector<unsigned char> & camera_image, 
 			  int width, 
 			  int height,
+			  agse_package::sampleStateFromImage::Response& response,
 			  const char* fname)
 {
   Mat image = Mat(height, width, CV_8UC3, camera_image.data());
@@ -91,6 +92,14 @@ void Sample_Detector::run(std::vector<unsigned char> & camera_image,
 	
   // Track Object
   tracker_output = object_tracker.track(image, filtered_output);
+
+  // NEED TO SET REAL RESPONSE HERE
+  response.foundSample = false;
+  response.sample.pos.r     = 0.0f;
+  response.sample.pos.theta = 0.0f;
+  response.sample.pos.z     = 0.0f;
+  response.sample.orientation.theta = 0.0f;
+  response.sample.orientation.phi   = 0.0f;
 	
   int nameLen = 0;
   if ( (nameLen = strlen(fname)) > 0 )

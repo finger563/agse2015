@@ -47,14 +47,7 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 		 arg.response.height,
 		 arg.response.imgVector.size());
 	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
-	sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
-	// NEED TO SET REAL RESPONSE HERE
-	res.foundSample = false;
-	res.sample.pos.r     = 0.0f;
-	res.sample.pos.theta = 0.0f;
-	res.sample.pos.z     = 0.0f;
-	res.sample.orientation.theta = 0.0f;
-	res.sample.orientation.phi   = 0.0f;
+	sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height, res); 
 	return true;
       }
       else {
@@ -80,14 +73,7 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 		 arg.response.imgVector.size());
 	// NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
 	std::vector<aruco::Marker> markers = 
-	  payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
-	// NEED TO SET REAL RESPONSE HERE
-	res.foundPayloadBay = false;
-	res.payloadBay.pos.r     = 0.0f;
-	res.payloadBay.pos.theta = 0.0f;
-	res.payloadBay.pos.z     = 0.0f;
-	res.payloadBay.orientation.theta = 0.0f;
-	res.payloadBay.orientation.phi   = 0.0f;
+	  payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height, res); 
 	return true;
       }
       else {

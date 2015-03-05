@@ -18,6 +18,8 @@
 #include "opencv/highgui.h"
 #include "Object_Tracker.h"
 
+#include "agse_package/sampleStateFromImage.h"
+
 using namespace cv;
 
 class Sample_Detector {
@@ -39,7 +41,11 @@ public:
 	void init();
 
 	// Main Real-Time Loop
-        void run(std::vector<unsigned char> & camera_image, int width, int height, const char* fname = "");
+  void run( std::vector<unsigned char> & camera_image, 
+	    int width, 
+	    int height, 
+	    agse_package::sampleStateFromImage::Response &response, 
+	    const char* fname = "");
 
 private:
 	// Webcam feed
