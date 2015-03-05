@@ -34,12 +34,12 @@ std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & raw_im
       }
 
     // NEED TO SET REAL RESPONSE HERE
-    response.foundSample = false;
-    response.sample.pos.r     = 0.0f;
-    response.sample.pos.theta = 0.0f;
-    response.sample.pos.z     = 0.0f;
-    response.sample.orientation.theta = 0.0f;
-    response.sample.orientation.phi   = 0.0f;
+    response.foundPayloadBay = false;
+    response.payloadBay.pos.r     = 0.0f;
+    response.payloadBay.pos.theta = 0.0f;
+    response.payloadBay.pos.z     = 0.0f;
+    response.payloadBay.orientation.theta = 0.0f;
+    response.payloadBay.orientation.phi   = 0.0f;
 
     int nameLen = 0;
     if ( (nameLen = strlen(fname)) > 0 )
