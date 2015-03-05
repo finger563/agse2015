@@ -7,12 +7,12 @@
 
 #include "agse_package/Object_Tracker.h"
 
-float minArea = 200*200;
+float minArea = 150*150;
 float maxArea = 200000;
 float minRatio = 1.5f;
-float maxRatio = 4.0f;
+float maxRatio = 5.0f;
 float minAreaRatio = 1.0f;
-float maxAreaRatio = 1.4f;
+float maxAreaRatio = 1.3f;
 
 RNG rng(12345);
 
@@ -116,7 +116,6 @@ vector<RotatedRect> Object_Tracker::track(Mat& raw_image, Mat& filtered_output, 
 
   contours_filtered = contours;
 
-  std::cout << "Number of Objects: " << contours_filtered.size() << std::endl;
   vector<Vec4i> hierarchy_filtered;
 
   /*
@@ -159,7 +158,7 @@ vector<RotatedRect> Object_Tracker::track(Mat& raw_image, Mat& filtered_output, 
     area = width * height;
     cArea = contourArea(contours_poly[i]);
     areaRatio = area/cArea;
-    //printf("area: %f, cArea: %f, areaRatio: %f,aspectRatio: %f, h: %f, w: %f, angle: %f\n",area,cArea,areaRatio,aspectRatio,height,width,boundRect[i].angle);
+    printf("area: %f, cArea: %f, areaRatio: %f,aspectRatio: %f, h: %f, w: %f, angle: %f\n",area,cArea,areaRatio,aspectRatio,height,width,boundRect[i].angle);
     if ( area > minArea && area < maxArea && 
 	 aspectRatio > minRatio && aspectRatio < maxRatio &&
 	 areaRatio > minAreaRatio && areaRatio < maxAreaRatio &&

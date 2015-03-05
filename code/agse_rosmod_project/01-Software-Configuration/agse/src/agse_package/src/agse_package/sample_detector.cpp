@@ -8,21 +8,35 @@
 #include "agse_package/sample_detector.hpp"
 
 // Filter Global Variables
-int hue_min = 0;
+/*
+ * YCRCB FILTER
+ */
+int hue_min = 184;
 int hue_max = 255;
 int saturation_min = 0;
-int saturation_max = 75;
-int value_min = 200;
+int saturation_max = 255;
+int value_min = 0;
 int value_max = 255;
+
+/*
+
+int hue_min = 190;
+int hue_max = 255;
+int saturation_min = 190;
+int saturation_max = 255;
+int value_min = 190;
+int value_max = 255;
+*/
+
 
 int min_grayscale_thresh = 190;
 int max_grayscale_thresh = 255;
 
-Size hsv_erode_size = Size(5, 5); 
-Size hsv_dilate_size = Size(10, 10); 
+Size hsv_erode_size = Size(20, 20); 
+Size hsv_dilate_size = Size(30, 30); 
 
 Size grayscale_erode_size = Size(20, 20);
-Size grayscale_dilate_size = Size(50, 50);
+Size grayscale_dilate_size = Size(30, 30);
 
 // Global callback function for sliders
 void slider_update(int, void*){}
@@ -79,51 +93,52 @@ Mat grayscale_image;
 Mat grayscale_filtered_image;
 Mat grayscale_tracked_image;
 
+Mat equalizeIntensity(const Mat& inputImage)
+{
+    if(inputImage.channels() >= 3)
+    {
+        Mat ycrcb;
+
+        cvtColor(inputImage,ycrcb,CV_BGR2YCrCb);
+
+        vector<Mat> channels;
+        split(ycrcb,channels);
+
+        equalizeHist(channels[0], channels[0]);
+
+        Mat result;
+        merge(channels,ycrcb);
+
+        cvtColor(ycrcb,result,CV_YCrCb2BGR);
+
+        return result;
+    }
+    return Mat();
+}
+
 vector<RotatedRect> hsv_method(Mat &image, Mat& imgMask) {
 
-  std::cout << "SAMPLE_DETECTOR::Starting HSV METHOD" << std::endl;
+  std::cout << "SAMPLE_DETECTOR::Starting YCrCb METHOD" << std::endl;
 
    // Convert from RGB TO HSV space
-  cvtColor(image, hsv_image, COLOR_BGR2HSV);
+  //  cvtColor(image, hsv_image, COLOR_BGR2HSV);
 
-  /*
-
-  Mat v_hist;
-  vector<Mat> planes;
-  split(hsv_image, planes);
-  int histSize = 256;
-  float range[] = {0, 256};
-  const float* histRange = {range};
-  bool uniform = true;
-  bool accumulate = false;
-
-  //  equalizeHist(hsv_image, eq_hist);
-  calcHist( &planes[2], 1, 0, Mat(), v_hist, 1, &histSize, &histRange, uniform, accumulate);
-
-  cv::imwrite("v_PLANES.png", planes[2]);
-  cv::imwrite("V_HIST_BEFORE_NORMALIZE.png", v_hist);
-
-  // Normalize
-  normalize(v_hist, v_hist, 0, hsv_image.rows, NORM_MINMAX, -1, Mat());
-
-  cv::imwrite("V_HIST.png", v_hist);
-
-  */
+  Mat ycrcb = equalizeIntensity(image);
 
   // Filter HSV Image based on slider values
-  inRange(hsv_image,
+  inRange(ycrcb,
 	  Scalar(hue_min, saturation_min, value_min), 
 	  Scalar(hue_max, saturation_max, value_max),
 	  hsv_filtered_image);
-
-  cv::imwrite("Sample-HSV-Threshold.png", hsv_filtered_image);
+  
+  cv::imwrite("Sample-YCrCb-Threshold.png", hsv_filtered_image);
 
   // Erode and Dilate
   obj_tracker.filter(hsv_filtered_image, hsv_erode_size, hsv_dilate_size);
 	
-  cv::imwrite("Sample-02-HSV-Filtered.png", hsv_filtered_image);
+  cv::imwrite("Sample-YCrCb-Filtered.png", hsv_filtered_image);
 
-  std::cout << "SAMPLE_DETECTOR::Completed HSV METHOD" << std::endl;
+  std::cout << "SAMPLE_DETECTOR::Completed YCrCb METHOD" << std::endl;
 
   return obj_tracker.track(image,hsv_filtered_image,imgMask);
 }
@@ -172,10 +187,9 @@ DetectedObject Sample_Detector::run( Mat& image,
       cv::imwrite("Sample-07-Bitwise-AND-Filtered.png", AND_image);
 
       Mat bitwise_and_tracked;
-      std::cout << "Before Tracking" << std::endl;
       tracked_objects = obj_tracker.track(image, AND_image, maskOutput);
-      std::cout << "Done Tracking" << std::endl;
       cv::imwrite("Sample-08-Bitwise-AND-Tracked.png", maskOutput);
+      std::cout << "OBJECT FOUND!!!!!" << std::endl;
     } else if ( hsv_tracked_objects.size() > 0 )
     {
       tracked_objects = hsv_tracked_objects;
