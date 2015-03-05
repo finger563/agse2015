@@ -120,19 +120,24 @@ void image_processor::startUp()
 
     // Need to read in and parse the group configuration xml if it exists
     GroupXMLParser groupParser;
+    std::map<std::string,std::string> *portGroupMap = NULL;
     std::string configFileName = nodeName + "." + compName + ".xml";
-    if ( boost::filesystem::exists(configFileName) )
+    if (groupParser.Parse(configFileName))
     {
-        groupParser.Parse(configFileName);
-	groupParser.Print();
+	portGroupMap = &groupParser.portGroupMap;
     }
+
+    std::string advertiseName;
 
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
+    advertiseName = "controlInputs";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
-	    ("controlInputs",
+	    (advertiseName.c_str(),
 	     1000,
 	     boost::bind(&image_processor::controlInputs_sub_OnOneData, this, _1),
 	     ros::VoidPtr(),
@@ -141,19 +146,25 @@ void image_processor::startUp()
 
     // Configure all provided services associated with this component
     // server: sampleStateFromImage_server
+    advertiseName = "sampleStateFromImage";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::AdvertiseServiceOptions sampleStateFromImage_server_options;
     sampleStateFromImage_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::sampleStateFromImage>
-	    ("sampleStateFromImage",
+	    (advertiseName.c_str(),
              boost::bind(&image_processor::sampleStateFromImageCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
     this->sampleStateFromImage_server = nh.advertiseService(sampleStateFromImage_server_options);
     // server: payloadBayStateFromImage_server
+    advertiseName = "payloadBayStateFromImage";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::AdvertiseServiceOptions payloadBayStateFromImage_server_options;
     payloadBayStateFromImage_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::payloadBayStateFromImage>
-	    ("payloadBayStateFromImage",
+	    (advertiseName.c_str(),
              boost::bind(&image_processor::payloadBayStateFromImageCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
@@ -161,8 +172,11 @@ void image_processor::startUp()
  
     // Configure all required services associated with this component
     // client: captureImage_client
+    advertiseName = "captureImage";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     this->captureImage_client = nh.serviceClient<agse_package::captureImage>
-	("captureImage"); 
+	(advertiseName.c_str()); 
 
     // Create Init Timer
     ros::TimerOptions timer_options;

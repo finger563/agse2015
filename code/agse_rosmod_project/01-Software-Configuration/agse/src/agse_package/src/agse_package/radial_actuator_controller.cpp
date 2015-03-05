@@ -117,19 +117,24 @@ void radial_actuator_controller::startUp()
 
     // Need to read in and parse the group configuration xml if it exists
     GroupXMLParser groupParser;
+    std::map<std::string,std::string> *portGroupMap = NULL;
     std::string configFileName = nodeName + "." + compName + ".xml";
-    if ( boost::filesystem::exists(configFileName) )
+    if (groupParser.Parse(configFileName))
     {
-        groupParser.Parse(configFileName);
-	groupParser.Print();
+	portGroupMap = &groupParser.portGroupMap;
     }
+
+    std::string advertiseName;
 
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
+    advertiseName = "controlInputs";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
-	    ("controlInputs",
+	    (advertiseName.c_str(),
 	     1000,
 	     boost::bind(&radial_actuator_controller::controlInputs_sub_OnOneData, this, _1),
 	     ros::VoidPtr(),
@@ -138,10 +143,13 @@ void radial_actuator_controller::startUp()
 
     // Configure all provided services associated with this component
     // server: radialPos_server
+    advertiseName = "radialPos";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::AdvertiseServiceOptions radialPos_server_options;
     radialPos_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::radialPos>
-	    ("radialPos",
+	    (advertiseName.c_str(),
              boost::bind(&radial_actuator_controller::radialPosCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);

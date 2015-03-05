@@ -428,19 +428,24 @@ void arm_controller::startUp()
 
     // Need to read in and parse the group configuration xml if it exists
     GroupXMLParser groupParser;
+    std::map<std::string,std::string> *portGroupMap = NULL;
     std::string configFileName = nodeName + "." + compName + ".xml";
-    if ( boost::filesystem::exists(configFileName) )
+    if (groupParser.Parse(configFileName))
     {
-        groupParser.Parse(configFileName);
-	groupParser.Print();
+	portGroupMap = &groupParser.portGroupMap;
     }
+
+    std::string advertiseName;
 
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
+    advertiseName = "controlInputs";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
-	    ("controlInputs",
+	    (advertiseName.c_str(),
 	     1000,
 	     boost::bind(&arm_controller::controlInputs_sub_OnOneData, this, _1),
 	     ros::VoidPtr(),
@@ -449,26 +454,47 @@ void arm_controller::startUp()
 
     // Configure all required services associated with this component
     // client: sampleStateFromImage_client
+    advertiseName = "sampleStateFromImage";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     this->sampleStateFromImage_client = nh.serviceClient<agse_package::sampleStateFromImage>
-	("sampleStateFromImage"); 
+	(advertiseName.c_str()); 
     // client: radialPos_client
+    advertiseName = "radialPos";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     this->radialPos_client = nh.serviceClient<agse_package::radialPos>
-	("radialPos"); 
+	(advertiseName.c_str()); 
     // client: armRotation_client
+    advertiseName = "armRotation";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     this->armRotation_client = nh.serviceClient<agse_package::armRotation>
-	("armRotation"); 
+	(advertiseName.c_str()); 
     // client: gripperRotation_client
+    advertiseName = "gripperRotation";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     this->gripperRotation_client = nh.serviceClient<agse_package::gripperRotation>
-	("gripperRotation"); 
+	(advertiseName.c_str()); 
     // client: verticalPos_client
+    advertiseName = "verticalPos";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     this->verticalPos_client = nh.serviceClient<agse_package::verticalPos>
-	("verticalPos"); 
+	(advertiseName.c_str()); 
     // client: gripperPos_client
+    advertiseName = "gripperPos";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     this->gripperPos_client = nh.serviceClient<agse_package::gripperPos>
-	("gripperPos"); 
+	(advertiseName.c_str()); 
     // client: payloadBayStateFromImage_client
+    advertiseName = "payloadBayStateFromImage";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     this->payloadBayStateFromImage_client = nh.serviceClient<agse_package::payloadBayStateFromImage>
-	("payloadBayStateFromImage"); 
+	(advertiseName.c_str()); 
 
     // Create Init Timer
     ros::TimerOptions timer_options;

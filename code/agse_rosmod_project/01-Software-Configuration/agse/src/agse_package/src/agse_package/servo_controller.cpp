@@ -143,19 +143,24 @@ void servo_controller::startUp()
 
     // Need to read in and parse the group configuration xml if it exists
     GroupXMLParser groupParser;
+    std::map<std::string,std::string> *portGroupMap = NULL;
     std::string configFileName = nodeName + "." + compName + ".xml";
-    if ( boost::filesystem::exists(configFileName) )
+    if (groupParser.Parse(configFileName))
     {
-        groupParser.Parse(configFileName);
-	groupParser.Print();
+	portGroupMap = &groupParser.portGroupMap;
     }
+
+    std::string advertiseName;
 
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
+    advertiseName = "controlInputs";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
-	    ("controlInputs",
+	    (advertiseName.c_str(),
 	     1000,
 	     boost::bind(&servo_controller::controlInputs_sub_OnOneData, this, _1),
 	     ros::VoidPtr(),
@@ -164,28 +169,37 @@ void servo_controller::startUp()
 
     // Configure all provided services associated with this component
     // server: armRotation_server
+    advertiseName = "armRotation";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::AdvertiseServiceOptions armRotation_server_options;
     armRotation_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::armRotation>
-	    ("armRotation",
+	    (advertiseName.c_str(),
              boost::bind(&servo_controller::armRotationCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
     this->armRotation_server = nh.advertiseService(armRotation_server_options);
     // server: gripperPos_server
+    advertiseName = "gripperPos";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::AdvertiseServiceOptions gripperPos_server_options;
     gripperPos_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::gripperPos>
-	    ("gripperPos",
+	    (advertiseName.c_str(),
              boost::bind(&servo_controller::gripperPosCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);
     this->gripperPos_server = nh.advertiseService(gripperPos_server_options);
     // server: gripperRotation_server
+    advertiseName = "gripperRotation";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     ros::AdvertiseServiceOptions gripperRotation_server_options;
     gripperRotation_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::gripperRotation>
-	    ("gripperRotation",
+	    (advertiseName.c_str(),
              boost::bind(&servo_controller::gripperRotationCallback, this, _1, _2),
 	     ros::VoidPtr(),
              &this->compQueue);

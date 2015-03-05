@@ -67,17 +67,22 @@ void user_input_controller::startUp()
 
     // Need to read in and parse the group configuration xml if it exists
     GroupXMLParser groupParser;
+    std::map<std::string,std::string> *portGroupMap = NULL;
     std::string configFileName = nodeName + "." + compName + ".xml";
-    if ( boost::filesystem::exists(configFileName) )
+    if (groupParser.Parse(configFileName))
     {
-        groupParser.Parse(configFileName);
-	groupParser.Print();
+	portGroupMap = &groupParser.portGroupMap;
     }
+
+    std::string advertiseName;
 
     // Configure all publishers associated with this component
     // publisher: controlInputs_pub
+    advertiseName = "controlInputs";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
     this->controlInputs_pub = nh.advertise<agse_package::controlInputs>
-	("controlInputs", 1000);	
+	(advertiseName.c_str(), 1000);	
 
     // Create Init Timer
     ros::TimerOptions timer_options;
