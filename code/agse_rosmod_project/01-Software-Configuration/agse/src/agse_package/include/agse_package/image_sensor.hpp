@@ -22,8 +22,16 @@
 #include <unistd.h>
 #include <jpeglib.h>
 #include <time.h>
+
 #include <linux/videodev2.h>
 #include <libv4l2.h>
+
+#define CLEAR(x) memset(&(x), 0, sizeof(x))
+
+struct buffer {
+        void   *start;
+        size_t length;
+};
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
@@ -77,6 +85,7 @@ class image_sensor : public Component
         int videoFD;
         int width;
         int height;
+        int numFrames;
         //# End User Private Variables Marker
 };
 

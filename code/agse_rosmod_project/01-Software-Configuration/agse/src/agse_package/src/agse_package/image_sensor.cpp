@@ -1,137 +1,21 @@
 #include "agse_package/image_sensor.hpp"
 
 //# Start User Globals Marker
+struct buffer      *buffers;
+struct v4l2_buffer  buf;
+int                 n_buffers;
 
-uint8_t *buffer;
-
-static int xioctl(int fd, int request, void *arg)
+static void xioctl(int fh, int request, void *arg)
 {
   int r;
-  do r = v4l2_ioctl (fd, request, arg);
-  while (-1 == r && ((EINTR == errno) || (errno == EAGAIN)));
-  return r;
-}
-
-int print_caps(int fd, int width, int height)
-{
-  struct v4l2_format fmt = {0};
-  fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width = width;
-  fmt.fmt.pix.height = height;
-  fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_BGR24;
-  fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
-        
-  if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt))
-    {
-      perror("Setting Pixel Format");
-      return 1;
-    }
-
-  if (fmt.fmt.pix.pixelformat != V4L2_PIX_FMT_BGR24 ) {
-    perror("couldn't set BGR24 format");
-    return 1;
+  do {
+    r = v4l2_ioctl(fh, request, arg);
+  } while (r == -1 && ((errno == EINTR) || (errno == EAGAIN)));
+  if (r == -1) {
+    fprintf(stderr, "error %d, %s\n", errno, strerror(errno));
+    exit(EXIT_FAILURE);
   }
-
-  if (fmt.fmt.pix.width != width || fmt.fmt.pix.height != height ) {
-    perror("couldn't set the height or width");
-    return 1;
-  }
- 
-  printf( "Selected Camera Mode:\n"
-	  "  Width: %d\n"
-	  "  Height: %d\n"
-	  "  PixFmt: %d\n"
-	  "  Field: %d\n",
-	  fmt.fmt.pix.width,
-	  fmt.fmt.pix.height,
-	  fmt.fmt.pix.pixelformat,
-	  fmt.fmt.pix.field);
-  return 0;
 }
- 
-int init_mmap(int fd)
-{
-  struct v4l2_requestbuffers req = {0};
-  req.count = 1;
-  req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  req.memory = V4L2_MEMORY_MMAP;
- 
-  if (-1 == xioctl(fd, VIDIOC_REQBUFS, &req))
-    {
-      perror("Requesting Buffer");
-      return 1;
-    }
- 
-  struct v4l2_buffer buf = {0};
-  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  buf.memory = V4L2_MEMORY_MMAP;
-  buf.index = 0;
-  if(-1 == xioctl(fd, VIDIOC_QUERYBUF, &buf))
-    {
-      perror("Querying Buffer");
-      return 1;
-    }
- 
-  buffer = (uint8_t *)v4l2_mmap (NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
-  printf("Length: %d\nAddress: %p\n", buf.length, buffer);
-  printf("Image Length: %d\n", buf.bytesused);
- 
-  return 0;
-}
-
-int tear_down(int fd)
-{
-  struct v4l2_buffer buf = {0};
-  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  buf.memory = V4L2_MEMORY_MMAP;
-  buf.index = 0;
-  if(-1 == xioctl(fd, VIDIOC_QBUF, &buf))
-    {
-      perror("Query Buffer");
-    }
-  v4l2_munmap(buffer,buf.length);
-  v4l2_close(fd);
-}
- 
-int capture_image(int fd)
-{
-  struct v4l2_buffer buf = {0};
-  buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  buf.memory = V4L2_MEMORY_MMAP;
-  buf.index = 0;
-  if(-1 == xioctl(fd, VIDIOC_QBUF, &buf))
-    {
-      perror("Query Buffer");
-      return 1;
-    }
- 
-  if(-1 == xioctl(fd, VIDIOC_STREAMON, &buf.type))
-    {
-      perror("Start Capture");
-      return 1;
-    }
- 
-  fd_set fds;
-  FD_ZERO(&fds);
-  FD_SET(fd, &fds);
-  struct timeval tv = {0};
-  tv.tv_sec = 2;
-  int r = select(fd+1, &fds, NULL, NULL, &tv);
-  if(-1 == r)
-    {
-      perror("Waiting for Frame");
-      return 1;
-    }
- 
-  if(-1 == xioctl(fd, VIDIOC_DQBUF, &buf))
-    {
-      perror("Retrieving Frame");
-      return 1;
-    }
- 
-  return 0;
-}
- 
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -145,22 +29,59 @@ void image_sensor::Init(const ros::TimerEvent& event)
   // Initialize Component
   paused = true;
   sprintf(videoDevice,"/dev/video0");
-  width = 640;
-  height = 480;
+  width = 1920;
+  height = 1080;
 
-  videoFD = v4l2_open(videoDevice, O_RDWR);
-  if (videoFD == -1)
-    {
-      perror("Opening video device");
+  struct v4l2_format              fmt;
+  struct v4l2_requestbuffers      reqBufs;
+
+  videoFD = v4l2_open(videoDevice, O_RDWR | O_NONBLOCK, 0);
+  if (videoFD < 0) {
+    perror("Cannot open device");
+    exit(EXIT_FAILURE);
+  }
+
+  CLEAR(fmt);
+  fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  fmt.fmt.pix.width       = width;
+  fmt.fmt.pix.height      = height;
+  fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_BGR24;
+  fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
+  xioctl(videoFD, VIDIOC_S_FMT, &fmt);
+  if (fmt.fmt.pix.pixelformat != V4L2_PIX_FMT_BGR24) {
+    printf("Libv4l didn't accept BGR24 format. Can't proceed.\n");
+    exit(EXIT_FAILURE);
+  }
+  if ((fmt.fmt.pix.width != width) || (fmt.fmt.pix.height != height))
+    printf("Warning: driver is sending image at %dx%d\n",
+	   fmt.fmt.pix.width, fmt.fmt.pix.height);
+
+  CLEAR(reqBufs);
+  reqBufs.count = 2;
+  reqBufs.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  reqBufs.memory = V4L2_MEMORY_MMAP;
+  xioctl(videoFD, VIDIOC_REQBUFS, &reqBufs);
+
+  buffers = (buffer *)calloc(reqBufs.count, sizeof(*buffers));
+  for (n_buffers = 0; n_buffers < reqBufs.count; ++n_buffers) {
+    CLEAR(buf);
+
+    buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    buf.memory      = V4L2_MEMORY_MMAP;
+    buf.index       = n_buffers;
+
+    xioctl(videoFD, VIDIOC_QUERYBUF, &buf);
+
+    buffers[n_buffers].length = buf.length;
+    buffers[n_buffers].start = v4l2_mmap(NULL, buf.length,
+					 PROT_READ | PROT_WRITE, MAP_SHARED,
+					 videoFD, buf.m.offset);
+
+    if (MAP_FAILED == buffers[n_buffers].start) {
+      perror("mmap");
+      exit(EXIT_FAILURE);
     }
-  else
-    {
-      if(print_caps(videoFD,width,height))
-	ROS_INFO("Couldn't get or set camera capabilities with v4l.");
-        
-      if(init_mmap(videoFD))
-	ROS_INFO("ERROR: couldn't init mmap!");
-    }
+  }
 
   // Stop Init Timer
   initOneShotTimer.stop();
@@ -185,80 +106,56 @@ bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &re
   if (paused)
     {
       // Business Logic for captureImage_server Server providing captureImage Service
-      struct v4l2_buffer buf = {0};
+      fd_set                          fds;
+      struct timeval                  tv;
+      enum v4l2_buf_type              type;
+      int                             r;
+
+      for (int i = 0; i < n_buffers; ++i) {
+	CLEAR(buf);
+	buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	buf.memory = V4L2_MEMORY_MMAP;
+	buf.index = i;
+	xioctl(videoFD, VIDIOC_QBUF, &buf);
+      }
+      type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+      xioctl(videoFD, VIDIOC_STREAMON, &type);
+      do {
+	FD_ZERO(&fds);
+	FD_SET(videoFD, &fds);
+
+	/* Timeout. */
+	tv.tv_sec = 2;
+	tv.tv_usec = 0;
+
+	r = select(videoFD + 1, &fds, NULL, NULL, &tv);
+      } while ((r == -1 && (errno = EINTR)));
+      if (r == -1) {
+	perror("select");
+	return false;
+      }
+
+      CLEAR(buf);
       buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
       buf.memory = V4L2_MEMORY_MMAP;
-      buf.index = 0;
-      if(-1 == xioctl(videoFD, VIDIOC_QBUF, &buf))
-	{
-	  perror("Query Buffer");
-	  return false;
-	}
- 
-      if(-1 == xioctl(videoFD, VIDIOC_STREAMON, &buf.type))
-	{
-	  perror("Start Capture");
-	  return false;
-	}
- 
-      fd_set fds;
-      FD_ZERO(&fds);
-      FD_SET(videoFD, &fds);
-      struct timeval tv = {0};
-      tv.tv_sec = 2;
-      int r = select(videoFD+1, &fds, NULL, NULL, &tv);
-      if(-1 == r)
-	{
-	  perror("Waiting for Frame");
-	  return false;
-	}
- 
-      if(-1 == xioctl(videoFD, VIDIOC_DQBUF, &buf))
-	{
-	  perror("Retrieving Frame");
-	  return false;
-	}
+      xioctl(videoFD, VIDIOC_DQBUF, &buf);
 
-      if(-1 == xioctl(videoFD, VIDIOC_QBUF, &buf))
-	{
-	  perror("Query Buffer");
-	  return false;
-	}
- 
-      FD_ZERO(&fds);
-      FD_SET(videoFD, &fds);
-      struct timeval tv2 = {0};
-      tv2.tv_sec = 2;
-      r = select(videoFD+1, &fds, NULL, NULL, &tv2);
-      if(-1 == r)
-	{
-	  perror("Waiting for Frame");
-	  return false;
-	}
- 
-      if(-1 == xioctl(videoFD, VIDIOC_DQBUF, &buf))
-	{
-	  perror("Retrieving Frame");
-	  return false;
-	}
+      //fwrite(buffers[buf.index].start, buf.bytesused, 1, fout);
 
-      if(-1 == xioctl(videoFD, VIDIOC_STREAMOFF, &buf.type))
-	{
-	  perror("Stop Capture");
-	  return false;
-	}
-    
-      std::copy(buffer, buffer + buf.bytesused, back_inserter(res.imgVector));
+      type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+      xioctl(videoFD, VIDIOC_STREAMOFF, &type);
 
+      res.imgVector.reserve(buf.bytesused);
+      std::copy(&((unsigned char *)buffers[buf.index].start)[0],
+		&((unsigned char *)buffers[buf.index].start)[0] + buf.bytesused,
+		back_inserter(res.imgVector));
       res.width = width;
       res.height = height;
 		
       return true;
     }
-  else
-    {
-      return false;
-    }
+  return false;
 }
 //# End captureImageCallback Marker
 
@@ -272,7 +169,9 @@ image_sensor::~image_sensor()
     controlInputs_sub.shutdown();
     captureImage_server.shutdown();
 //# Start Destructor Marker
-    tear_down(videoFD);
+  for (int i = 0; i < n_buffers; ++i)
+    v4l2_munmap(buffers[i].start, buffers[i].length);
+  v4l2_close(videoFD);
 //# End Destructor Marker
 }
 
