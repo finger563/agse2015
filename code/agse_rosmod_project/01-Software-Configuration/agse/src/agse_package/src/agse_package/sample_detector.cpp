@@ -94,7 +94,7 @@ void hsv_method(std::vector<unsigned char> & camera_image,
   dilate_size = Size(8, 8); 
 
   // Erode and Dilate
-  //  obj_tracker.filter(hsv_filtered_image, erode_size, dilate_size);
+  obj_tracker.filter(hsv_filtered_image, erode_size, dilate_size);
 	
   // Track Object
   //  hsv_tracked_image = obj_tracker.track(image, hsv_filtered_image);

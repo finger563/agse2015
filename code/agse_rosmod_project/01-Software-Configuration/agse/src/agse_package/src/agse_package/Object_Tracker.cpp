@@ -118,32 +118,47 @@ Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
 	// Approximate contour to polygons + get bounding rects and circles
 	vector<vector<Point> > contours_poly(contours_filtered.size());
 	vector<RotatedRect> boundRect(contours_filtered.size());
-	vector<float> objectAngle(contours_filtered.size());
-	vector<Point2f> center(contours_filtered.size());
-        object_center = center;
-	vector<float> radius(contours_filtered.size());
 
+	vector<vector<Point>> tracked_contours;
+	vector<RotatedRect> tracked_BB;
+	vector<float> objectAngle;
+	
+	float minArea = 100*100;
+	float maxArea = 1000*1000;
+	float minRatio = 2.0f;
+	float maxRatio = 4.0f;
 	for(int i = 0; i < contours_filtered.size(); i++){
 		approxPolyDP(Mat(contours_filtered[i]), contours_poly[i], 3, true);
 		boundRect[i] = minAreaRect(Mat (contours_poly[i]));
-		objectAngle[i] = boundRect[i].angle;
+		float area, width,height,ratio;
+		width = max(boundRect[i].size.width,boundRect[i].size.height);
+		height = min(boundRect[i].size.width,boundRect[i].size.height);
+		ratio = width/height;
+		area = width * height;
+		printf("area: %f, ratio: %f, h: %f, w: %f\n",area,ratio,height,width);
+		if ( area > minArea && area < maxArea && ratio > minRatio && ratio < maxRatio )
+		  {
+		    tracked_contours.push_back(contours_poly[i]);
+		    tracked_BB.push_back(boundRect[i]);
+		    objectAngle.push_back(boundRect[i].angle);
+		  } else 
+		  {
+		  }
 		std::cout << "Angle: " << objectAngle[i] << std::endl;		
-		minEnclosingCircle((Mat)contours_poly[i], center[i], radius[i]);
 	}
 
 	// Draw polygonal contour + bounding rects + circles
 	Mat tracker_output = Mat::zeros(filtered_output.size(), CV_8UC3);
-	for (int i = 0; i < contours_filtered.size(); i++){
+	for (int i = 0; i < tracked_contours.size(); i++){
 		Scalar color = Scalar(rng.uniform(0, 255), 
 				      rng.uniform(0, 255), 
                                       rng.uniform(0,255));
-		drawContours(tracker_output, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point());
+		drawContours(tracker_output, tracked_contours, i, color, 1, 8, vector<Vec4i>(), 0, Point());
 		Point2f rectPoints[4];
-		boundRect[i].points(rectPoints);
+		tracked_BB[i].points(rectPoints);
 		for (int j=0;j<4;j++) {
 		  line(tracker_output, rectPoints[j], rectPoints[(j+1)%4], color, 2, 8, 0);
 		}
-		circle(tracker_output, center[i], (int)radius[i], color, 2, 8, 0);
 	}
 	return tracker_output;
 }
