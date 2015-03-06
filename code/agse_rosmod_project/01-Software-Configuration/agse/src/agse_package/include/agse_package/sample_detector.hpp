@@ -44,7 +44,6 @@ public:
   void run( std::vector<unsigned char> & camera_image, 
 	    int width, 
 	    int height, 
-	    agse_package::sampleStateFromImage::Response &response, 
 	    const char* fname = "");
 
 private:

@@ -58,15 +58,12 @@ void Sample_Detector::handle_user_input(){
 
 // Main Initialize Function
 void Sample_Detector::init(){
-  setup_webcam_feed(0);
-  //  create_filter_knobs_slider();
 }
 
 // Main Real-Time Loop
 void Sample_Detector::run(std::vector<unsigned char> & camera_image, 
 			  int width, 
 			  int height,
-			  agse_package::sampleStateFromImage::Response& response,
 			  const char* fname)
 {
   Mat image = Mat(height, width, CV_8UC3, camera_image.data());
@@ -93,14 +90,6 @@ void Sample_Detector::run(std::vector<unsigned char> & camera_image,
   // Track Object
   tracker_output = object_tracker.track(image, filtered_output);
 
-  // NEED TO SET REAL RESPONSE HERE
-  response.foundSample = false;
-  response.sample.pos.r     = 0.0f;
-  response.sample.pos.theta = 0.0f;
-  response.sample.pos.z     = 0.0f;
-  response.sample.orientation.theta = 0.0f;
-  response.sample.orientation.phi   = 0.0f;
-	
   int nameLen = 0;
   if ( (nameLen = strlen(fname)) > 0 )
     {
@@ -111,10 +100,4 @@ void Sample_Detector::run(std::vector<unsigned char> & camera_image,
       cv::imwrite(rawName,image);
       cv::imwrite(filteredName, tracker_output);
     }
-
-  // Show all output windows
-  // show_windows();
-	
-  // Handle user input
-  handle_user_input();
 }

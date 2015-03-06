@@ -14,10 +14,9 @@ using namespace aruco;
 class PayloadBay_Detector {
 public:
   void init(float msize, const char* camParamFileName);
-  std::vector<Marker> run( std::vector<unsigned char> & raw_image_data, 
+  void run( std::vector<unsigned char> & raw_image_data, 
 			   int width, 
 			   int height, 
-			   agse_package::payloadBayStateFromImage::Response& response,
 			   const char* fname = "");
 private:
   MarkerDetector MDetector;

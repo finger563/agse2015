@@ -6,10 +6,9 @@ void PayloadBay_Detector::init(float msize, const char* camParamFileName)
   CamParam.readFromXMLFile(camParamFileName);
 }
 
-std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & raw_image_data, 
+void PayloadBay_Detector::run(std::vector<unsigned char> & raw_image_data, 
 					     int width, 
 					     int height, 
-					     agse_package::payloadBayStateFromImage::Response& response,
 					     const char* fname)
 {
   std::vector<Marker> Markers;
@@ -33,14 +32,6 @@ std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & raw_im
 	CvDrawingUtils::draw3dCube(image,Markers[i],CamParam);
       }
 
-    // NEED TO SET REAL RESPONSE HERE
-    response.foundPayloadBay = false;
-    response.payloadBay.pos.r     = 0.0f;
-    response.payloadBay.pos.theta = 0.0f;
-    response.payloadBay.pos.z     = 0.0f;
-    response.payloadBay.orientation.theta = 0.0f;
-    response.payloadBay.orientation.phi   = 0.0f;
-
     int nameLen = 0;
     if ( (nameLen = strlen(fname)) > 0 )
       {
@@ -55,5 +46,4 @@ std::vector<Marker> PayloadBay_Detector::run(std::vector<unsigned char> & raw_im
     {
       printf("ERROR: caught exception detecting markers: %s\n",ex.what());
     }
-  return Markers;
 }

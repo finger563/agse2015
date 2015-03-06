@@ -219,6 +219,29 @@ bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &re
 	  return false;
 	}
 
+      if(-1 == xioctl(videoFD, VIDIOC_QBUF, &buf))
+	{
+	  perror("Query Buffer");
+	  return false;
+	}
+ 
+      FD_ZERO(&fds);
+      FD_SET(videoFD, &fds);
+      struct timeval tv2 = {0};
+      tv2.tv_sec = 2;
+      r = select(videoFD+1, &fds, NULL, NULL, &tv2);
+      if(-1 == r)
+	{
+	  perror("Waiting for Frame");
+	  return false;
+	}
+ 
+      if(-1 == xioctl(videoFD, VIDIOC_DQBUF, &buf))
+	{
+	  perror("Retrieving Frame");
+	  return false;
+	}
+
       if(-1 == xioctl(videoFD, VIDIOC_STREAMOFF, &buf.type))
 	{
 	  perror("Stop Capture");
