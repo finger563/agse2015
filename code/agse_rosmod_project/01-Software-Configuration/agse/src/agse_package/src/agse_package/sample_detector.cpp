@@ -8,11 +8,11 @@
 #include "agse_package/sample_detector.hpp"
 
 // Filter Global Variables
-int hue_min = 20;
+int hue_min = 64;
 int hue_max = 255;
 int saturation_min = 0;
-int saturation_max = 59;
-int value_min = 150;
+int saturation_max = 53;
+int value_min = 46;
 int value_max = 255;
 
 // Global callback function for sliders
@@ -60,6 +60,82 @@ void Sample_Detector::handle_user_input(){
 void Sample_Detector::init(){
 }
 
+Mat image;
+Mat hsv_image;
+Mat hsv_filtered_image;
+Mat hsv_tracked_image;
+Object_Tracker obj_tracker;
+
+Mat grayscale_image;
+Mat grayscale_filtered_image;
+Mat grayscale_tracked_image;
+
+Size erode_size;
+Size dilate_size;
+
+void hsv_method(std::vector<unsigned char> & camera_image, 
+		int width, 
+		int height) {
+
+  std::cout << "SAMPLE_DETECTOR::Starting HSV METHOD" << std::endl;
+
+  image = Mat(height, width, CV_8UC3, camera_image.data());
+
+   // Convert from RGB TO HSV space
+  cvtColor(image, hsv_image, COLOR_BGR2HSV);
+	
+  // Filter HSV Image based on slider values
+  inRange(hsv_image,
+	  Scalar(hue_min, saturation_min, value_min), 
+	  Scalar(hue_max, saturation_max, value_max),
+	  hsv_filtered_image);
+
+  erode_size = Size(3, 3); 
+  dilate_size = Size(8, 8); 
+
+  // Erode and Dilate
+  //  obj_tracker.filter(hsv_filtered_image, erode_size, dilate_size);
+	
+  // Track Object
+  //  hsv_tracked_image = obj_tracker.track(image, hsv_filtered_image);
+
+  cv::imwrite("Sample-01-Raw.png", image);
+  cv::imwrite("Sample-02-HSV-Filtered.png", hsv_filtered_image);
+  //  cv::imwrite("Sample-03-HSV-Tracked.png", hsv_tracked_image);
+
+  std::cout << "SAMPLE_DETECTOR::Completed HSV METHOD" << std::endl;
+
+}
+
+void grayscale_method(std::vector<unsigned char> & camera_image, 
+		int width, 
+		int height) {
+
+  std::cout << "SAMPLE_DETECTOR::Starting Grayscale METHOD" << std::endl;
+
+  image = Mat(height, width, CV_8UC3, camera_image.data());
+
+  cvtColor(image, grayscale_image, CV_BGR2GRAY);
+
+  threshold(grayscale_image, grayscale_filtered_image, 158, 160, 0);
+
+  erode_size = Size(15, 15);
+  dilate_size = Size(50, 50);
+
+  // Erode and Dilate
+  obj_tracker.filter(grayscale_filtered_image, erode_size, dilate_size);
+	
+  // Track Object
+  //  grayscale_tracked_image = obj_tracker.track(image, grayscale_filtered_image);
+	
+  cv::imwrite("Sample-04-Grayscale.png", grayscale_image);
+  cv::imwrite("Sample-05-Grayscale-Filtered.png", grayscale_filtered_image);
+  //  cv::imwrite("Sample-06-Grayscale-Tracked.png", grayscale_tracked_image);
+
+  std::cout << "SAMPLE_DETECTOR::Completed Grayscale METHOD" << std::endl;
+
+}
+
 // Main Real-Time Loop
 DetectedObject Sample_Detector::run(std::vector<unsigned char> & camera_image, 
 			  int width, 
@@ -68,39 +144,17 @@ DetectedObject Sample_Detector::run(std::vector<unsigned char> & camera_image,
 {
   DetectedObject object;
   object.state = HIDDEN;
-  Mat image = Mat(height, width, CV_8UC3, camera_image.data());
-  // Mat image = Mat(image_rgb.rows, image_rgb.cols, CV_8UC3);
-  // int from_to[] = {0, 2, 1, 1, 2, 0};
-  // mixChannels(&image_rgb, 1, &image, 1, from_to, 3);
 
-  std::cout << "Before BGR to HSV Translation" << std::endl;
+  hsv_method(camera_image, width, height);
+  grayscale_method(camera_image, width, height);
 
-   // Convert from RGB TO HSV space
-  cvtColor(image, HSV, COLOR_BGR2HSV);
+  Mat AND_image;
+  bitwise_and(hsv_filtered_image, grayscale_filtered_image, AND_image);
+  cv::imwrite("Sample-07-Bitwise-AND-Filtered.png", AND_image);
 
-  std::cout << "After BGR TO HSV Translation" << std::endl;
-	
-  // Filter HSV Image based on slider values
-  inRange(HSV,
-	  Scalar(hue_min, saturation_min, value_min), 
-	  Scalar(hue_max, saturation_max, value_max),
-	  filtered_output);
-	
-  // Erode and Dilate
-  object_tracker.filter(filtered_output);
-	
-  // Track Object
-  tracker_output = object_tracker.track(image, filtered_output);
+  Mat bitwise_and_tracked;
+  bitwise_and_tracked = obj_tracker.track(image, AND_image);
+  cv::imwrite("Sample-08-Bitwise-AND-Tracked.png", bitwise_and_tracked);
 
-  int nameLen = 0;
-  if ( (nameLen = strlen(fname)) > 0 )
-    {
-      char rawName[nameLen + 10];
-      char filteredName[nameLen + 20];
-      sprintf(rawName,"%s.png",fname);
-      sprintf(filteredName,"%s_tracker.png",fname);
-      cv::imwrite(rawName,image);
-      cv::imwrite(filteredName, tracker_output);
-    }
   return object;
 }

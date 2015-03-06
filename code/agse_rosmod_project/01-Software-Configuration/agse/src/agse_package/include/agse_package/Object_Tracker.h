@@ -17,7 +17,7 @@ public:
 	Object_Tracker();
 
 	// Image Filter 
-	void filter(Mat &filter_matrix);
+	void filter(Mat &filter_matrix, Size erode_size, Size dilate_size);
 
 	// Try to approximate the detected sample as a polygon
 	Mat PolygonApproximate(Mat filtered_output);
