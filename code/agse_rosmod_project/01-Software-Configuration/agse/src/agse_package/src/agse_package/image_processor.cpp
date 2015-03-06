@@ -16,7 +16,7 @@ void image_processor::Init(const ros::TimerEvent& event)
   // initialize both the sample detector code
   // and the payload bay (marker) detector code
     sampleDetector.init();
-    payloadBayDetector.init( 1.0f, "camera.yml");
+    payloadBayDetector.init( 0.75f, "camera.yml");
 
     agse_package::captureImage arg;
     if (this->captureImage_client.call(arg)) {
@@ -24,7 +24,6 @@ void image_processor::Init(const ros::TimerEvent& event)
 	       arg.response.width,
 	       arg.response.height,
 	       arg.response.imgVector.size());
-      // NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
       DetectedObject sample = 
 	sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height, "sample"); 
     }
@@ -34,7 +33,6 @@ void image_processor::Init(const ros::TimerEvent& event)
 	       arg.response.width,
 	       arg.response.height,
 	       arg.response.imgVector.size());
-      // NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
       DetectedObject payloadBay =
 	payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height, "payload"); 
       ROS_INFO("PB: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
@@ -72,14 +70,10 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
 	DetectedObject sample =
 	  sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
-	
-	res.foundSample = false;
-	res.sample.pos.r     = 0.0f;
-	res.sample.pos.theta = 0.0f;
-	res.sample.pos.z     = 0.0f;
-	res.sample.orientation.theta = 0.0f;
-	res.sample.orientation.phi   = 0.0f;
-	
+	res.status = sample.state;
+	res.x = sample.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
+	res.y = sample.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
+	res.angle = sample.angle;
 	return true;
       }
       else {
@@ -106,13 +100,10 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 	// NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
 	DetectedObject payloadBay =
 	  payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
-
-	res.foundPayloadBay = false;
-	res.payloadBay.pos.r     = 0.0f;
-	res.payloadBay.pos.theta = 0.0f;
-	res.payloadBay.pos.z     = 0.0f;
-	res.payloadBay.orientation.theta = 0.0f;
-	res.payloadBay.orientation.phi   = 0.0f;
+	res.status = payloadBay.state;
+	res.x = payloadBay.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
+	res.y = payloadBay.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
+	res.angle = payloadBay.angle;
 	return true;
       }
       else {

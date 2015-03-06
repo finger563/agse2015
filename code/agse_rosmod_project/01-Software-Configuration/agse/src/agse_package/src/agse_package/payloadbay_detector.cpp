@@ -48,6 +48,8 @@ DetectedObject PayloadBay_Detector::run(std::vector<unsigned char> & raw_image_d
       circle(image,center,20.0f,color,-1);
 
       object.state = DETECTED;
+      if (Markers.size() == 1)
+	object.state = PARTIAL;
       object.x = center.x;
       object.y = center.y;
       object.angle = angle;

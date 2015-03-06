@@ -26,6 +26,23 @@ void user_input_controller::Init(const ros::TimerEvent& event)
 }
 //# End Init Marker
 
+// OnOneData Subscription handler for sampleState_sub subscriber
+//# Start sampleState_sub_OnOneData Marker
+void user_input_controller::sampleState_sub_OnOneData(const agse_package::sampleState::ConstPtr& received_data)
+{
+    // Business Logic for sampleState_sub subscriber subscribing to topic sampleState callback 
+
+}
+//# End sampleState_sub_OnOneData Marker
+// OnOneData Subscription handler for payloadBayState_sub subscriber
+//# Start payloadBayState_sub_OnOneData Marker
+void user_input_controller::payloadBayState_sub_OnOneData(const agse_package::payloadBayState::ConstPtr& received_data)
+{
+    // Business Logic for payloadBayState_sub subscriber subscribing to topic payloadBayState callback 
+
+}
+//# End payloadBayState_sub_OnOneData Marker
+
 // Callback for userInputTimer timer
 //# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
@@ -56,6 +73,8 @@ user_input_controller::~user_input_controller()
 {
     userInputTimer.stop();
     controlInputs_pub.shutdown();
+    sampleState_sub.shutdown();
+    payloadBayState_sub.shutdown();
 //# Start Destructor Marker
 
 //# End Destructor Marker
@@ -75,6 +94,34 @@ void user_input_controller::startUp()
     }
 
     std::string advertiseName;
+
+    // Configure all subscribers associated with this component
+    // subscriber: sampleState_sub
+    advertiseName = "sampleState";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    ros::SubscribeOptions sampleState_sub_options;
+    sampleState_sub_options = 
+	ros::SubscribeOptions::create<agse_package::sampleState>
+	    (advertiseName.c_str(),
+	     1000,
+	     boost::bind(&user_input_controller::sampleState_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->sampleState_sub = nh.subscribe(sampleState_sub_options);
+    // subscriber: payloadBayState_sub
+    advertiseName = "payloadBayState";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    ros::SubscribeOptions payloadBayState_sub_options;
+    payloadBayState_sub_options = 
+	ros::SubscribeOptions::create<agse_package::payloadBayState>
+	    (advertiseName.c_str(),
+	     1000,
+	     boost::bind(&user_input_controller::payloadBayState_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->payloadBayState_sub = nh.subscribe(payloadBayState_sub_options);
 
     // Configure all publishers associated with this component
     // publisher: controlInputs_pub

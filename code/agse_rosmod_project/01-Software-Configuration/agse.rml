@@ -67,8 +67,10 @@ package agse_package
 
             response
             {
-                bool foundSample;
-                agse_package/sampleState sample;
+                int8 status;
+                float32 x;
+                float32 y;
+                float32 angle;
             }
         }
         // ROS srv - verticalPos
@@ -164,8 +166,10 @@ package agse_package
 
             response
             {
-                bool foundPayloadBay;
-                agse_package/payloadBayState payloadBay;
+                int8 status;
+                float32 x;
+                float32 y;
+                float32 angle;
             }
         }
     }
@@ -203,6 +207,8 @@ package agse_package
 	    requires verticalPos;
 	    requires gripperPos;
 	    requires payloadBayStateFromImage;
+	    publisher<sampleState> sampleState_pub;
+	    publisher<payloadBayState> payloadBayState_pub;
      	    subscriber<controlInputs> controlInputs_sub;
 	    timer armTimer
 	    {
@@ -221,6 +227,8 @@ package agse_package
 	component user_input_controller
 	{
 	    publisher<controlInputs> controlInputs_pub;
+     	    subscriber<sampleState> sampleState_sub;
+     	    subscriber<payloadBayState> payloadBayState_sub;
 	    timer userInputTimer
 	    {
 	        period = 0.01s;

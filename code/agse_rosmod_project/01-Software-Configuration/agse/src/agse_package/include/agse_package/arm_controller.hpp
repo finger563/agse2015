@@ -8,9 +8,11 @@
 //      USER INCLUDES GO HERE
 // --------------------------------
 //# Start User Includes Marker
-
+#include "agse_package/detected_object.hpp"
 //# End User Includes Marker
 
+#include "agse_package/sampleState.h"
+#include "agse_package/payloadBayState.h"
 #include "agse_package/controlInputs.h"
 #include "agse_package/sampleStateFromImage.h"
 #include "agse_package/radialPos.h"
@@ -59,6 +61,13 @@ class arm_controller : public Component
 
 	// ROS Subscriber - controlInputs_sub
 	ros::Subscriber controlInputs_sub; 
+
+
+	// ROS Publisher - sampleState_pub
+	ros::Publisher sampleState_pub;
+
+	// ROS Publisher - payloadBayState_pub
+	ros::Publisher payloadBayState_pub;
 
 
 	// ROS Service Client - sampleStateFromImage_client
@@ -115,6 +124,21 @@ class arm_controller : public Component
   void Inserting_Sample_StateFunc();
   void Closing_PB_StateFunc();
   void Moving_Away_StateFunc();
+  
+  float maxRadialPos;
+  float maxVerticalPos;
+  float maxArmRotation;
+  float maxGripperRotation;
+  float maxGripperPos;
+
+  float minRadialPos;
+  float minVerticalPos;
+  float minArmRotation;
+  float minGripperRotation;
+  float minGripperPos;
+
+  float gripperPosOpened;
+  float gripperPosClosed;
   
   float currentRadialPos;
   float currentVerticalPos;
