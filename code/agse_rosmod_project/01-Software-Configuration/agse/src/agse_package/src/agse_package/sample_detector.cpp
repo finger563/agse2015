@@ -61,11 +61,13 @@ void Sample_Detector::init(){
 }
 
 // Main Real-Time Loop
-void Sample_Detector::run(std::vector<unsigned char> & camera_image, 
+DetectedObject Sample_Detector::run(std::vector<unsigned char> & camera_image, 
 			  int width, 
 			  int height,
 			  const char* fname)
 {
+  DetectedObject object;
+  object.state = HIDDEN;
   Mat image = Mat(height, width, CV_8UC3, camera_image.data());
   // Mat image = Mat(image_rgb.rows, image_rgb.cols, CV_8UC3);
   // int from_to[] = {0, 2, 1, 1, 2, 0};
@@ -100,4 +102,5 @@ void Sample_Detector::run(std::vector<unsigned char> & camera_image,
       cv::imwrite(rawName,image);
       cv::imwrite(filteredName, tracker_output);
     }
+  return object;
 }

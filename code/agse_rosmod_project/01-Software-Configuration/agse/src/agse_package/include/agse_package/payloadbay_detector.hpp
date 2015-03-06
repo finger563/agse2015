@@ -6,7 +6,7 @@
 #include "aruco/cvdrawingutils.h"
 #include <opencv2/highgui/highgui.hpp>
 
-#include "agse_package/payloadBayStateFromImage.h"
+#include "agse_package/detected_object.hpp"
 
 using namespace cv;
 using namespace aruco;
@@ -14,7 +14,7 @@ using namespace aruco;
 class PayloadBay_Detector {
 public:
   void init(float msize, const char* camParamFileName);
-  void run( std::vector<unsigned char> & raw_image_data, 
+  DetectedObject run( std::vector<unsigned char> & raw_image_data, 
 			   int width, 
 			   int height, 
 			   const char* fname = "");

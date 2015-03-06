@@ -17,6 +17,29 @@ void image_processor::Init(const ros::TimerEvent& event)
   // and the payload bay (marker) detector code
     sampleDetector.init();
     payloadBayDetector.init( 1.0f, "camera.yml");
+
+    agse_package::captureImage arg;
+    if (this->captureImage_client.call(arg)) {
+      ROS_INFO("Image width: %d, height: %d, size: %d", 
+	       arg.response.width,
+	       arg.response.height,
+	       arg.response.imgVector.size());
+      // NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
+      DetectedObject sample = 
+	sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height, "sample"); 
+    }
+
+    if (this->captureImage_client.call(arg)) {
+      ROS_INFO("Image width: %d, height: %d, size: %d", 
+	       arg.response.width,
+	       arg.response.height,
+	       arg.response.imgVector.size());
+      // NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
+      DetectedObject payloadBay =
+	payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height, "payload"); 
+      ROS_INFO("PB: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
+    }
+
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -47,8 +70,9 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 		 arg.response.height,
 		 arg.response.imgVector.size());
 	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
-	sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
-
+	DetectedObject sample =
+	  sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
+	
 	res.foundSample = false;
 	res.sample.pos.r     = 0.0f;
 	res.sample.pos.theta = 0.0f;
@@ -80,7 +104,8 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 		 arg.response.height,
 		 arg.response.imgVector.size());
 	// NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
-	payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
+	DetectedObject payloadBay =
+	  payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
 
 	res.foundPayloadBay = false;
 	res.payloadBay.pos.r     = 0.0f;

@@ -18,7 +18,7 @@
 #include "opencv/highgui.h"
 #include "Object_Tracker.h"
 
-#include "agse_package/sampleStateFromImage.h"
+#include "agse_package/detected_object.hpp"
 
 using namespace cv;
 
@@ -41,7 +41,7 @@ public:
 	void init();
 
 	// Main Real-Time Loop
-  void run( std::vector<unsigned char> & camera_image, 
+  DetectedObject run( std::vector<unsigned char> & camera_image, 
 	    int width, 
 	    int height, 
 	    const char* fname = "");
