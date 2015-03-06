@@ -12,16 +12,22 @@ void PayloadBay_Detector::run(std::vector<unsigned char> & raw_image_data,
 					     const char* fname)
 {
   std::vector<Marker> Markers;
-
+  std::vector<Point2f> Centers;
+  Point2f center(0.0f,0.0f);
   try {
     CamParam.resize(Size(height,width));
     Mat image = Mat(height,width, CV_8UC3, raw_image_data.data());
-    // Mat image = Mat(rawImage.rows, rawImage.cols, CV_8UC3);
-    // int from_to[] = { 0,2, 1,1, 2,0};
-    // mixChannels(&rawImage, 1, &image, 1, from_to, 3);
 
     MDetector.detect(image, Markers, CamParam, MarkerSize);
-
+    for (unsigned int i=0;i<Markers.size();i++) {
+      Centers.push_back(Markers[i].getCenter());
+      center += Centers[i];
+    }
+    center = center * (1.0f / (float)Centers.size());
+    Scalar color = Scalar(255, 
+			  255, 
+			  255);
+    circle(image,center,20.0f,color,-1);
     //for each marker, draw info and its boundaries in the image
     for (unsigned int i=0;i<Markers.size();i++) {
       Markers[i].draw(image,Scalar(0,0,255),2);
@@ -29,7 +35,7 @@ void PayloadBay_Detector::run(std::vector<unsigned char> & raw_image_data,
     //draw a 3d cube in each marker if there is 3d info
     if (  CamParam.isValid() && MarkerSize!=-1)
       for (unsigned int i=0;i<Markers.size();i++) {
-	CvDrawingUtils::draw3dCube(image,Markers[i],CamParam);
+	CvDrawingUtils::draw3dAxis(image,Markers[i],CamParam);
       }
 
     int nameLen = 0;
