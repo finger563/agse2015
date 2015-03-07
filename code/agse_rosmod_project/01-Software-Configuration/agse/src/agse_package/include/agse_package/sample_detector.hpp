@@ -41,10 +41,9 @@ public:
 	void init();
 
 	// Main Real-Time Loop
-  DetectedObject run( std::vector<unsigned char> & camera_image, 
-	    int width, 
-	    int height, 
-	    const char* fname = "");
+  DetectedObject run( Mat& image,
+		      Mat& maskOutput,
+		      const char* fname = "");
 
 private:
 	// Webcam feed

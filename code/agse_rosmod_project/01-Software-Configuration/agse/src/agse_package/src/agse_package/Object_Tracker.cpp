@@ -64,7 +64,7 @@ Mat Object_Tracker::PolygonApproximate(Mat filtered_output)
 }
 
 // Track Object
-Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
+Mat Object_Tracker::track(Mat raw_image, Mat filtered_output){
 
 	// Center of Object
 	int x = 0, y  = 0;

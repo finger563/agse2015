@@ -6,10 +6,9 @@ void PayloadBay_Detector::init(float msize, const char* camParamFileName)
   CamParam.readFromXMLFile(camParamFileName);
 }
 
-DetectedObject PayloadBay_Detector::run(std::vector<unsigned char> & raw_image_data, 
-					     int width, 
-					     int height, 
-					     const char* fname)
+DetectedObject PayloadBay_Detector::run( Mat& image, 
+					 Mat& maskOutput,
+					 const char* fname)
 {
   DetectedObject object;
   object.state = HIDDEN;
@@ -18,18 +17,19 @@ DetectedObject PayloadBay_Detector::run(std::vector<unsigned char> & raw_image_d
   Point2f center(0.0f,0.0f);
   float angle = 0.0f;
   try {
+    float width = image.rows;
+    float height = image.cols;
     CamParam.resize(Size(height,width));
-    Mat image = Mat(height,width, CV_8UC3, raw_image_data.data());
 
     MDetector.detect(image, Markers, CamParam, MarkerSize);
     //for each marker, draw info and its boundaries in the image
     for (unsigned int i=0;i<Markers.size();i++) {
-      Markers[i].draw(image,Scalar(0,0,255),2);
+      Markers[i].draw(maskOutput,Scalar(0,0,255),4);
     }
     //draw a 3d cube in each marker if there is 3d info
     if (  CamParam.isValid() && MarkerSize!=-1)
       for (unsigned int i=0;i<Markers.size();i++) {
-	CvDrawingUtils::draw3dAxis(image,Markers[i],CamParam);
+	CvDrawingUtils::draw3dAxis(maskOutput,Markers[i],CamParam);
       }
 
     if (Markers.size() > 0) {

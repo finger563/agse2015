@@ -24,17 +24,18 @@ void image_processor::Init(const ros::TimerEvent& event)
 	       arg.response.width,
 	       arg.response.height,
 	       arg.response.imgVector.size());
+      Mat image = Mat( arg.response.height, 
+		       arg.response.width, 
+		       CV_8UC3, 
+		       arg.response.imgVector.data());
+      Mat detectedObjectsMask;
       DetectedObject sample = 
-	sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height, "sample"); 
-    }
-
-    if (this->captureImage_client.call(arg)) {
-      ROS_INFO("Image width: %d, height: %d, size: %d", 
-	       arg.response.width,
-	       arg.response.height,
-	       arg.response.imgVector.size());
+	sampleDetector.run( image,
+			    detectedObjectsMask); 
       DetectedObject payloadBay =
-	payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height, "payload"); 
+	payloadBayDetector.run( image,
+				detectedObjectsMask); 
+      cv::imwrite("Sample-01-Raw.png", image+detectedObjectsMask);
       ROS_INFO("PB: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
     }
 
@@ -67,9 +68,14 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 		 arg.response.width,
 		 arg.response.height,
 		 arg.response.imgVector.size());
+	Mat image = Mat( arg.response.height, 
+			 arg.response.width, 
+			 CV_8UC3, 
+			 arg.response.imgVector.data());
+	Mat detectedObjectsMask;
 	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
 	DetectedObject sample =
-	  sampleDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
+	  sampleDetector.run(image,detectedObjectsMask); 
 	res.status = sample.state;
 	res.x = sample.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
 	res.y = sample.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
@@ -97,9 +103,14 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 		 arg.response.width,
 		 arg.response.height,
 		 arg.response.imgVector.size());
+	Mat image = Mat( arg.response.height, 
+			 arg.response.width, 
+			 CV_8UC3, 
+			 arg.response.imgVector.data());
+	Mat detectedObjectsMask;
 	// NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
 	DetectedObject payloadBay =
-	  payloadBayDetector.run(arg.response.imgVector, arg.response.width, arg.response.height); 
+	  payloadBayDetector.run(image,detectedObjectsMask); 
 	res.status = payloadBay.state;
 	res.x = payloadBay.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
 	res.y = payloadBay.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]

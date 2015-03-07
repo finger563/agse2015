@@ -14,10 +14,9 @@ using namespace aruco;
 class PayloadBay_Detector {
 public:
   void init(float msize, const char* camParamFileName);
-  DetectedObject run( std::vector<unsigned char> & raw_image_data, 
-			   int width, 
-			   int height, 
-			   const char* fname = "");
+  DetectedObject run( Mat& image,
+		      Mat& maskOutput,
+		      const char* fname = "");
 private:
   MarkerDetector MDetector;
   // real-world size of the markers
