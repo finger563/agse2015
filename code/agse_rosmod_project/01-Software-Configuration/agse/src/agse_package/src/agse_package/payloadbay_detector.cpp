@@ -1,4 +1,6 @@
 #include "agse_package/payloadbay_detector.hpp"
+#include "opencv/cv.h"
+#include "opencv/highgui.h"
 
 void PayloadBay_Detector::init(float msize, const char* camParamFileName)
 {
@@ -20,8 +22,18 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
     float width = image.cols;
     float height = image.rows;
     CamParam.resize(Size(height,width));
-
+    
+    // Converting to grayscale
+    Mat grayscale;
+    cvtColor(image, grayscale, CV_BGR2GRAY);
+    Mat eq_gray;
+    equalizeHist(grayscale, eq_gray);
+    Mat eq_gray_filtered;
+    threshold(eq_gray, eq_gray_filtered, 130, 255, 0);
+    cv::imwrite("Payload-Grayscale-Thresholded.png", eq_gray_filtered);
+    
     MDetector.detect(image, Markers, CamParam, MarkerSize);
+
     //for each marker, draw info and its boundaries in the image
     for (unsigned int i=0;i<Markers.size();i++) {
       Markers[i].draw(maskOutput,Scalar(0,0,255),4);
@@ -54,6 +66,9 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
       object.y = center.y;
       object.angle = angle;
     }
+
+    cv::imwrite("Payload-THresholded.png", MDetector.getThresholdedImage());
+    
 
     int nameLen = 0;
     if ( (nameLen = strlen(fname)) > 0 )

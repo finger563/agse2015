@@ -7,7 +7,7 @@
 
 #include "agse_package/Object_Tracker.h"
 
-float minArea = 100*100;
+float minArea = 200*200;
 float maxArea = 200000;
 float minRatio = 1.5f;
 float maxRatio = 4.0f;
@@ -163,7 +163,7 @@ vector<RotatedRect> Object_Tracker::track(Mat& raw_image, Mat& filtered_output, 
     if ( area > minArea && area < maxArea && 
 	 aspectRatio > minRatio && aspectRatio < maxRatio &&
 	 areaRatio > minAreaRatio && areaRatio < maxAreaRatio &&
-	 !onImageEdge )
+      	 !onImageEdge )
       {
 	tracked_contours.push_back(contours_poly[i]);
 	tracked_BB.push_back(boundRect[i]);

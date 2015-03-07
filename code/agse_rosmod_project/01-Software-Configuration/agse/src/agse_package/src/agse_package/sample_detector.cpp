@@ -11,8 +11,8 @@
 int hue_min = 0;
 int hue_max = 255;
 int saturation_min = 0;
-int saturation_max = 50;
-int value_min = 100;
+int saturation_max = 75;
+int value_min = 200;
 int value_max = 255;
 
 int min_grayscale_thresh = 190;
@@ -85,6 +85,30 @@ vector<RotatedRect> hsv_method(Mat &image, Mat& imgMask) {
 
    // Convert from RGB TO HSV space
   cvtColor(image, hsv_image, COLOR_BGR2HSV);
+
+  /*
+
+  Mat v_hist;
+  vector<Mat> planes;
+  split(hsv_image, planes);
+  int histSize = 256;
+  float range[] = {0, 256};
+  const float* histRange = {range};
+  bool uniform = true;
+  bool accumulate = false;
+
+  //  equalizeHist(hsv_image, eq_hist);
+  calcHist( &planes[2], 1, 0, Mat(), v_hist, 1, &histSize, &histRange, uniform, accumulate);
+
+  cv::imwrite("v_PLANES.png", planes[2]);
+  cv::imwrite("V_HIST_BEFORE_NORMALIZE.png", v_hist);
+
+  // Normalize
+  normalize(v_hist, v_hist, 0, hsv_image.rows, NORM_MINMAX, -1, Mat());
+
+  cv::imwrite("V_HIST.png", v_hist);
+
+  */
 
   // Filter HSV Image based on slider values
   inRange(hsv_image,

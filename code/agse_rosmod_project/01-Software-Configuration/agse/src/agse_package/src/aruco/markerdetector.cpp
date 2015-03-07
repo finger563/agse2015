@@ -49,7 +49,8 @@ MarkerDetector::MarkerDetector()
 {
     _doErosion=false; 
     _thresMethod=ADPT_THRES;
-    _thresParam1=_thresParam2=7;
+    _thresParam1=5;
+    _thresParam2=5;
     _cornerMethod=LINES;
     _markerWarpSize=56;
     _speed=0;
