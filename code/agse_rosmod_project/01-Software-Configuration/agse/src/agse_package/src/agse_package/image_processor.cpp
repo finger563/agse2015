@@ -28,7 +28,7 @@ void image_processor::Init(const ros::TimerEvent& event)
 		       arg.response.width, 
 		       CV_8UC3, 
 		       arg.response.imgVector.data());
-      Mat detectedObjectsMask;
+      Mat detectedObjectsMask = Mat::zeros(image.size(), CV_8UC3);
       DetectedObject sample = 
 	sampleDetector.run( image,
 			    detectedObjectsMask); 
@@ -36,7 +36,8 @@ void image_processor::Init(const ros::TimerEvent& event)
 	payloadBayDetector.run( image,
 				detectedObjectsMask); 
       cv::imwrite("Sample-01-Raw.png", image+detectedObjectsMask);
-      ROS_INFO("PB: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
+      ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
+      ROS_INFO("PayloadBay: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
     }
 
     // Stop Init Timer
@@ -72,7 +73,7 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 			 arg.response.width, 
 			 CV_8UC3, 
 			 arg.response.imgVector.data());
-	Mat detectedObjectsMask;
+	Mat detectedObjectsMask = Mat::zeros(image.size(), CV_8UC3);
 	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
 	DetectedObject sample =
 	  sampleDetector.run(image,detectedObjectsMask); 
@@ -107,7 +108,7 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 			 arg.response.width, 
 			 CV_8UC3, 
 			 arg.response.imgVector.data());
-	Mat detectedObjectsMask;
+	Mat detectedObjectsMask = Mat::zeros(image.size(), CV_8UC3);
 	// NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
 	DetectedObject payloadBay =
 	  payloadBayDetector.run(image,detectedObjectsMask); 

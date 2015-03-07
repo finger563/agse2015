@@ -138,12 +138,17 @@ DetectedObject Sample_Detector::run( Mat& image,
 
   Mat bitwise_and_tracked;
   std::cout << "Before Tracking" << std::endl;
-  bitwise_and_tracked = obj_tracker.track(image, AND_image);
+  vector<RotatedRect> tracked_objects = obj_tracker.track(image, AND_image, maskOutput);
   std::cout << "Done Tracking" << std::endl;
-  cv::imwrite("Sample-08-Bitwise-AND-Tracked.png", bitwise_and_tracked);
+  cv::imwrite("Sample-08-Bitwise-AND-Tracked.png", maskOutput);
 
-
-  maskOutput = bitwise_and_tracked;
+  if ( tracked_objects.size() > 0 )
+    {
+      object.state = DETECTED;
+      object.x = tracked_objects[0].center.x;
+      object.y = tracked_objects[0].center.y;
+      object.angle = tracked_objects[0].angle;
+    }
 
   return object;
 }

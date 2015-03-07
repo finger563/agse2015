@@ -23,7 +23,7 @@ public:
 	Mat PolygonApproximate(Mat filtered_output);
 
 	// Main Object Tracker Function
-	Mat track(Mat webcam_feed, Mat filterd_output);
+	vector<RotatedRect> track(Mat &raw_image, Mat &filtered_output, Mat& tracked_output);
 
         // Get Center Point of Detected Object
         Vector<Point2f> get_object_center();
