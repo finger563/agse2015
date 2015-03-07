@@ -153,7 +153,9 @@ DetectedObject Sample_Detector::run(std::vector<unsigned char> & camera_image,
   cv::imwrite("Sample-07-Bitwise-AND-Filtered.png", AND_image);
 
   Mat bitwise_and_tracked;
+  std::cout << "Before Tracking" << std::endl;
   bitwise_and_tracked = obj_tracker.track(image, AND_image);
+  std::cout << "Done Tracking" << std::endl;
   cv::imwrite("Sample-08-Bitwise-AND-Tracked.png", bitwise_and_tracked);
 
   return object;

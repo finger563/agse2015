@@ -138,13 +138,14 @@ Mat Object_Tracker::track(Mat webcam_feed, Mat filtered_output){
 		printf("area: %f, ratio: %f, h: %f, w: %f\n",area,ratio,height,width);
 		if ( area > minArea && area < maxArea && ratio > minRatio && ratio < maxRatio )
 		  {
+		    
 		    tracked_contours.push_back(contours_poly[i]);
 		    tracked_BB.push_back(boundRect[i]);
 		    objectAngle.push_back(boundRect[i].angle);
 		  } else 
 		  {
 		  }
-		std::cout << "Angle: " << objectAngle[i] << std::endl;		
+		//std::cout << "Angle: " << objectAngle[i] << std::endl;		
 	}
 
 	// Draw polygonal contour + bounding rects + circles
