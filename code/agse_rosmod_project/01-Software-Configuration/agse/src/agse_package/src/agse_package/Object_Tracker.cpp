@@ -7,13 +7,21 @@
 
 #include "agse_package/Object_Tracker.h"
 
+
+float minArea = 100*100;
+float maxArea = 1000*1000;
+float minRatio = 1.5f;
+float maxRatio = 4.5f;
+float minAreaRatio = 1.0f;
+float maxAreaRatio = 1.4f;
+
 RNG rng(12345);
 
 // Constructor
 Object_Tracker::Object_Tracker(){
   max_objects = 20;
-  min_area = 20*20;
-  max_area = 640*480;
+  min_area = minArea;
+  max_area = maxArea;
   object_angle = 0.0;
 }
 
@@ -107,6 +115,8 @@ vector<RotatedRect> Object_Tracker::track(Mat& raw_image, Mat& filtered_output, 
     //}
   }
 
+  contours_filtered = contours;
+
   std::cout << "Number of Objects: " << contours_filtered.size() << std::endl;
   vector<Vec4i> hierarchy_filtered;
 
@@ -123,20 +133,20 @@ vector<RotatedRect> Object_Tracker::track(Mat& raw_image, Mat& filtered_output, 
   vector<RotatedRect> tracked_BB;
   vector<float> objectAngle;
 	
-  float minArea = 100*100;
-  float maxArea = 1000*1000;
-  float minRatio = 2.0f;
-  float maxRatio = 4.0f;
   for(int i = 0; i < contours_filtered.size(); i++){
     approxPolyDP(Mat(contours_filtered[i]), contours_poly[i], 3, true);
     boundRect[i] = minAreaRect(Mat (contours_poly[i]));
-    float area, width,height,ratio;
+    float area, cArea, width, height, aspectRatio, areaRatio;
     width = max(boundRect[i].size.width,boundRect[i].size.height);
     height = min(boundRect[i].size.width,boundRect[i].size.height);
-    ratio = width/height;
+    aspectRatio = width/height;
     area = width * height;
-    printf("area: %f, ratio: %f, h: %f, w: %f\n",area,ratio,height,width);
-    if ( area > minArea && area < maxArea && ratio > minRatio && ratio < maxRatio )
+    cArea = contourArea(contours_poly[i]);
+    areaRatio = area/cArea;
+    printf("area: %f, cArea: %f, areaRatio: %f,aspectRatio: %f, h: %f, w: %f\n",area,cArea,areaRatio,aspectRatio,height,width);
+    if ( area > minArea && area < maxArea && 
+	 aspectRatio > minRatio && aspectRatio < maxRatio &&
+	 areaRatio > minAreaRatio && areaRatio < maxAreaRatio )
       {
 	tracked_contours.push_back(contours_poly[i]);
 	tracked_BB.push_back(boundRect[i]);

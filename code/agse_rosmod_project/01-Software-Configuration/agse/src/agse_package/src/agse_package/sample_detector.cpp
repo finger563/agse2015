@@ -7,7 +7,7 @@
 
 #include "agse_package/sample_detector.hpp"
 
-int sensitivity = 90;
+int sensitivity = 120;
 
 // Filter Global Variables
 int hue_min = 0;
@@ -16,6 +16,15 @@ int saturation_min = 0;
 int saturation_max = sensitivity;
 int value_min = 255-sensitivity;
 int value_max = 255;
+
+int min_grayscale_thresh = 120;
+int max_grayscale_thresh = 160;
+
+Size hsv_erode_size = Size(10, 10); 
+Size hsv_dilate_size = Size(25, 25); 
+
+Size grayscale_erode_size = Size(15, 15);
+Size grayscale_dilate_size = Size(50, 50);
 
 // Global callback function for sliders
 void slider_update(int, void*){}
@@ -72,9 +81,6 @@ Mat grayscale_image;
 Mat grayscale_filtered_image;
 Mat grayscale_tracked_image;
 
-Size erode_size;
-Size dilate_size;
-
 void hsv_method(Mat &image) {
 
   std::cout << "SAMPLE_DETECTOR::Starting HSV METHOD" << std::endl;
@@ -88,11 +94,8 @@ void hsv_method(Mat &image) {
 	  Scalar(hue_max, saturation_max, value_max),
 	  hsv_filtered_image);
 
-  erode_size = Size(3, 3); 
-  dilate_size = Size(8, 8); 
-
   // Erode and Dilate
-  obj_tracker.filter(hsv_filtered_image, erode_size, dilate_size);
+  obj_tracker.filter(hsv_filtered_image, hsv_erode_size, hsv_dilate_size);
 	
   cv::imwrite("Sample-02-HSV-Filtered.png", hsv_filtered_image);
 
@@ -105,17 +108,15 @@ void grayscale_method(Mat& image) {
   std::cout << "SAMPLE_DETECTOR::Starting Grayscale METHOD" << std::endl;
 
   cvtColor(image, grayscale_image, CV_BGR2GRAY);
+  cv::imwrite("Sample-04-Grayscale.png", grayscale_image);
 
-  threshold(grayscale_image, grayscale_filtered_image, 158, 160, 0);
-
-  erode_size = Size(15, 15);
-  dilate_size = Size(50, 50);
+  threshold(grayscale_image, grayscale_filtered_image, min_grayscale_thresh, max_grayscale_thresh, 0);
+  cv::imwrite("Sample-05-Grayscale-Threshold.png", grayscale_filtered_image);
 
   // Erode and Dilate
-  obj_tracker.filter(grayscale_filtered_image, erode_size, dilate_size);
+  obj_tracker.filter(grayscale_filtered_image, grayscale_erode_size, grayscale_dilate_size);
 	
-  cv::imwrite("Sample-04-Grayscale.png", grayscale_image);
-  cv::imwrite("Sample-05-Grayscale-Filtered.png", grayscale_filtered_image);
+  cv::imwrite("Sample-06-Grayscale-Filtered.png", grayscale_filtered_image);
 
   std::cout << "SAMPLE_DETECTOR::Completed Grayscale METHOD" << std::endl;
 
