@@ -7,23 +7,21 @@
 
 #include "agse_package/sample_detector.hpp"
 
-int sensitivity = 120;
-
 // Filter Global Variables
 int hue_min = 0;
 int hue_max = 255;
 int saturation_min = 0;
-int saturation_max = sensitivity;
-int value_min = 255-sensitivity;
+int saturation_max = 50;
+int value_min = 100;
 int value_max = 255;
 
-int min_grayscale_thresh = 120;
-int max_grayscale_thresh = 160;
+int min_grayscale_thresh = 190;
+int max_grayscale_thresh = 255;
 
-Size hsv_erode_size = Size(10, 10); 
-Size hsv_dilate_size = Size(25, 25); 
+Size hsv_erode_size = Size(5, 5); 
+Size hsv_dilate_size = Size(10, 10); 
 
-Size grayscale_erode_size = Size(15, 15);
+Size grayscale_erode_size = Size(20, 20);
 Size grayscale_dilate_size = Size(50, 50);
 
 // Global callback function for sliders
@@ -81,7 +79,7 @@ Mat grayscale_image;
 Mat grayscale_filtered_image;
 Mat grayscale_tracked_image;
 
-void hsv_method(Mat &image) {
+vector<RotatedRect> hsv_method(Mat &image, Mat& imgMask) {
 
   std::cout << "SAMPLE_DETECTOR::Starting HSV METHOD" << std::endl;
 
@@ -94,6 +92,8 @@ void hsv_method(Mat &image) {
 	  Scalar(hue_max, saturation_max, value_max),
 	  hsv_filtered_image);
 
+  cv::imwrite("Sample-HSV-Threshold.png", hsv_filtered_image);
+
   // Erode and Dilate
   obj_tracker.filter(hsv_filtered_image, hsv_erode_size, hsv_dilate_size);
 	
@@ -101,16 +101,20 @@ void hsv_method(Mat &image) {
 
   std::cout << "SAMPLE_DETECTOR::Completed HSV METHOD" << std::endl;
 
+  return obj_tracker.track(image,hsv_filtered_image,imgMask);
 }
 
-void grayscale_method(Mat& image) {
+vector<RotatedRect> grayscale_method(Mat& image, Mat& imgMask) {
 
   std::cout << "SAMPLE_DETECTOR::Starting Grayscale METHOD" << std::endl;
 
   cvtColor(image, grayscale_image, CV_BGR2GRAY);
+  Mat eq_gray;
+  equalizeHist(grayscale_image,eq_gray);
   cv::imwrite("Sample-04-Grayscale.png", grayscale_image);
+  cv::imwrite("Sample-Grayscale-equalized.png", eq_gray);
 
-  threshold(grayscale_image, grayscale_filtered_image, min_grayscale_thresh, max_grayscale_thresh, 0);
+  threshold(eq_gray, grayscale_filtered_image, min_grayscale_thresh, max_grayscale_thresh, 0);
   cv::imwrite("Sample-05-Grayscale-Threshold.png", grayscale_filtered_image);
 
   // Erode and Dilate
@@ -120,6 +124,7 @@ void grayscale_method(Mat& image) {
 
   std::cout << "SAMPLE_DETECTOR::Completed Grayscale METHOD" << std::endl;
 
+  return obj_tracker.track(image,grayscale_filtered_image,imgMask);
 }
 
 // Main Real-Time Loop
@@ -130,18 +135,32 @@ DetectedObject Sample_Detector::run( Mat& image,
   DetectedObject object;
   object.state = HIDDEN;
 
-  hsv_method(image);
-  grayscale_method(image);
+  Mat hsvMask = Mat::zeros(image.size(), CV_8UC3);
+  Mat grayMask = Mat::zeros(image.size(), CV_8UC3);
+  vector<RotatedRect> hsv_tracked_objects = hsv_method(image, hsvMask);
+  vector<RotatedRect> gray_tracked_objects = grayscale_method(image, grayMask);
+  vector<RotatedRect> tracked_objects;
 
-  Mat AND_image;
-  bitwise_and(hsv_filtered_image, grayscale_filtered_image, AND_image);
-  cv::imwrite("Sample-07-Bitwise-AND-Filtered.png", AND_image);
+  if ( hsv_tracked_objects.size() > 0 && gray_tracked_objects.size() > 0 )
+    {
+      Mat AND_image;
+      bitwise_and(hsv_filtered_image, grayscale_filtered_image, AND_image);
+      cv::imwrite("Sample-07-Bitwise-AND-Filtered.png", AND_image);
 
-  Mat bitwise_and_tracked;
-  std::cout << "Before Tracking" << std::endl;
-  vector<RotatedRect> tracked_objects = obj_tracker.track(image, AND_image, maskOutput);
-  std::cout << "Done Tracking" << std::endl;
-  cv::imwrite("Sample-08-Bitwise-AND-Tracked.png", maskOutput);
+      Mat bitwise_and_tracked;
+      std::cout << "Before Tracking" << std::endl;
+      tracked_objects = obj_tracker.track(image, AND_image, maskOutput);
+      std::cout << "Done Tracking" << std::endl;
+      cv::imwrite("Sample-08-Bitwise-AND-Tracked.png", maskOutput);
+    } else if ( hsv_tracked_objects.size() > 0 )
+    {
+      tracked_objects = hsv_tracked_objects;
+      maskOutput = hsvMask;
+    } else if ( gray_tracked_objects.size() > 0 )
+    {
+      tracked_objects = gray_tracked_objects;
+      maskOutput = grayMask;
+    }
 
   if ( tracked_objects.size() > 0 )
     {

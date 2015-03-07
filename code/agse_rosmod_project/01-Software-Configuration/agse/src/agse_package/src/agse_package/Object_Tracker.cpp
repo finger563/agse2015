@@ -7,11 +7,10 @@
 
 #include "agse_package/Object_Tracker.h"
 
-
 float minArea = 100*100;
-float maxArea = 1000*1000;
+float maxArea = 200000;
 float minRatio = 1.5f;
-float maxRatio = 4.5f;
+float maxRatio = 4.0f;
 float minAreaRatio = 1.0f;
 float maxAreaRatio = 1.4f;
 
@@ -136,6 +135,23 @@ vector<RotatedRect> Object_Tracker::track(Mat& raw_image, Mat& filtered_output, 
   for(int i = 0; i < contours_filtered.size(); i++){
     approxPolyDP(Mat(contours_filtered[i]), contours_poly[i], 3, true);
     boundRect[i] = minAreaRect(Mat (contours_poly[i]));
+
+    float imgwidth = raw_image.cols;
+    float imgheight = raw_image.rows;
+    bool onImageEdge = false;
+    Point2f rectPoints[4];
+    boundRect[i].points(rectPoints);
+    float epsilon = 5.0f;
+    for (int j=0;j<4;j++)
+      {
+	if ( rectPoints[j].x <= epsilon || rectPoints[j].x >= (imgwidth-epsilon) ||
+	     rectPoints[j].y <= epsilon || rectPoints[j].y >= (imgheight-epsilon) )
+	  {
+	    onImageEdge = true;
+	    break;
+	  }
+      }
+
     float area, cArea, width, height, aspectRatio, areaRatio;
     width = max(boundRect[i].size.width,boundRect[i].size.height);
     height = min(boundRect[i].size.width,boundRect[i].size.height);
@@ -143,10 +159,11 @@ vector<RotatedRect> Object_Tracker::track(Mat& raw_image, Mat& filtered_output, 
     area = width * height;
     cArea = contourArea(contours_poly[i]);
     areaRatio = area/cArea;
-    printf("area: %f, cArea: %f, areaRatio: %f,aspectRatio: %f, h: %f, w: %f\n",area,cArea,areaRatio,aspectRatio,height,width);
+    //printf("area: %f, cArea: %f, areaRatio: %f,aspectRatio: %f, h: %f, w: %f, angle: %f\n",area,cArea,areaRatio,aspectRatio,height,width,boundRect[i].angle);
     if ( area > minArea && area < maxArea && 
 	 aspectRatio > minRatio && aspectRatio < maxRatio &&
-	 areaRatio > minAreaRatio && areaRatio < maxAreaRatio )
+	 areaRatio > minAreaRatio && areaRatio < maxAreaRatio &&
+	 !onImageEdge )
       {
 	tracked_contours.push_back(contours_poly[i]);
 	tracked_BB.push_back(boundRect[i]);

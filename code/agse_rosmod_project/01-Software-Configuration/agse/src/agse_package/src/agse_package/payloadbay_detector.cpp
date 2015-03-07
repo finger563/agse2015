@@ -17,8 +17,8 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
   Point2f center(0.0f,0.0f);
   float angle = 0.0f;
   try {
-    float width = image.rows;
-    float height = image.cols;
+    float width = image.cols;
+    float height = image.rows;
     CamParam.resize(Size(height,width));
 
     MDetector.detect(image, Markers, CamParam, MarkerSize);
