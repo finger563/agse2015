@@ -226,12 +226,8 @@ add_dependencies(arm agse_package_generate_messages_cpp)
 add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/radial_actuator_controller.cpp  
                 src/agse_package/vertical_actuator_controller.cpp  
-                src/agse_package/servo_controller.cpp  
 		## Start positioning CPP Marker
 		src/agse_package/gpio.cpp
-		src/agse_package/Dynamixel.cpp
-		src/agse_package/SerialPort.cpp
-		src/agse_package/Utils.cpp
 		src/agse_package/eqep.cpp
                 ## End positioning CPP Marker
               )
@@ -299,6 +295,20 @@ target_link_libraries(detector
                       ## End detector Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(detector agse_package_generate_messages_cpp)
+add_executable( servos src/agse_package/servos_main.cpp src/agse_package/Component.cpp 
+                src/agse_package/servo_controller.cpp  
+		## Start servos CPP Marker
+		src/agse_package/Dynamixel.cpp
+		src/agse_package/SerialPort.cpp
+		src/agse_package/Utils.cpp
+		## End servos CPP Marker
+              )
+target_link_libraries(servos 
+                      ## Start servos Target Link Libraries Marker
+
+                      ## End servos Target Link Libraries Marker
+                      ${catkin_LIBRARIES})
+add_dependencies(servos agse_package_generate_messages_cpp)
 
 
 
