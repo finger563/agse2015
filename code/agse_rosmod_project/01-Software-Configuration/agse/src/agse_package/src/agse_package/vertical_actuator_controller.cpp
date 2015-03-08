@@ -16,7 +16,7 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   paused = true;
 
   // THESE NEED TO BE UPDATED
-  epsilon = 5;
+  epsilon = 10;
   motorForwardPin = 86;  // connected to GPIO2_22, pin P8_27
   motorBackwardPin = 87; // connected to GPIO2_23, pin P8_29
   
@@ -32,7 +32,7 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   verticalMotoreQEP.initialize("/sys/devices/ocp.3/48304000.epwmss/48304180.eqep", eQEP::eQEP_Mode_Absolute);
   verticalMotoreQEP.set_period(vm_eqep_period);
   // initialize the goal position to 0
-  verticalGoal = 0;
+  verticalGoal = 1000;
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -68,15 +68,16 @@ bool vertical_actuator_controller::verticalPosCallback(agse_package::verticalPos
 void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for verticalPosTimer 
-  if (!paused)
+  if (paused)
     {
       // read current value for vertical position (encoder)
-      verticalCurrent = verticalMotoreQEP.get_position();
-      ROS_INFO("Vertical Actuator Encoder Reading: %d",verticalCurrent);
+      // verticalCurrent = verticalMotoreQEP.get_position();
+      //ROS_INFO("Vertical Actuator Encoder Reading: %d",verticalCurrent);
 
       unsigned int adcVal = 0;
       adc_get_value(adcPin,&adcVal);
-      ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
+      verticalCurrent = adcVal;
+      //ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
 
       // update motor based on current value
       if ( abs(verticalGoal-verticalCurrent) > epsilon ) // if there's significant reason to move
@@ -91,6 +92,11 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
 	      gpio_set_value(motorForwardPin,LOW);
 	      gpio_set_value(motorBackwardPin,HIGH);
 	    }
+	}
+      else
+	{
+	  gpio_set_value(motorForwardPin,LOW);
+	  gpio_set_value(motorBackwardPin,LOW);
 	}
     }
 }

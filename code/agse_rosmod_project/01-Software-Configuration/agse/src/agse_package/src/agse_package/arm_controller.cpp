@@ -488,21 +488,21 @@ void arm_controller::Init(const ros::TimerEvent& event)
   currentState = INIT;
 
   // need to initialize the min and max sensor values
-  maxRadialPos       = -1.0f;
-  maxVerticalPos     = -1.0f;
+  maxRadialPos       = 4000;
+  maxVerticalPos     = 3000;
   maxArmRotation     = 330.0f;
-  maxGripperRotation = 330.0f;
-  maxGripperPos      = 330.0f;
+  maxGripperRotation = 90.0f;
+  maxGripperPos      = 180.0f;
 
-  minRadialPos       = -1.0f;
-  minVerticalPos     = -1.0f;
+  minRadialPos       = 300;
+  minVerticalPos     = 100;
   minArmRotation     = 0.0f;
   minGripperRotation = 0.0f;
   minGripperPos      = 0.0f;
 
   // need to initialize the gripper's state sensor values
-  gripperPosOpened = 180.0f;
-  gripperPosClosed = 0.0f;
+  gripperPosOpened = 0.0f;
+  gripperPosClosed = 90.0f;
 
   // need to properly initialize the current sensor readings
   currentRadialPos        = -1.0f;
