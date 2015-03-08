@@ -16,7 +16,7 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   paused = true;
 
   // THESE NEED TO BE UPDATED
-  epsilon = 5;
+  epsilon = 10;
   motorForwardPin = 88;     // connected to GPIO2_24, pin P8_28
   motorBackwardPin = 89;    // connected to GPIO2_25, pin P8_30
   
@@ -32,7 +32,7 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   radialMotoreQEP.initialize("/sys/devices/ocp.3/48302000.epwmss/48302180.eqep", eQEP::eQEP_Mode_Absolute);
   radialMotoreQEP.set_period(rm_eqep_period);
   // initialize the goal position to 0
-  radialGoal = 0;
+  radialGoal = 1000;
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -68,15 +68,16 @@ bool radial_actuator_controller::radialPosCallback(agse_package::radialPos::Requ
 void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for radialPosTimer 
-  if (!paused)
+  if (paused)
     {
       // read current value for radial position (encoder)
-      radialCurrent = radialMotoreQEP.get_position();
-      ROS_INFO("Raidal Actuator Encoder Reading: %d",radialCurrent);
+      //      radialCurrent = radialMotoreQEP.get_position();
+      //ROS_INFO("Raidal Actuator Encoder Reading: %d",radialCurrent);
 
       unsigned int adcVal = 0;
       adc_get_value(adcPin,&adcVal);
-      ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
+      radialCurrent = adcVal;
+      //ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
 
       // update motor based on current value
       if ( abs(radialGoal-radialCurrent) > epsilon ) // if there's significant reason to move
@@ -91,6 +92,11 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
 	      gpio_set_value(motorForwardPin,LOW);
 	      gpio_set_value(motorBackwardPin,HIGH);
 	    }
+	}
+      else
+	{
+	  gpio_set_value(motorForwardPin,LOW);
+	  gpio_set_value(motorBackwardPin,LOW);
 	}
     }
 }
