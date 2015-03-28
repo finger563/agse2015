@@ -67,11 +67,33 @@ class user_input_controller : public Component
 
 
         //# Start User Private Variables Marker
-  bool paused;
-  // pin for pause switch
-  unsigned int pauseSwitchPin;
-  // variable to keep track of switch state
-  unsigned int pauseSwitchState;
+        bool paused;
+
+        // Pins for Pause (AMBER) Missile Switch
+  unsigned int pauseSwitchPin; //63
+  unsigned int pauseSwitch_LEDPin; //62
+
+        // Pins for Manual Override (RED) Missile Switch
+  unsigned int manualSwitchPin; //37
+  unsigned int manualSwitch_LEDPin; //36
+ 
+        // Pins for halt (BLUE) Missile Switch
+  unsigned int haltSwitchPin; //33
+  unsigned int haltSwitch_LEDPin; //32
+
+        // Pin for Pause LED
+  unsigned int pauseLED; //76
+        // Pin for Alarm LED
+        unsigned int alarmLED;
+        // Pin for Sample LED
+        unsigned int sampleLED[3];
+        // Pin for Bay LED
+        unsigned int bayLED[3];
+        // Pin for Init LED
+        unsigned int initLED[3];
+
+        // variable to keep track of switch state
+        unsigned int pauseSwitchState;
         //# End User Private Variables Marker
 };
 
