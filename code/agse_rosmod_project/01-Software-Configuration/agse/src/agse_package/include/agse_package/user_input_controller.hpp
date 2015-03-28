@@ -9,6 +9,9 @@
 // --------------------------------
 //# Start User Includes Marker
 #include "agse_package/gpio.h"
+//#include "agse_package/uip.h"
+#include "opencv/cv.h"
+#include "opencv/highgui.h"
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
@@ -94,6 +97,13 @@ class user_input_controller : public Component
 
         // variable to keep track of switch state
         unsigned int pauseSwitchState;
+
+  // Four Images to show in UIP
+  IplImage * img1;
+  IplImage * img2;
+  IplImage * img3;
+  IplImage * img4;
+
         //# End User Private Variables Marker
 };
 
