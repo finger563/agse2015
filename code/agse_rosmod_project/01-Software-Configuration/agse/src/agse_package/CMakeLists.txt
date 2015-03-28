@@ -243,9 +243,25 @@ add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package
 		src/agse_package/gpio.cpp
                 ## End user_input CPP Marker
               )
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+## Start Include Directories Marker
+  /usr/include/opencv2
+  ${OpenCV_INCLUDE_DIRS}
+## End Include Directories Marker
+)
 target_link_libraries(user_input 
                       ## Start user_input Target Link Libraries Marker
-
+                      opencv_core 
+                      opencv_imgproc 
+                      opencv_highgui 
+                      opencv_contrib
+                      opencv_legacy
+                      opencv_photo
+                      opencv_video
+                      opencv_videostab
+		      opencv_calib3d
+		      opencv_ml
                       ## End user_input Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(user_input agse_package_generate_messages_cpp)
