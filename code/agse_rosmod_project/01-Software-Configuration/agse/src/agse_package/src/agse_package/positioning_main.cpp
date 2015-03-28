@@ -8,7 +8,6 @@
 // Include all components this actor requires
 #include "agse_package/radial_actuator_controller.hpp" 
 #include "agse_package/vertical_actuator_controller.hpp" 
-#include "agse_package/servo_controller.hpp" 
 
 
 void componentThread(Component* compPtr)
@@ -33,15 +32,12 @@ int main(int argc, char **argv)
     // Create Component Objects
     radial_actuator_controller radial_controller_i(nodeName, "radial_controller_i", argc, argv); 
     vertical_actuator_controller vertical_controller_i(nodeName, "vertical_controller_i", argc, argv); 
-    servo_controller servo_controller_i(nodeName, "servo_controller_i", argc, argv); 
 
     // Create Component Threads
     boost::thread radial_controller_i_thread(componentThread, &radial_controller_i);
     ROS_INFO("Node positioning has started radial_controller_i");
     boost::thread vertical_controller_i_thread(componentThread, &vertical_controller_i);
     ROS_INFO("Node positioning has started vertical_controller_i");
-    boost::thread servo_controller_i_thread(componentThread, &servo_controller_i);
-    ROS_INFO("Node positioning has started servo_controller_i");
 
 
     ROS_INFO_STREAM("NodeMain thread id = " << boost::this_thread::get_id());
@@ -49,7 +45,6 @@ int main(int argc, char **argv)
     // Create Component Threads
     radial_controller_i_thread.join();
     vertical_controller_i_thread.join();
-    servo_controller_i_thread.join();
 
 
     return 0; 

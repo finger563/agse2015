@@ -267,7 +267,6 @@ package agse_package
             // Instantiating components in ROS node
      	    component<radial_actuator_controller> radial_controller_i;
      	    component<vertical_actuator_controller> vertical_controller_i;
-     	    component<servo_controller> servo_controller_i;
 	}
         node user_input 
 	{
@@ -283,6 +282,11 @@ package agse_package
 	{
             // Instantiating components in ROS node
      	    component<image_processor> image_processor_i;
+	}
+        node servos 
+	{
+            // Instantiating components in ROS node
+     	    component<servo_controller> servo_controller_i;
 	}
     }
 }

@@ -226,12 +226,8 @@ add_dependencies(arm agse_package_generate_messages_cpp)
 add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp 
                 src/agse_package/radial_actuator_controller.cpp  
                 src/agse_package/vertical_actuator_controller.cpp  
-                src/agse_package/servo_controller.cpp  
 		## Start positioning CPP Marker
 		src/agse_package/gpio.cpp
-		src/agse_package/Dynamixel.cpp
-		src/agse_package/SerialPort.cpp
-		src/agse_package/Utils.cpp
 		src/agse_package/eqep.cpp
                 ## End positioning CPP Marker
               )
@@ -247,9 +243,25 @@ add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package
 		src/agse_package/gpio.cpp
                 ## End user_input CPP Marker
               )
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+## Start Include Directories Marker
+  /usr/include/opencv2
+  ${OpenCV_INCLUDE_DIRS}
+## End Include Directories Marker
+)
 target_link_libraries(user_input 
                       ## Start user_input Target Link Libraries Marker
-
+                      opencv_core 
+                      opencv_imgproc 
+                      opencv_highgui 
+                      opencv_contrib
+                      opencv_legacy
+                      opencv_photo
+                      opencv_video
+                      opencv_videostab
+		      opencv_calib3d
+		      opencv_ml
                       ## End user_input Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(user_input agse_package_generate_messages_cpp)
@@ -299,6 +311,20 @@ target_link_libraries(detector
                       ## End detector Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(detector agse_package_generate_messages_cpp)
+add_executable( servos src/agse_package/servos_main.cpp src/agse_package/Component.cpp 
+                src/agse_package/servo_controller.cpp  
+		## Start servos CPP Marker
+		src/agse_package/Dynamixel.cpp
+		src/agse_package/SerialPort.cpp
+		src/agse_package/Utils.cpp
+		## End servos CPP Marker
+              )
+target_link_libraries(servos 
+                      ## Start servos Target Link Libraries Marker
+
+                      ## End servos Target Link Libraries Marker
+                      ${catkin_LIBRARIES})
+add_dependencies(servos agse_package_generate_messages_cpp)
 
 
 

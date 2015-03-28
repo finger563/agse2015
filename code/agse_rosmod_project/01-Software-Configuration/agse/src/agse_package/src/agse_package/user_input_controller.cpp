@@ -1,7 +1,7 @@
 #include "agse_package/user_input_controller.hpp"
 
 //# Start User Globals Marker
-
+#include "agse_package/uip.h"
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -15,12 +15,33 @@ void user_input_controller::Init(const ros::TimerEvent& event)
     // Initialize Component
   paused = true;
 
-  // THESE NEED TO BE UPDATED
-  pauseSwitchPin = 57;
-
-  // set up the pins to control the h-bridge
+  // PAUSE Switch
+  pauseSwitchPin = 63;
   gpio_export(pauseSwitchPin);
   gpio_set_dir(pauseSwitchPin,INPUT_PIN);
+
+  // PAUSE LED on Switch
+  pauseSwitch_LEDPin = 62;
+  gpio_export(pauseSwitch_LEDPin);
+  gpio_set_dir(pauseSwitch_LEDPin, OUTPUT_PIN);
+
+  // PAUSE MAIN LED
+  pauseLED = 76;
+  gpio_export(pauseLED);
+  gpio_set_dir(pauseLED, OUTPUT_PIN);
+
+  manualSwitchPin = 37;
+  manualSwitch_LEDPin = 36;
+
+  haltSwitchPin = 33;
+  haltSwitch_LEDPin = 32;
+
+  // The Four Images to show in UIP
+  img1 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/01.png");
+  img2 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/02.png");
+  img3 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/03.png");
+  img4 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/04.png");
+
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -47,6 +68,9 @@ void user_input_controller::payloadBayState_sub_OnOneData(const agse_package::pa
 //# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
+  gpio_set_value(pauseSwitch_LEDPin, HIGH);
+  cvShowManyImages("UIP", 4, img1, img2, img3, img4);
+
     // Business Logic for userInputTimer 
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
@@ -56,10 +80,16 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
       agse_package::controlInputs control;
       control.paused = paused;
       controlInputs_pub.publish(control);
-      if (paused)
+      if (paused) {
 	ROS_INFO("Pausing the system!");
-      else
+	gpio_set_value(pauseLED, HIGH);
+	gpio_set_value(pauseSwitch_LEDPin, HIGH);
+    }
+      else {
 	ROS_INFO("Unpausing the system!");
+	gpio_set_value(pauseLED, LOW);
+	gpio_set_value(pauseSwitch_LEDPin, LOW);
+      }
     }
 }
 //# End userInputTimerCallback Marker
