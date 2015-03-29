@@ -1,7 +1,7 @@
 #include "agse_package/radial_actuator_controller.hpp"
 
 //# Start User Globals Marker
-
+#include <stdlib.h>
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -32,7 +32,15 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   radialMotoreQEP.initialize("/sys/devices/ocp.3/48302000.epwmss/48302180.eqep", eQEP::eQEP_Mode_Absolute);
   radialMotoreQEP.set_period(rm_eqep_period);
   // initialize the goal position to 0
-  radialGoal = 1000;
+
+  // Command line args for radial goal
+  for (int i = 0; i < node_argc; i++) {
+    if (!strcmp(node_argv[i], "-r")) {
+      radialGoal = atof(node_argv[i+1]);
+    }
+  }
+
+  //  radialGoal = 1000;
     // Stop Init Timer
     initOneShotTimer.stop();
 }

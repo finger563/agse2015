@@ -1,7 +1,7 @@
 #include "agse_package/servo_controller.hpp"
 
 //# Start User Globals Marker
-
+#include <stdlib.h>
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -20,9 +20,20 @@ void servo_controller::Init(const ros::TimerEvent& event)
   gripperPositionID = 1;
   if (serialPort.connect(portName)!=0)
     {
-      armRotationGoal = 30.0f;
-      gripperRotationGoal = 90.0f;
-      gripperPosGoal = 0.0f;
+
+      // Command line args for servo control
+      for (int i = 0; i < node_argc; i++) {
+	if (!strcmp(node_argv[i], "-a"))
+	  armRotationGoal = atof(node_argv[i+1]);
+	else if (!strcmp(node_argv[i], "-r"))
+	  gripperRotationGoal = atof(node_argv[i+1]);
+	else if (!strcmp(node_argv[i], "-p"))
+	  gripperPosGoal = atof(node_argv[i+1]);
+      }
+
+      //      armRotationGoal = 30.0f;
+      //gripperRotationGoal = 90.0f;
+      //gripperPosGoal = 0.0f;
     }
   else
     {
