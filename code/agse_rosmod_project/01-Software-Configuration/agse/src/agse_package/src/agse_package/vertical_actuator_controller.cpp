@@ -1,7 +1,7 @@
 #include "agse_package/vertical_actuator_controller.hpp"
 
 //# Start User Globals Marker
-
+#include <stdlib.h>
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -32,7 +32,14 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   verticalMotoreQEP.initialize("/sys/devices/ocp.3/48304000.epwmss/48304180.eqep", eQEP::eQEP_Mode_Absolute);
   verticalMotoreQEP.set_period(vm_eqep_period);
   // initialize the goal position to 0
-  verticalGoal = 1000;
+
+  // Command line args for vertical goal
+  for (int i = 0; i < node_argc; i++) {
+    if (!strcmp(node_argv[i], "-v"))
+      verticalGoal = atof(node_argv[i+1]);
+  }
+
+  //verticalGoal = 1000;
     // Stop Init Timer
     initOneShotTimer.stop();
 }
