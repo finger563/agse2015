@@ -19,6 +19,9 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   epsilon = 10;
   motorForwardPin = 86;  // connected to GPIO2_22, pin P8_27
   motorBackwardPin = 87; // connected to GPIO2_23, pin P8_29
+
+  // Limit Switch Pin GPIO P8_20 & P8_21
+  
   
   adcPin = 1;  // connected to ADC1, pin P9_40
 

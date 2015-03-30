@@ -19,6 +19,9 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   epsilon = 10;
   motorForwardPin = 88;     // connected to GPIO2_24, pin P8_28
   motorBackwardPin = 89;    // connected to GPIO2_25, pin P8_30
+
+  // Limit Switch Pin GPIO P8_20 & P8_21
+  
   
   adcPin = 0;  // connected to ADC0, pin P9_39
 

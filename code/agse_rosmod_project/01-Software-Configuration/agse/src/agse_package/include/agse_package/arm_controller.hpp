@@ -9,6 +9,7 @@
 // --------------------------------
 //# Start User Includes Marker
 #include "agse_package/detected_object.hpp"
+#include "agse_package/gpio.h"
 //# End User Includes Marker
 
 #include "agse_package/sampleState.h"
