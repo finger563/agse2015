@@ -89,10 +89,15 @@ void arm_controller::Init_StateFunc()
   // Whatever should be here, not quite sure if this is needed.
   // perhaps do calibration (hit limit switches) of linear actuators
   currentState = FINDING_PB;
+
+  call_at_timer = true;
 }
 
 void arm_controller::Finding_PB_StateFunc()
 {
+
+  call_at_timer = false;
+
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
@@ -209,6 +214,9 @@ void arm_controller::Finding_PB_StateFunc()
 
 void arm_controller::Opening_PB_StateFunc()
 {
+
+  call_at_timer = false;
+
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -227,6 +235,9 @@ void arm_controller::Opening_PB_StateFunc()
 
 void arm_controller::Finding_Sample_StateFunc()
 {
+
+  call_at_timer = false;
+
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
@@ -343,6 +354,9 @@ void arm_controller::Finding_Sample_StateFunc()
 
 void arm_controller::Grabbing_Sample_StateFunc()
 {
+
+  call_at_timer = false;
+
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -381,6 +395,9 @@ void arm_controller::Grabbing_Sample_StateFunc()
 
 void arm_controller::Carrying_Sample_StateFunc()
 {
+
+  call_at_timer = false;
+
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -411,6 +428,9 @@ void arm_controller::Carrying_Sample_StateFunc()
 
 void arm_controller::Inserting_Sample_StateFunc()
 {
+
+  call_at_timer = false;
+
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -430,6 +450,9 @@ void arm_controller::Inserting_Sample_StateFunc()
 
 void arm_controller::Closing_PB_StateFunc()
 {
+
+  call_at_timer = false;
+
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -451,6 +474,9 @@ void arm_controller::Closing_PB_StateFunc()
 
 void arm_controller::Moving_Away_StateFunc()
 {
+
+  call_at_timer = false;
+
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -568,7 +594,7 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
     {
       UpdateSensorData();
       // If we haven't gotten where the state said we should go, return
-      if ( !CheckGoals() )
+      if ( !CheckGoals() && !call_at_timer )
 	return;
       switch (currentState)
 	{
