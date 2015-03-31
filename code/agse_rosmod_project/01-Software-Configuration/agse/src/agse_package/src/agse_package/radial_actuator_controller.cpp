@@ -17,8 +17,8 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
 
   // THESE NEED TO BE UPDATED
   epsilon = 10;
-  motorForwardPin = 88;     // connected to GPIO2_24, pin P8_28
-  motorBackwardPin = 89;    // connected to GPIO2_25, pin P8_30
+  motorForwardPin = 87; //88;     // connected to GPIO2_24, pin P8_28
+  motorBackwardPin = 86; //89;    // connected to GPIO2_25, pin P8_30
 
   // Limit Switch Pin GPIO P8_20 & P8_21
   
@@ -32,16 +32,21 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(motorBackwardPin,OUTPUT_PIN);
   // set up the encoder module
   rm_eqep_period = 1000000000L;
-  radialMotoreQEP.initialize("/sys/devices/ocp.3/48302000.epwmss/48302180.eqep", eQEP::eQEP_Mode_Absolute);
+  radialMotoreQEP.initialize("/sys/devices/ocp.3/48304000.epwmss/48304180.eqep", eQEP::eQEP_Mode_Absolute);
   radialMotoreQEP.set_period(rm_eqep_period);
   // initialize the goal position to 0
 
   // Command line args for radial goal
   for (int i = 0; i < node_argc; i++) {
     if (!strcmp(node_argv[i], "-r")) {
-      radialGoal = atof(node_argv[i+1]);
+      radialGoal = atoi(node_argv[i+1]);
+    }
+    if (!strcmp(node_argv[i], "-e")) {
+      epsilon = atoi(node_argv[i+1]);
     }
   }
+
+  ROS_INFO("RADIAL GOAL SET TO : %d",radialGoal);
 
   //  radialGoal = 1000;
     // Stop Init Timer
@@ -82,12 +87,12 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
   if (paused)
     {
       // read current value for radial position (encoder)
-      //      radialCurrent = radialMotoreQEP.get_position();
+      radialCurrent = radialMotoreQEP.get_position();
       //ROS_INFO("Raidal Actuator Encoder Reading: %d",radialCurrent);
 
-      unsigned int adcVal = 0;
-      adc_get_value(adcPin,&adcVal);
-      radialCurrent = adcVal;
+      //unsigned int adcVal = 0;
+      //adc_get_value(adcPin,&adcVal);
+      //radialCurrent = adcVal;
       //ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
 
       // update motor based on current value

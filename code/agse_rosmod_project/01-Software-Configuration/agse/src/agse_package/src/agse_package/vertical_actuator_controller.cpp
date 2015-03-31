@@ -17,8 +17,8 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
 
   // THESE NEED TO BE UPDATED
   epsilon = 10;
-  motorForwardPin = 86;  // connected to GPIO2_22, pin P8_27
-  motorBackwardPin = 87; // connected to GPIO2_23, pin P8_29
+  motorForwardPin = 89; //86;  // connected to GPIO2_22, pin P8_27
+  motorBackwardPin = 88; //87; // connected to GPIO2_23, pin P8_29
 
   // Limit Switch Pin GPIO P8_20 & P8_21
   
@@ -32,15 +32,20 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(motorBackwardPin,OUTPUT_PIN);
   // set up the encoder module
   vm_eqep_period = 1000000000L;
-  verticalMotoreQEP.initialize("/sys/devices/ocp.3/48304000.epwmss/48304180.eqep", eQEP::eQEP_Mode_Absolute);
+  verticalMotoreQEP.initialize("/sys/devices/ocp.3/48302000.epwmss/48302180.eqep", eQEP::eQEP_Mode_Absolute);
   verticalMotoreQEP.set_period(vm_eqep_period);
   // initialize the goal position to 0
 
   // Command line args for vertical goal
   for (int i = 0; i < node_argc; i++) {
     if (!strcmp(node_argv[i], "-v"))
-      verticalGoal = atof(node_argv[i+1]);
+      verticalGoal = atoi(node_argv[i+1]);
+    if (!strcmp(node_argv[i], "-e")) {
+      epsilon = atoi(node_argv[i+1]);
+    }
   }
+
+  ROS_INFO("VERTICAL GOAL SET TO : %d",verticalGoal);
 
   //verticalGoal = 1000;
     // Stop Init Timer
@@ -81,12 +86,12 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
   if (paused)
     {
       // read current value for vertical position (encoder)
-      // verticalCurrent = verticalMotoreQEP.get_position();
+      verticalCurrent = verticalMotoreQEP.get_position();
       //ROS_INFO("Vertical Actuator Encoder Reading: %d",verticalCurrent);
 
-      unsigned int adcVal = 0;
-      adc_get_value(adcPin,&adcVal);
-      verticalCurrent = adcVal;
+      //unsigned int adcVal = 0;
+      //adc_get_value(adcPin,&adcVal);
+      //verticalCurrent = adcVal;
       //ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
 
       // update motor based on current value

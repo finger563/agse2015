@@ -68,12 +68,13 @@ void user_input_controller::payloadBayState_sub_OnOneData(const agse_package::pa
 //# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
-  gpio_set_value(pauseSwitch_LEDPin, HIGH);
-  cvShowManyImages("UIP", 4, img1, img2, img3, img4);
+  //  gpio_set_value(pauseSwitch_LEDPin, HIGH);
+  //  cvShowManyImages("UIP", 4, img1, img2, img3, img4);
 
     // Business Logic for userInputTimer 
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
+  ROS_INFO("Puase Switch State: %d", pauseSwitchState);
   if ( previousSwitchState != pauseSwitchState )
     {
       paused = (pauseSwitchState == HIGH) ? true : false;
