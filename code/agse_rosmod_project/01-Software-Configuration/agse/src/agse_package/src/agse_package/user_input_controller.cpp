@@ -15,26 +15,25 @@ void user_input_controller::Init(const ros::TimerEvent& event)
     // Initialize Component
   paused = true;
 
-  // PAUSE Switch
-  pauseSwitchPin = 63;
+  // PAUSE Switch - Amber
+  pauseSwitchPin = 67;
   gpio_export(pauseSwitchPin);
   gpio_set_dir(pauseSwitchPin,INPUT_PIN);
 
-  // PAUSE LED on Switch
-  pauseSwitch_LEDPin = 62;
-  gpio_export(pauseSwitch_LEDPin);
-  gpio_set_dir(pauseSwitch_LEDPin, OUTPUT_PIN);
+  // MANUAL Switch - Blue
+  manualSwitchPin = 68;
+  gpio_export(manualSwitchPin);
+  gpio_set_dir(manualSwitchPin,INPUT_PIN);
 
-  // PAUSE MAIN LED
-  pauseLED = 76;
-  gpio_export(pauseLED);
-  gpio_set_dir(pauseLED, OUTPUT_PIN);
+  // HALT Switch - Red
+  haltSwitchPin = 69;
+  gpio_export(haltSwitchPin);
+  gpio_set_dir(haltSwitchPin,INPUT_PIN);
 
-  manualSwitchPin = 37;
-  manualSwitch_LEDPin = 36;
-
-  haltSwitchPin = 33;
-  haltSwitch_LEDPin = 32;
+  // PAUSE MAIN LED - Needs to be updated
+  //  pauseLED = 76;
+  // gpio_export(pauseLED);
+  //gpio_set_dir(pauseLED, OUTPUT_PIN);
 
   // The Four Images to show in UIP
   img1 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/01.png");
@@ -68,12 +67,13 @@ void user_input_controller::payloadBayState_sub_OnOneData(const agse_package::pa
 //# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
-  gpio_set_value(pauseSwitch_LEDPin, HIGH);
-  cvShowManyImages("UIP", 4, img1, img2, img3, img4);
+  //  gpio_set_value(pauseSwitch_LEDPin, HIGH);
+  //  cvShowManyImages("UIP", 4, img1, img2, img3, img4);
 
     // Business Logic for userInputTimer 
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
+  ROS_INFO("Puase Switch State: %d", pauseSwitchState);
   if ( previousSwitchState != pauseSwitchState )
     {
       paused = (pauseSwitchState == HIGH) ? true : false;
