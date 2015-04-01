@@ -31,7 +31,7 @@ class arm_controller : public Component
 {
     public:
         // Component arm_controller Constructor
-        arm_controller(std::string nodeName, std::string compName, int argc, char **argv) : Component(nodeName, compName, argc, argv) {}
+        arm_controller(std::string hostName, std::string nodeName, std::string compName, int argc, char **argv) : Component(hostName, nodeName, compName, argc, argv) {}
 
         // These functions' business logic will be filled in by the user:
 

@@ -19,10 +19,15 @@ void componentThread(Component* compPtr)
 int main(int argc, char **argv)
 {
     std::string nodeName = "positioning";
+    std::string hostName = "localhost";
 
     for(int i = 0; i < argc; i++)
+    {
         if(!strcmp(argv[i], "-nodename"))
             nodeName = argv[i+1];
+	if(!strcmp(argv[i], "-hostname"))
+	    hostName = argv[i+1];
+    }
 
     ros::init(argc, argv, nodeName.c_str());
 
@@ -30,8 +35,8 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     // Create Component Objects
-    radial_actuator_controller radial_controller_i(nodeName, "radial_controller_i", argc, argv); 
-    vertical_actuator_controller vertical_controller_i(nodeName, "vertical_controller_i", argc, argv); 
+    radial_actuator_controller radial_controller_i(hostName, nodeName, "radial_controller_i", argc, argv); 
+    vertical_actuator_controller vertical_controller_i(hostName, nodeName, "vertical_controller_i", argc, argv); 
 
     // Create Component Threads
     boost::thread radial_controller_i_thread(componentThread, &radial_controller_i);

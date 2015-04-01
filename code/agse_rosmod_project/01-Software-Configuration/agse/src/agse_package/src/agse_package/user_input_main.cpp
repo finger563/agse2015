@@ -18,10 +18,15 @@ void componentThread(Component* compPtr)
 int main(int argc, char **argv)
 {
     std::string nodeName = "user_input";
+    std::string hostName = "localhost";
 
     for(int i = 0; i < argc; i++)
+    {
         if(!strcmp(argv[i], "-nodename"))
             nodeName = argv[i+1];
+	if(!strcmp(argv[i], "-hostname"))
+	    hostName = argv[i+1];
+    }
 
     ros::init(argc, argv, nodeName.c_str());
 
@@ -29,7 +34,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     // Create Component Objects
-    user_input_controller user_intput_controller_i(nodeName, "user_intput_controller_i", argc, argv); 
+    user_input_controller user_intput_controller_i(hostName, nodeName, "user_intput_controller_i", argc, argv); 
 
     // Create Component Threads
     boost::thread user_intput_controller_i_thread(componentThread, &user_intput_controller_i);

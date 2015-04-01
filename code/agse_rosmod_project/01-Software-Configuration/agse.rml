@@ -80,11 +80,14 @@ package agse_package
             {
                 int64 goal;
                 bool update;
+                bool setZeroPosition;
             }
 
             response
             {
                 int64 current;
+                bool lowerLimitReached;
+                bool upperLimitReached;
             }
         }
         // ROS srv - armRotation
@@ -108,11 +111,14 @@ package agse_package
             {
                 int64 goal;
                 bool update;
+                bool setZeroPosition;
             }
 
             response
             {
                 int64 current;
+                bool lowerLimitReached;
+                bool upperLimitReached;
             }
         }
         // ROS srv - gripperPos
@@ -226,6 +232,7 @@ package agse_package
         // ROS Component - user_input_controller
 	component user_input_controller
 	{
+	    requires captureImage;
 	    publisher<controlInputs> controlInputs_pub;
      	    subscriber<sampleState> sampleState_sub;
      	    subscriber<payloadBayState> payloadBayState_sub;

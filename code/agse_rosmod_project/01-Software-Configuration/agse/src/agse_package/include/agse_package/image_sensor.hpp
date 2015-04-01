@@ -45,7 +45,7 @@ class image_sensor : public Component
 {
     public:
         // Component image_sensor Constructor
-        image_sensor(std::string nodeName, std::string compName, int argc, char **argv) : Component(nodeName, compName, argc, argv) {}
+        image_sensor(std::string hostName, std::string nodeName, std::string compName, int argc, char **argv) : Component(hostName, nodeName, compName, argc, argv) {}
 
         // These functions' business logic will be filled in by the user:
 

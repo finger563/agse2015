@@ -676,8 +676,8 @@ void arm_controller::startUp()
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
     advertiseName = "controlInputs";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("controlInputs_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["controlInputs_sub"];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -691,58 +691,58 @@ void arm_controller::startUp()
     // Configure all publishers associated with this component
     // publisher: sampleState_pub
     advertiseName = "sampleState";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("sampleState_pub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["sampleState_pub"];
     this->sampleState_pub = nh.advertise<agse_package::sampleState>
 	(advertiseName.c_str(), 1000);	
     // publisher: payloadBayState_pub
     advertiseName = "payloadBayState";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("payloadBayState_pub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["payloadBayState_pub"];
     this->payloadBayState_pub = nh.advertise<agse_package::payloadBayState>
 	(advertiseName.c_str(), 1000);	
 
     // Configure all required services associated with this component
     // client: sampleStateFromImage_client
     advertiseName = "sampleStateFromImage";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->sampleStateFromImage_client = nh.serviceClient<agse_package::sampleStateFromImage>
 	(advertiseName.c_str()); 
     // client: radialPos_client
     advertiseName = "radialPos";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->radialPos_client = nh.serviceClient<agse_package::radialPos>
 	(advertiseName.c_str()); 
     // client: armRotation_client
     advertiseName = "armRotation";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->armRotation_client = nh.serviceClient<agse_package::armRotation>
 	(advertiseName.c_str()); 
     // client: gripperRotation_client
     advertiseName = "gripperRotation";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->gripperRotation_client = nh.serviceClient<agse_package::gripperRotation>
 	(advertiseName.c_str()); 
     // client: verticalPos_client
     advertiseName = "verticalPos";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->verticalPos_client = nh.serviceClient<agse_package::verticalPos>
 	(advertiseName.c_str()); 
     // client: gripperPos_client
     advertiseName = "gripperPos";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->gripperPos_client = nh.serviceClient<agse_package::gripperPos>
 	(advertiseName.c_str()); 
     // client: payloadBayStateFromImage_client
     advertiseName = "payloadBayStateFromImage";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->payloadBayStateFromImage_client = nh.serviceClient<agse_package::payloadBayStateFromImage>
 	(advertiseName.c_str()); 
 
@@ -765,4 +765,27 @@ void arm_controller::startUp()
 	     &this->compQueue);
     this->armTimer = nh.createTimer(timer_options);
 
+
+    /*
+     * Identify present working directory of node executable
+     */
+    std::string s = node_argv[0];
+    std::string exec_path = s;
+    std::string delimiter = "/";
+    std::string exec, pwd;
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        exec = s.substr(0, pos);
+        s.erase(0, pos + delimiter.length());
+    }
+    exec = s.substr(0, pos);
+    pwd = exec_path.erase(exec_path.find(exec), exec.length());
+    // Establish the log file name
+    std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
+
+    // Create the log file & open file stream
+    LOGGER.CREATE_FILE(log_file_path);
+
+    // Establish log levels of LOGGER
+    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }

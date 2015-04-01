@@ -105,6 +105,7 @@ user_input_controller::~user_input_controller()
     controlInputs_pub.shutdown();
     sampleState_sub.shutdown();
     payloadBayState_sub.shutdown();
+    captureImage_client.shutdown();
 //# Start Destructor Marker
 
 //# End Destructor Marker
@@ -128,8 +129,8 @@ void user_input_controller::startUp()
     // Configure all subscribers associated with this component
     // subscriber: sampleState_sub
     advertiseName = "sampleState";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("sampleState_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["sampleState_sub"];
     ros::SubscribeOptions sampleState_sub_options;
     sampleState_sub_options = 
 	ros::SubscribeOptions::create<agse_package::sampleState>
@@ -141,8 +142,8 @@ void user_input_controller::startUp()
     this->sampleState_sub = nh.subscribe(sampleState_sub_options);
     // subscriber: payloadBayState_sub
     advertiseName = "payloadBayState";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("payloadBayState_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["payloadBayState_sub"];
     ros::SubscribeOptions payloadBayState_sub_options;
     payloadBayState_sub_options = 
 	ros::SubscribeOptions::create<agse_package::payloadBayState>
@@ -156,10 +157,18 @@ void user_input_controller::startUp()
     // Configure all publishers associated with this component
     // publisher: controlInputs_pub
     advertiseName = "controlInputs";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("controlInputs_pub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["controlInputs_pub"];
     this->controlInputs_pub = nh.advertise<agse_package::controlInputs>
 	(advertiseName.c_str(), 1000);	
+
+    // Configure all required services associated with this component
+    // client: captureImage_client
+    advertiseName = "captureImage";
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
+    this->captureImage_client = nh.serviceClient<agse_package::captureImage>
+	(advertiseName.c_str()); 
 
     // Create Init Timer
     ros::TimerOptions timer_options;
@@ -180,4 +189,27 @@ void user_input_controller::startUp()
 	     &this->compQueue);
     this->userInputTimer = nh.createTimer(timer_options);
 
+
+    /*
+     * Identify present working directory of node executable
+     */
+    std::string s = node_argv[0];
+    std::string exec_path = s;
+    std::string delimiter = "/";
+    std::string exec, pwd;
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        exec = s.substr(0, pos);
+        s.erase(0, pos + delimiter.length());
+    }
+    exec = s.substr(0, pos);
+    pwd = exec_path.erase(exec_path.find(exec), exec.length());
+    // Establish the log file name
+    std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
+
+    // Create the log file & open file stream
+    LOGGER.CREATE_FILE(log_file_path);
+
+    // Establish log levels of LOGGER
+    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }

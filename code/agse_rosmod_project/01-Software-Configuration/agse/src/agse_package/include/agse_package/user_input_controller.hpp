@@ -17,6 +17,7 @@
 #include "agse_package/controlInputs.h"
 #include "agse_package/sampleState.h"
 #include "agse_package/payloadBayState.h"
+#include "agse_package/captureImage.h"
 
 //# Start User Globals Marker
 
@@ -26,7 +27,7 @@ class user_input_controller : public Component
 {
     public:
         // Component user_input_controller Constructor
-        user_input_controller(std::string nodeName, std::string compName, int argc, char **argv) : Component(nodeName, compName, argc, argv) {}
+        user_input_controller(std::string hostName, std::string nodeName, std::string compName, int argc, char **argv) : Component(hostName, nodeName, compName, argc, argv) {}
 
         // These functions' business logic will be filled in by the user:
 
@@ -68,6 +69,9 @@ class user_input_controller : public Component
 	// ROS Publisher - controlInputs_pub
 	ros::Publisher controlInputs_pub;
 
+
+	// ROS Service Client - captureImage_client
+	ros::ServiceClient captureImage_client;
 
         //# Start User Private Variables Marker
         bool paused;

@@ -193,8 +193,8 @@ void image_sensor::startUp()
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
     advertiseName = "controlInputs";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("controlInputs_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["controlInputs_sub"];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -208,8 +208,8 @@ void image_sensor::startUp()
     // Configure all provided services associated with this component
     // server: captureImage_server
     advertiseName = "captureImage";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("captureImage_server") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["captureImage_server"];
     ros::AdvertiseServiceOptions captureImage_server_options;
     captureImage_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::captureImage>
@@ -229,4 +229,27 @@ void image_sensor::startUp()
              true);
     this->initOneShotTimer = nh.createTimer(timer_options);  
   
+
+    /*
+     * Identify present working directory of node executable
+     */
+    std::string s = node_argv[0];
+    std::string exec_path = s;
+    std::string delimiter = "/";
+    std::string exec, pwd;
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        exec = s.substr(0, pos);
+        s.erase(0, pos + delimiter.length());
+    }
+    exec = s.substr(0, pos);
+    pwd = exec_path.erase(exec_path.find(exec), exec.length());
+    // Establish the log file name
+    std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
+
+    // Create the log file & open file stream
+    LOGGER.CREATE_FILE(log_file_path);
+
+    // Establish log levels of LOGGER
+    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }
