@@ -77,6 +77,8 @@ class vertical_actuator_controller : public Component
   unsigned int motorForwardPin;
   // pin that motor backward is connected to
   unsigned int motorBackwardPin;
+  // pin that lower limit switch is connected to
+  unsigned int lowerLimitSwitchPin;
   // ADC the motor potentiometer is connected to (for the prototype)
   int adcPin;
   // enhanced Quadrature Encoder Pulse eQEP module for the vertical actuator

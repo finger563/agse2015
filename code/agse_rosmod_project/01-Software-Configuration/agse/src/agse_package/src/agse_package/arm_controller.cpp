@@ -9,11 +9,13 @@ void arm_controller::UpdateSensorData()
   // output: current
   agse_package::radialPos rPos;
   rPos.request.update = false;
+  rPos.request.setZeroPosition = false;
   radialPos_client.call(rPos);
   currentRadialPos = rPos.response.current;
 
   agse_package::verticalPos vPos;
   vPos.request.update = false;
+  vPos.request.setZeroPosition = false;
   verticalPos_client.call(vPos);
   currentVerticalPos = vPos.response.current;
 
@@ -86,17 +88,59 @@ bool arm_controller::CheckGoals()
 
 void arm_controller::Init_StateFunc()
 {
-  // Whatever should be here, not quite sure if this is needed.
-  // perhaps do calibration (hit limit switches) of linear actuators
-  currentState = FINDING_PB;
-
-  call_at_timer = true;
+  // Init zeroes out the positions of the linear actuators for calibration
+  static bool zeroedHeight = false;
+  static bool zeroedRadius = false;
+  call_at_timer = true; // WE WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if (!zeroedHeight)
+    {
+      agse_package::verticalPos vPos;
+      vPos.request.update = true;
+      vPos.request.setZeroPosition = false;
+      vPos.request.goal = currentVerticalPos - 10000;
+      verticalPos_client.call(vPos);
+      if (vPos.response.lowerLimitReached)
+	{
+	  vPos.request.update = false;
+	  vPos.request.setZeroPosition = true;
+	  verticalPos_client.call(vPos);
+	  zeroedHeight = true;
+	}
+    }
+  else if (!zeroedRadius)
+    {
+      agse_package::radialPos rPos;
+      rPos.request.update = true;
+      rPos.request.setZeroPosition = false;
+      rPos.request.goal = currentRadialPos - 10000;
+      radialPos_client.call(rPos);
+      if (rPos.response.lowerLimitReached)
+	{
+	  rPos.request.update = false;
+	  rPos.request.setZeroPosition = true;
+	  radialPos_client.call(rPos);
+	  zeroedRadius = true;
+	}
+    }
+  else
+    {
+      agse_package::verticalPos vPos;
+      vPos.request.update = true;
+      vPos.request.setZeroPosition = false;
+      vPos.request.goal = 0;
+      verticalPos_client.call(vPos);
+      agse_package::radialPos rPos;
+      rPos.request.update = true;
+      rPos.request.setZeroPosition = false;
+      rPos.request.goal = 0;
+      radialPos_client.call(rPos);
+      currentState = FINDING_PB;
+    }
 }
 
 void arm_controller::Finding_PB_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -214,8 +258,7 @@ void arm_controller::Finding_PB_StateFunc()
 
 void arm_controller::Opening_PB_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -235,8 +278,7 @@ void arm_controller::Opening_PB_StateFunc()
 
 void arm_controller::Finding_Sample_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -354,8 +396,7 @@ void arm_controller::Finding_Sample_StateFunc()
 
 void arm_controller::Grabbing_Sample_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -395,8 +436,7 @@ void arm_controller::Grabbing_Sample_StateFunc()
 
 void arm_controller::Carrying_Sample_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -428,8 +468,7 @@ void arm_controller::Carrying_Sample_StateFunc()
 
 void arm_controller::Inserting_Sample_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -450,8 +489,7 @@ void arm_controller::Inserting_Sample_StateFunc()
 
 void arm_controller::Closing_PB_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -474,8 +512,7 @@ void arm_controller::Closing_PB_StateFunc()
 
 void arm_controller::Moving_Away_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -512,23 +549,24 @@ void arm_controller::Init(const ros::TimerEvent& event)
   paused = true;
 
   currentState = INIT;
+  call_at_timer = true;  // set this to true to ensure that states are entered
 
   // need to initialize the min and max sensor values
-  maxRadialPos       = 4000;
-  maxVerticalPos     = 3000;
+  maxRadialPos       = 100000;
+  maxVerticalPos     = 100000;
   maxArmRotation     = 330.0f;
   maxGripperRotation = 90.0f;
-  maxGripperPos      = 180.0f;
+  maxGripperPos      = 260.0f;
 
-  minRadialPos       = 300;
-  minVerticalPos     = 100;
+  minRadialPos       = 0;
+  minVerticalPos     = 0;
   minArmRotation     = 0.0f;
-  minGripperRotation = 0.0f;
-  minGripperPos      = 0.0f;
+  minGripperRotation = -90.0f;
+  minGripperPos      = 190.0f;
 
   // need to initialize the gripper's state sensor values
-  gripperPosOpened = 0.0f;
-  gripperPosClosed = 90.0f;
+  gripperPosOpened = 250.0f;
+  gripperPosClosed = 200.0f;
 
   // need to properly initialize the current sensor readings
   currentRadialPos        = -1.0f;
@@ -538,11 +576,11 @@ void arm_controller::Init(const ros::TimerEvent& event)
   currentGripperPos       = -1.0f;
 
   // need to properly initialize the current actuator goals
-  goalRadialPos        = -1.0f;
-  goalVerticalPos      = -1.0f;
-  goalArmRotation      = -1.0f;
-  goalGripperRotation  = -1.0f;
-  goalGripperPos       = -1.0f;
+  goalRadialPos        = 0.0f;
+  goalVerticalPos      = 0.0f;
+  goalArmRotation      = 0.0f;
+  goalGripperRotation  = 0.0f;
+  goalGripperPos       = 0.0f;
 
   // need to properly initialize the sample and payloadBay
   sample.pos.r     = -1.0f;
@@ -558,17 +596,49 @@ void arm_controller::Init(const ros::TimerEvent& event)
   payloadBay.orientation.phi   = -1.0f;
 
   // need to initialize the epsilons for the goal/current feedback loops
-  radialEpsilon          = -1.0f;
-  verticalEpsilon        = -1.0f;
-  armRotationEpsilon     = -1.0f;
-  gripperRotationEpsilon = -1.0f;
-  gripperPosEpsilon      = -1.0f;
+  radialEpsilon          = 100;
+  verticalEpsilon        = 100;
+  armRotationEpsilon     = 1.0f;
+  gripperRotationEpsilon = 1.0f;
+  gripperPosEpsilon      = 1.0f;
   // need to initialize the offsets with measurements from the system
-  radialOffset          = -1.0f;
-  verticalOffset        = -1.0f;
-  armRotationOffset     = -1.0f;
-  gripperRotationOffset = -1.0f;
-  gripperPosOffset      = -1.0f;
+  radialOffset          = 0.0f;
+  verticalOffset        = 0.0f;
+  armRotationOffset     = 0.0f;
+  gripperRotationOffset = 0.0f;
+  gripperPosOffset      = 0.0f;
+
+  // need to initialize the offsets with measurements from the system
+  
+
+  // command line args parsing for arm_controller:
+  for (int i=0; i < node_argc; i++) 
+    {
+      if (!strcmp(node_argv[i], "-P"))
+	{
+	  paused = false;
+	}
+      if (!strcmp(node_argv[i], "-R"))
+	{
+	  goalRadialPos = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-T"))
+	{
+	  goalArmRotation = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-Z"))
+	{
+	  goalVerticalPos = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-GR"))
+	{
+	  goalGripperRotation = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-GP"))
+	{
+	  goalGripperPos = atoi(node_argv[i+1]);
+	}
+    }
 
     // Stop Init Timer
     initOneShotTimer.stop();

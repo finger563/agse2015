@@ -165,6 +165,10 @@ class arm_controller : public Component
   float gripperRotationOffset; // difference between our 0 angle (plane of radius) and servo's 0 angle
   float gripperPosOffset; // difference between our 0 angle (open) and the servo's 0 angle
 
+  // offsets measured between center of camera image and the center underneath the gripper (r,theta)
+  float angleBetweenGripperAndCamera;
+  float radiusBetweenGripperAndCamera;
+
   bool call_at_timer; // We want Init_StateFunc to be called at each timer tick (not till CheckGoals = true)
 
         //# End User Private Variables Marker
