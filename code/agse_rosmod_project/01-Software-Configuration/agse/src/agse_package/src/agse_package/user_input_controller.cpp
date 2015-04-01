@@ -73,7 +73,7 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     // Business Logic for userInputTimer 
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
-  ROS_INFO("Puase Switch State: %d", pauseSwitchState);
+  ROS_INFO("Pause Switch State: %d", pauseSwitchState);
   if ( previousSwitchState != pauseSwitchState )
     {
       paused = (pauseSwitchState == HIGH) ? true : false;
@@ -83,12 +83,10 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
       if (paused) {
 	ROS_INFO("Pausing the system!");
 	gpio_set_value(pauseLED, HIGH);
-	gpio_set_value(pauseSwitch_LEDPin, HIGH);
-    }
+      }
       else {
 	ROS_INFO("Unpausing the system!");
 	gpio_set_value(pauseLED, LOW);
-	gpio_set_value(pauseSwitch_LEDPin, LOW);
       }
     }
 }

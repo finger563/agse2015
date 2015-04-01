@@ -20,20 +20,18 @@ void servo_controller::Init(const ros::TimerEvent& event)
   gripperPositionID = 1;
   if (serialPort.connect(portName)!=0)
     {
-
       // Command line args for servo control
-      for (int i = 0; i < node_argc; i++) {
-	if (!strcmp(node_argv[i], "-a"))
-	  armRotationGoal = atof(node_argv[i+1]);
-	else if (!strcmp(node_argv[i], "-r"))
-	  gripperRotationGoal = atof(node_argv[i+1]);
-	else if (!strcmp(node_argv[i], "-p"))
-	  gripperPosGoal = atof(node_argv[i+1]);
-      }
-
-      //      armRotationGoal = 30.0f;
-      //gripperRotationGoal = 90.0f;
-      //gripperPosGoal = 0.0f;
+      for (int i = 0; i < node_argc; i++) 
+	{
+	  if (!strcmp(node_argv[i], "-unpaused"))
+	    paused = false;
+	  else if (!strcmp(node_argv[i], "-a"))
+	    armRotationGoal = atof(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-r"))
+	    gripperRotationGoal = atof(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-p"))
+	    gripperPosGoal = atof(node_argv[i+1]);
+	}
     }
   else
     {
@@ -102,11 +100,7 @@ bool servo_controller::gripperRotationCallback(agse_package::gripperRotation::Re
 void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for servoTimer 
-  if (paused) {
-
-    //armRotationGoal = Dynamixel::posToAngle( rand() % 1023 );
-    //gripperRotationGoal = Dynamixel::posToAngle( rand() % 1023 );
-    //gripperPosGoal = Dynamixel::posToAngle( rand() % 1023 );
+  if (!paused) {
 
     int pos; // temp value to store position from servo
     

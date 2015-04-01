@@ -126,14 +126,14 @@ class arm_controller : public Component
   void Closing_PB_StateFunc();
   void Moving_Away_StateFunc();
   
-  float maxRadialPos;
-  float maxVerticalPos;
+  int maxRadialPos;
+  int maxVerticalPos;
   float maxArmRotation;
   float maxGripperRotation;
   float maxGripperPos;
 
-  float minRadialPos;
-  float minVerticalPos;
+  int minRadialPos;
+  int minVerticalPos;
   float minArmRotation;
   float minGripperRotation;
   float minGripperPos;
@@ -141,33 +141,33 @@ class arm_controller : public Component
   float gripperPosOpened;
   float gripperPosClosed;
   
-  float currentRadialPos;
-  float currentVerticalPos;
+  int currentRadialPos;
+  int currentVerticalPos;
   float currentArmRotation;
   float currentGripperRotation;
   float currentGripperPos;
 
-  float goalRadialPos;
-  float goalVerticalPos;
+  int goalRadialPos;
+  int goalVerticalPos;
   float goalArmRotation;
   float goalGripperRotation;
   float goalGripperPos;
 
-  float radialEpsilon;
-  float verticalEpsilon;
+  int radialEpsilon;
+  int verticalEpsilon;
   float armRotationEpsilon;
   float gripperRotationEpsilon;
   float gripperPosEpsilon;
 
-  float radialOffset;   // should be 0
-  float verticalOffset; // should be 0
+  int radialOffset;   // should be 0
+  int verticalOffset; // should be 0
   float armRotationOffset; // difference between our 0 angle (arm frame) and servo's 0 angle
   float gripperRotationOffset; // difference between our 0 angle (plane of radius) and servo's 0 angle
   float gripperPosOffset; // difference between our 0 angle (open) and the servo's 0 angle
 
   // offsets measured between center of camera image and the center underneath the gripper (r,theta)
   float angleBetweenGripperAndCamera;
-  float radiusBetweenGripperAndCamera;
+  int radiusBetweenGripperAndCamera;
 
   bool call_at_timer; // We want Init_StateFunc to be called at each timer tick (not till CheckGoals = true)
 

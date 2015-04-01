@@ -83,6 +83,13 @@ void image_sensor::Init(const ros::TimerEvent& event)
     }
   }
 
+  // Command line args for servo control
+  for (int i = 0; i < node_argc; i++) 
+    {
+      if (!strcmp(node_argv[i], "-unpaused"))
+	paused = false;
+    }
+
   // Stop Init Timer
   initOneShotTimer.stop();
 }
@@ -103,7 +110,7 @@ void image_sensor::controlInputs_sub_OnOneData(const agse_package::controlInputs
 bool image_sensor::captureImageCallback(agse_package::captureImage::Request  &req,
 					agse_package::captureImage::Response &res)
 {
-  if (paused)
+  if (!paused)
     {
       // Business Logic for captureImage_server Server providing captureImage Service
       fd_set                          fds;
