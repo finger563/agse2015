@@ -14,6 +14,7 @@
 
 #include "agse_package/sampleState.h"
 #include "agse_package/payloadBayState.h"
+#include "agse_package/armState.h"
 #include "agse_package/controlInputs.h"
 #include "agse_package/sampleStateFromImage.h"
 #include "agse_package/radialPos.h"
@@ -69,6 +70,9 @@ class arm_controller : public Component
 
 	// ROS Publisher - payloadBayState_pub
 	ros::Publisher payloadBayState_pub;
+
+	// ROS Publisher - armState_pub
+	ros::Publisher armState_pub;
 
 
 	// ROS Service Client - sampleStateFromImage_client

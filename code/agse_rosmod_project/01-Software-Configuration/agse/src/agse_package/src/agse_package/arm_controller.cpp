@@ -722,6 +722,7 @@ arm_controller::~arm_controller()
     armTimer.stop();
     sampleState_pub.shutdown();
     payloadBayState_pub.shutdown();
+    armState_pub.shutdown();
     controlInputs_sub.shutdown();
     sampleStateFromImage_client.shutdown();
     radialPos_client.shutdown();
@@ -777,6 +778,12 @@ void arm_controller::startUp()
     if ( portGroupMap != NULL && portGroupMap->find("payloadBayState_pub") != portGroupMap->end() )
         advertiseName += "_" + (*portGroupMap)["payloadBayState_pub"];
     this->payloadBayState_pub = nh.advertise<agse_package::payloadBayState>
+	(advertiseName.c_str(), 1000);	
+    // publisher: armState_pub
+    advertiseName = "armState";
+    if ( portGroupMap != NULL && portGroupMap->find("armState_pub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["armState_pub"];
+    this->armState_pub = nh.advertise<agse_package::armState>
 	(advertiseName.c_str(), 1000);	
 
     // Configure all required services associated with this component
@@ -837,7 +844,7 @@ void arm_controller::startUp()
     // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(0.02),
+             (ros::Duration(0.2),
 	     boost::bind(&arm_controller::armTimerCallback, this, _1),
 	     &this->compQueue);
     this->armTimer = nh.createTimer(timer_options);

@@ -33,6 +33,8 @@ package agse_package
             bool paused;
             bool start;
             bool stop;
+            bool manual;
+            bool halted;
         } 
         // ROS msg - payloadBayState
         msg payloadBayState
@@ -52,6 +54,11 @@ package agse_package
         {
             float64 theta;
             float64 phi;
+        } 
+        // ROS msg - armState
+        msg armState
+        {
+            int64 state;
         } 
     }
 
@@ -215,10 +222,11 @@ package agse_package
 	    requires payloadBayStateFromImage;
 	    publisher<sampleState> sampleState_pub;
 	    publisher<payloadBayState> payloadBayState_pub;
+	    publisher<armState> armState_pub;
      	    subscriber<controlInputs> controlInputs_sub;
 	    timer armTimer
 	    {
-	        period = 0.02s;
+	        period = 0.2s;
 	    }
 	}
         // ROS Component - image_processor
@@ -236,9 +244,10 @@ package agse_package
 	    publisher<controlInputs> controlInputs_pub;
      	    subscriber<sampleState> sampleState_sub;
      	    subscriber<payloadBayState> payloadBayState_sub;
+     	    subscriber<armState> armState_sub;
 	    timer userInputTimer
 	    {
-	        period = 0.01s;
+	        period = 0.2s;
 	    }
 	}
         // ROS Component - servo_controller

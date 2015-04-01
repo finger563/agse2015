@@ -88,6 +88,8 @@ add_message_files(
 
   payloadBayOrientation.msg
 
+  armState.msg
+
 )
 
 # Generate services in the 'srv' folder

@@ -14,7 +14,9 @@ void user_input_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
   paused = true;
-
+  halted = false;
+  manual = false;
+ 
   // PAUSE Switch - Amber
   pauseSwitchPin = 67;
   gpio_export(pauseSwitchPin);
@@ -31,9 +33,10 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(haltSwitchPin,INPUT_PIN);
 
   // PAUSE MAIN LED - Needs to be updated
-  //  pauseLED = 76;
-  // gpio_export(pauseLED);
-  //gpio_set_dir(pauseLED, OUTPUT_PIN);
+  pauseLED = 76;
+  gpio_export(pauseLED);
+  gpio_set_dir(pauseLED, OUTPUT_PIN);
+  pauseLEDBlinkDelay = 2;
 
   // The Four Images to show in UIP
   img1 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/01.png");
@@ -51,7 +54,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
 void user_input_controller::sampleState_sub_OnOneData(const agse_package::sampleState::ConstPtr& received_data)
 {
     // Business Logic for sampleState_sub subscriber subscribing to topic sampleState callback 
-
+  sample = *received_data;
 }
 //# End sampleState_sub_OnOneData Marker
 // OnOneData Subscription handler for payloadBayState_sub subscriber
@@ -59,35 +62,96 @@ void user_input_controller::sampleState_sub_OnOneData(const agse_package::sample
 void user_input_controller::payloadBayState_sub_OnOneData(const agse_package::payloadBayState::ConstPtr& received_data)
 {
     // Business Logic for payloadBayState_sub subscriber subscribing to topic payloadBayState callback 
-
+  payloadBay = *received_data;
 }
 //# End payloadBayState_sub_OnOneData Marker
+// OnOneData Subscription handler for armState_sub subscriber
+//# Start armState_sub_OnOneData Marker
+void user_input_controller::armState_sub_OnOneData(const agse_package::armState::ConstPtr& received_data)
+{
+    // Business Logic for armState_sub subscriber subscribing to topic armState callback 
+  arm = *received_data;
+}
+//# End armState_sub_OnOneData Marker
 
 // Callback for userInputTimer timer
 //# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
+  // Business Logic for userInputTimer 
+
+  // SHOW IMAGES HERE
   //  gpio_set_value(pauseSwitch_LEDPin, HIGH);
   //  cvShowManyImages("UIP", 4, img1, img2, img3, img4);
 
-    // Business Logic for userInputTimer 
+  // DRAW TEXT FOR SAMPLE STATE HERE
+  // DRAW TEXT FOR PAYLOAD BAY STATE HERE
+
+  // HANDLE SCREEN BUTTONS HERE
+
+  // HANDLE MISSILE SWITCHES HERE
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
   ROS_INFO("Pause Switch State: %d", pauseSwitchState);
+  agse_package::controlInputs control;
+  
   if ( previousSwitchState != pauseSwitchState )
     {
       paused = (pauseSwitchState == HIGH) ? true : false;
       agse_package::controlInputs control;
       control.paused = paused;
-      controlInputs_pub.publish(control);
       if (paused) {
 	ROS_INFO("Pausing the system!");
-	gpio_set_value(pauseLED, HIGH);
       }
       else {
 	ROS_INFO("Unpausing the system!");
-	gpio_set_value(pauseLED, LOW);
       }
+    }
+  previousSwitchState = haltSwitchState;
+  gpio_get_value(haltSwitchPin, &haltSwitchState);
+  ROS_INFO("Halt Switch State: %d", haltSwitchState);
+  if ( previousSwitchState != haltSwitchState )
+    {
+      halted = (haltSwitchState == HIGH) ? true : false;
+      control.stop = halted;
+      if (halted) {
+	ROS_INFO("Halting the system!");
+      }
+      else {
+	ROS_INFO("Un-halting the system!");
+      }
+    }
+  previousSwitchState = manualSwitchState;
+  gpio_get_value(manualSwitchPin, &manualSwitchState);
+  ROS_INFO("Manual Switch State: %d", manualSwitchState);
+  if ( previousSwitchState != manualSwitchState )
+    {
+      manual= (manualSwitchState == HIGH) ? true : false;
+      control.manual = manual;
+      if (manual) {
+	ROS_INFO("Switching the system to manual!");
+      }
+      else {
+	ROS_INFO("Switching the system to automatic!");
+      }
+    }
+  controlInputs_pub.publish(control);
+
+  // HANDLE LED OUTPUTS HERE
+  static int currentBlinkDelay = 0;
+  if (paused)
+    {
+      gpio_set_value(pauseLED,HIGH);
+    }
+  else
+    {
+      if (currentBlinkDelay++ < pauseLEDBlinkDelay)
+	gpio_set_value(pauseLED,LOW);
+      else
+	{
+	  gpio_set_value(pauseLED,HIGH);
+	  currentBlinkDelay = 0;
+	}
     }
 }
 //# End userInputTimerCallback Marker
@@ -103,6 +167,7 @@ user_input_controller::~user_input_controller()
     controlInputs_pub.shutdown();
     sampleState_sub.shutdown();
     payloadBayState_sub.shutdown();
+    armState_sub.shutdown();
     captureImage_client.shutdown();
 //# Start Destructor Marker
 
@@ -151,6 +216,19 @@ void user_input_controller::startUp()
 	     ros::VoidPtr(),
              &this->compQueue);
     this->payloadBayState_sub = nh.subscribe(payloadBayState_sub_options);
+    // subscriber: armState_sub
+    advertiseName = "armState";
+    if ( portGroupMap != NULL && portGroupMap->find("armState_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["armState_sub"];
+    ros::SubscribeOptions armState_sub_options;
+    armState_sub_options = 
+	ros::SubscribeOptions::create<agse_package::armState>
+	    (advertiseName.c_str(),
+	     1000,
+	     boost::bind(&user_input_controller::armState_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->armState_sub = nh.subscribe(armState_sub_options);
 
     // Configure all publishers associated with this component
     // publisher: controlInputs_pub
@@ -182,7 +260,7 @@ void user_input_controller::startUp()
     // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(0.01),
+             (ros::Duration(0.2),
 	     boost::bind(&user_input_controller::userInputTimerCallback, this, _1),
 	     &this->compQueue);
     this->userInputTimer = nh.createTimer(timer_options);
