@@ -40,6 +40,8 @@ class Dynamixel {
   int getReadAX12PositionCommand(byte id);
   int getReadAX12TemperatureCommand(byte id);
 
+  int getSetAX12SpeedCommand(byte id, short speed);
+
  public:
   Dynamixel();
   ~Dynamixel();
@@ -48,7 +50,9 @@ class Dynamixel {
   static short angleToPos(float angle);
 
   int getPosition(SerialPort *serialPort, int idAX12);
-  int setPosition(SerialPort *serialPort, int idAX12, int position);		
+  int setPosition(SerialPort *serialPort, int idAX12, int position);
+  
+  int setSpeed(SerialPort *serialPort, int idAX12, int speed);
 		
   int sendTossModeCommand(SerialPort *serialPort);
 
