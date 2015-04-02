@@ -256,10 +256,10 @@ void arm_controller::Finding_PB_StateFunc()
 		  // if pbY > 0 : rotate CW, else if pbY < 0 rotate CCW
 		  if ( pbY > 0 )
 		    {
-		      initArmRotation += armRotationStep / 6.0f;
+		      initArmRotation -= armRotationStep / 6.0f;
 		    } else
 		    {
-		      initArmRotation -= armRotationStep / 6.0f;
+		      initArmRotation += armRotationStep / 6.0f;
 		    }
 		  // if pbX > 0 : retract radius, else if pbX < 0 extend radius
 		  if ( pbX > 0 )
@@ -393,10 +393,10 @@ void arm_controller::Finding_Sample_StateFunc()
 		  // if sY > 0 : rotate CW, else if sY < 0 CCW
 		  if ( sY > 0 )
 		    {
-		      initArmRotation += armRotationStep / 6.0f;
+		      initArmRotation -= armRotationStep / 6.0f;
 		    } else
 		    {
-		      initArmRotation -= armRotationStep / 6.0f;
+		      initArmRotation += armRotationStep / 6.0f;
 		    }
 		  // if sX > 0 : retract radius, else if sX < 0 extend
 		  if ( sX > 0 )
