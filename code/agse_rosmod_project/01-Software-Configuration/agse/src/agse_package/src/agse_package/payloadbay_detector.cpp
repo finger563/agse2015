@@ -44,7 +44,7 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
 	CvDrawingUtils::draw3dAxis(maskOutput,Markers[i],CamParam);
       }
 
-    if (Markers.size() > 0) {
+    if (Markers.size() > 1) {
       for (unsigned int i=0;i<Markers.size();i++) {
 	printf("MARKER XY = %f, %f\n",Markers[i].getCenter().x,Markers[i].getCenter().y);
 	Centers.push_back(Markers[i].getCenter());
