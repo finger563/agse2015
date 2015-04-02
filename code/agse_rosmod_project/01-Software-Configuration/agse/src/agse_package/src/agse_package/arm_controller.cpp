@@ -93,6 +93,7 @@ void arm_controller::Init_StateFunc()
   static bool zeroedRadius = false;
   if (!zeroedHeight)
     {
+      ROS_INFO("ZEROING HEIGHT");
       agse_package::verticalPos vPos;
       vPos.request.update = true;
       vPos.request.setZeroPosition = false;
@@ -100,6 +101,7 @@ void arm_controller::Init_StateFunc()
       verticalPos_client.call(vPos);
       if (vPos.response.lowerLimitReached)
 	{
+	  ROS_INFO("LOWER LIMIT REACHED");
 	  vPos.request.update = false;
 	  vPos.request.setZeroPosition = true;
 	  verticalPos_client.call(vPos);
@@ -108,6 +110,7 @@ void arm_controller::Init_StateFunc()
     }
   else if (!zeroedRadius)
     {
+      ROS_INFO("ZEROING HEIGHT");
       agse_package::radialPos rPos;
       rPos.request.update = true;
       rPos.request.setZeroPosition = false;
@@ -115,6 +118,7 @@ void arm_controller::Init_StateFunc()
       radialPos_client.call(rPos);
       if (rPos.response.lowerLimitReached)
 	{
+	  ROS_INFO("LOWER LIMIT REACHED");
 	  rPos.request.update = false;
 	  rPos.request.setZeroPosition = true;
 	  radialPos_client.call(rPos);
@@ -123,6 +127,7 @@ void arm_controller::Init_StateFunc()
     }
   else
     {
+      ROS_INFO("ZEROED EVERYTHING");
       agse_package::verticalPos vPos;
       vPos.request.update = true;
       vPos.request.setZeroPosition = false;

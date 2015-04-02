@@ -14,6 +14,7 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
   paused = true;
+  lowerLimitReached = false;
 
   // THESE NEED TO BE UPDATED
   epsilon = 100;
@@ -106,8 +107,10 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
       gpio_get_value(lowerLimitSwitchPin,&limitSwitchState);
       gpio_get_value(motorBackwardPin,&backwardPinState);
       if (backwardPinState && !limitSwitchState)
-	lowerLimitReached = true;
-
+	{
+	  ROS_INFO("LOWER LIMIT REACHED");
+	  lowerLimitReached = true;
+	}
       // update motor based on current value
       if ( abs(verticalGoal-verticalCurrent) > epsilon ) // if there's significant reason to move
 	{
