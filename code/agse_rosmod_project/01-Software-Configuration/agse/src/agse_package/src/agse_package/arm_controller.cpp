@@ -79,12 +79,12 @@ bool arm_controller::CheckGoals()
   ROS_INFO("RADIUS : %d",currentRadialPos);
   ROS_INFO("HEIGHT GOAL: %d",goalVerticalPos);
   ROS_INFO("HEIGHT : %d",currentVerticalPos);
-  ROS_INFO("ARM ROTATION GOAL: %d",goalArmRotation);
-  ROS_INFO("ARM ROTATION : %d",currentArmRotation);
-  ROS_INFO("GRIPPER ROTATION GOAL: %d",goalGripperRotation);
-  ROS_INFO("GRIPPER ROTATION : %d",currentGripperRotation);
-  ROS_INFO("GRIPPER POSITION GOAL: %d",goalGripperPos);
-  ROS_INFO("GRIPPER POSITION : %d",currentGripperPos);
+  ROS_INFO("ARM ROTATION GOAL: %f",goalArmRotation);
+  ROS_INFO("ARM ROTATION : %f",currentArmRotation);
+  ROS_INFO("GRIPPER ROTATION GOAL: %f",goalGripperRotation);
+  ROS_INFO("GRIPPER ROTATION : %f",currentGripperRotation);
+  ROS_INFO("GRIPPER POSITION GOAL: %f",goalGripperPos);
+  ROS_INFO("GRIPPER POSITION : %f",currentGripperPos);
   if ( abs(goalRadialPos - currentRadialPos) > radialEpsilon )
     return false;
   if ( abs(goalVerticalPos - currentVerticalPos) > verticalEpsilon )
