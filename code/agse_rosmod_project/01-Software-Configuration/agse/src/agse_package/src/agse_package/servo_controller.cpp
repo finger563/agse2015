@@ -23,6 +23,9 @@ void servo_controller::Init(const ros::TimerEvent& event)
   gripperRotationSpeed = 0;
   gripperPositionSpeed = 0;
 
+  complianceMargin = 0;
+  complianceSlope = 0x50;
+
   if (serialPort.connect(portName,9600)!=0)
     {
       // Command line args for servo control

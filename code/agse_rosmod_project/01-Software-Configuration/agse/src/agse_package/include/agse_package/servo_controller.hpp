@@ -102,6 +102,8 @@ class servo_controller : public Component
 
   // compliance margin
   int complianceMargin;
+  // compliance slope
+  int complianceSlope;
 
   // goal Position for the arm servo
   float armRotationGoal;
