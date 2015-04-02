@@ -16,27 +16,77 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   paused = true;
   halted = false;
   manual = false;
- 
+
+  //////////////////////////////////////////////
+  // UIP SWITCHES
+  //////////////////////////////////////////////
+
   // PAUSE Switch - Amber
-  pauseSwitchPin = 67;
+  pauseSwitchPin = 22; // P8_18
   gpio_export(pauseSwitchPin);
   gpio_set_dir(pauseSwitchPin,INPUT_PIN);
 
   // MANUAL Switch - Blue
-  manualSwitchPin = 68;
+  manualSwitchPin = 22; // P8_19
   gpio_export(manualSwitchPin);
   gpio_set_dir(manualSwitchPin,INPUT_PIN);
 
   // HALT Switch - Red
-  haltSwitchPin = 69;
+  haltSwitchPin = 27; // P8_17
   gpio_export(haltSwitchPin);
   gpio_set_dir(haltSwitchPin,INPUT_PIN);
 
-  // PAUSE MAIN LED - Needs to be updated
-  pauseLED = 76;
+  //////////////////////////////////////////////
+  // UIP LEDS
+  //////////////////////////////////////////////
+
+  // PAUSE MAIN LED 
+  pauseLED = 37; // P8_22
   gpio_export(pauseLED);
   gpio_set_dir(pauseLED, OUTPUT_PIN);
   pauseLEDBlinkDelay = 2;
+
+  // ALARM MAIN LED
+  alarmLED = 66; // P8_07
+  gpio_export(alarmLED);
+  gpio_set_dir(alarmLED, OUTPUT_PIN);  
+
+  // INIT MAIN LED
+  initLED[0] = 45; // P8_11 - Blue
+  initLED[1] = 44; // P8_12 - Green
+  initLED[2] = 23; // P8_13 - Red
+  gpio_export(initLED[0]);
+  gpio_set_dir(initLED[0], OUTPUT_PIN);  
+  gpio_export(initLED[1]);
+  gpio_set_dir(initLED[1], OUTPUT_PIN);  
+  gpio_export(initLED[2]);
+  gpio_set_dir(initLED[2], OUTPUT_PIN);  
+
+  // SAMPLE MAIN LED
+  sampleLED[0] = 26; // P8_14 - Blue
+  sampleLED[1] = 47; // P8_15 - Green
+  sampleLED[2] = 46; // P8_16 - Red
+  gpio_export(sampleLED[0]);
+  gpio_set_dir(sampleLED[0], OUTPUT_PIN);  
+  gpio_export(sampleLED[1]);
+  gpio_set_dir(sampleLED[1], OUTPUT_PIN);  
+  gpio_export(sampleLED[2]);
+  gpio_set_dir(sampleLED[2], OUTPUT_PIN);  
+
+  // BAY MAIN LED
+  bayLED[0] = 67; // P8_8 - Blue
+  bayLED[1] = 69; // P8_9 - Green
+  bayLED[2] = 68; // P8_10 - Red
+  gpio_export(bayLED[0]);
+  gpio_set_dir(bayLED[0], OUTPUT_PIN);  
+  gpio_export(bayLED[1]);
+  gpio_set_dir(bayLED[1], OUTPUT_PIN);  
+  gpio_export(bayLED[2]);
+  gpio_set_dir(bayLED[2], OUTPUT_PIN);  
+
+  //////////////////////////////////////////////
+  // UIP LCD SETUP
+  //////////////////////////////////////////////
 
   // The Four Images to show in UIP
   img1 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/01.png");
@@ -141,7 +191,7 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   static int currentBlinkDelay = 0;
   if (paused)
     {
-      gpio_set_value(pauseLED,HIGH);
+      gpio_set_value(pauseLED, HIGH);
     }
   else
     {
@@ -153,6 +203,14 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 	  currentBlinkDelay = 0;
 	}
     }
+
+  if (halted) {
+    gpio_set_value(alarmLED, HIGH);
+  }
+  else {
+    gpio_set_value(alarmLED, LOW);
+  }
+
 }
 //# End userInputTimerCallback Marker
 

@@ -91,11 +91,11 @@ class user_input_controller : public Component
   agse_package::payloadBayState payloadBay;
 
   // Pins for Pause (AMBER) Missile Switch
-  unsigned int pauseSwitchPin; //63
+  unsigned int pauseSwitchPin; 
   // Pins for Manual Override (RED) Missile Switch
-  unsigned int manualSwitchPin; //37
+  unsigned int manualSwitchPin;
   // Pins for halt (BLUE) Missile Switch
-  unsigned int haltSwitchPin; //33
+  unsigned int haltSwitchPin; 
 
   // variable to keep track of switch states
   unsigned int pauseSwitchState;
@@ -103,7 +103,7 @@ class user_input_controller : public Component
   unsigned int manualSwitchState;
 
   // Pin for Pause LED
-  unsigned int pauseLED; //76
+  unsigned int pauseLED;
   unsigned int pauseLEDBlinkDelay;
   // Pin for Alarm LED
   unsigned int alarmLED;
