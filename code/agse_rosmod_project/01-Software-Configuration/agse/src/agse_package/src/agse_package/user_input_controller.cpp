@@ -221,12 +221,12 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     gpio_set_value(initLED[0], LOW); // Switch OFF Blue
     gpio_set_value(initLED[1], HIGH); // Switch ON Green
 
-    gpio_set_value(pbLED[0], HIGH); // Blue
+    gpio_set_value(bayLED[0], HIGH); // Blue
     break;
   case 2:
     // OPENING_PB
-    gpio_set_value(pbLED[0], LOW); // Switch OFF Blue
-    gpio_set_value(pbLED[1], HIGH); // Switch ON Green    
+    gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
+    gpio_set_value(bayLED[1], HIGH); // Switch ON Green    
     break;
   case 3:
     // FINDING_SAMPLE

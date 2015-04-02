@@ -656,6 +656,10 @@ void arm_controller::Init(const ros::TimerEvent& event)
 	{
 	  goalGripperPos = atoi(node_argv[i+1]);
 	}
+      if (!strcmp(node_argv[i], "-servoEpsilon"))
+	{
+	  armRotationEpsilon = atof(node_argv[i+1]);
+	}
     }
 
     // Stop Init Timer
