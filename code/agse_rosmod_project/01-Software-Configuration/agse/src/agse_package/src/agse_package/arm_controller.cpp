@@ -177,7 +177,7 @@ void arm_controller::Finding_PB_StateFunc()
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
   static float armRotationStep = 15.0f; // degrees between steps of the state search
-  static float radialPosStep = 5000.0f;    // amount to move by in radius
+  static float radialPosStep = 10000.0f;    // amount to move by in radius
 
   static float positionRadius = 200.0f; // once center of PB is in this radius, we are done
   
