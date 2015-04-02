@@ -45,6 +45,9 @@ class Dynamixel {
   int getSetCCWComplianceMarginCommand(byte id, short margin);
   int getSetCWComplianceMarginCommand(byte id, short margin);
 
+  int getSetCCWComplianceSlopeCommand(byte id, short slope);
+  int getSetCWComplianceSlopeCommand(byte id, short slope);
+
  public:
   Dynamixel();
   ~Dynamixel();
@@ -59,6 +62,9 @@ class Dynamixel {
 
   int setCCWComplianceMargin(SerialPort *serialPort, int idAX12, int margin);
   int setCWComplianceMargin(SerialPort *serialPort, int idAX12, int margin);
+
+  int setCCWComplianceSlope(SerialPort *serialPort, int idAX12, int slope);
+  int setCWComplianceSlope(SerialPort *serialPort, int idAX12, int slope);
 		
   int sendTossModeCommand(SerialPort *serialPort);
 
