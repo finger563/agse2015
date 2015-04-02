@@ -97,7 +97,7 @@ void arm_controller::Init_StateFunc()
       agse_package::verticalPos vPos;
       vPos.request.update = true;
       vPos.request.setZeroPosition = false;
-      vPos.request.goal = currentVerticalPos - 50000;
+      vPos.request.goal = currentVerticalPos - 10000;
       verticalPos_client.call(vPos);
       if (vPos.response.lowerLimitReached)
 	{
@@ -114,7 +114,7 @@ void arm_controller::Init_StateFunc()
       agse_package::radialPos rPos;
       rPos.request.update = true;
       rPos.request.setZeroPosition = false;
-      rPos.request.goal = currentRadialPos - 50000;
+      rPos.request.goal = currentRadialPos - 10000;
       radialPos_client.call(rPos);
       if (rPos.response.lowerLimitReached)
 	{
@@ -688,27 +688,35 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
 	  break;
 	case FINDING_PB:
 	  Finding_PB_StateFunc();
+	  UpdateArmPosition();
 	  break;
 	case OPENING_PB:
 	  Opening_PB_StateFunc();
+	  UpdateArmPosition();
 	  break;
 	case FINDING_SAMPLE:
 	  Finding_Sample_StateFunc();
+	  UpdateArmPosition();
 	  break;
 	case GRABBING_SAMPLE:
 	  Grabbing_Sample_StateFunc();
+	  UpdateArmPosition();
 	  break;
 	case CARRYING_SAMPLE:
 	  Carrying_Sample_StateFunc();
+	  UpdateArmPosition();
 	  break;
 	case INSERTING_SAMPLE:
 	  Inserting_Sample_StateFunc();
+	  UpdateArmPosition();
 	  break;
 	case CLOSING_PB:
 	  Closing_PB_StateFunc();
+	  UpdateArmPosition();
 	  break;
 	case MOVING_AWAY:
 	  Moving_Away_StateFunc();
+	  UpdateArmPosition();
 	  break;
 	default:
 	  break;
@@ -717,7 +725,6 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
       payloadBayState_pub.publish(payloadBay);
       arm.state = currentState;
       armState_pub.publish(arm);
-      UpdateArmPosition();
     }
 }
 //# End armTimerCallback Marker
