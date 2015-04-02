@@ -297,6 +297,121 @@ int Dynamixel::setSpeed(SerialPort *serialPort, int idAX12, int speed)
   return error;
 }
 
+int Dynamixel::getSetCWComplianceMarginCommand(byte id, short margin)
+{
+  int pos = 0;
+  byte numberOfParameters = 0;
+  //OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 �PARAMETER N CHECK SUM
+
+  buffer[pos++] = 0xff;
+  buffer[pos++] = 0xff;
+  buffer[pos++] = id;
+
+  // bodyLength
+  buffer[pos++] = 0; //place holder
+
+  //the instruction, query => 3
+  buffer[pos++] = 3;
+
+  // CW Compliance Margin
+  buffer[pos++] = 0x1A;
+  buffer[pos++] = margin;
+  numberOfParameters++;
+
+  // bodyLength
+  buffer[3] = (byte)(numberOfParameters + 3);
+
+  byte checksum = checkSumatory(buffer, pos);
+  buffer[pos++] = checksum;
+
+  return pos;
+}
+
+int Dynamixel::getSetCCWComplianceMarginCommand(byte id, short margin)
+{
+  int pos = 0;
+  byte numberOfParameters = 0;
+  //OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 �PARAMETER N CHECK SUM
+
+  buffer[pos++] = 0xff;
+  buffer[pos++] = 0xff;
+  buffer[pos++] = id;
+
+  // bodyLength
+  buffer[pos++] = 0; //place holder
+
+  //the instruction, query => 3
+  buffer[pos++] = 3;
+
+  // CCW Compliance Margin
+  buffer[pos++] = 0x1B;
+  buffer[pos++] = margin;
+  numberOfParameters++;
+
+  // bodyLength
+  buffer[3] = (byte)(numberOfParameters + 3);
+
+  byte checksum = checkSumatory(buffer, pos);
+  buffer[pos++] = checksum;
+
+  return pos;
+}
+
+int Dynamixel::setCWComplianceMargin(SerialPort *serialPort, int idAX12, int margin) 
+{
+  int error=0;
+
+  int n=getSetCWComplianceMarginCommand(idAX12, speed);
+  //bf(buffer,n);
+  long l=serialPort->sendArray(buffer,n);
+  Utils::sleepMS(waitTimeForResponse);
+
+  memset(bufferIn,0,BufferSize);
+  n=serialPort->getArray(bufferIn, n);
+  //bf(bufferIn,n);
+  memset(bufferIn,0,BufferSize);
+  n=serialPort->getArray(bufferIn, setResponseLength);
+  //bf(bufferIn,setResponseLength);
+
+  if (n>4 && bufferIn[4] == 0)
+    printf("setCWComplianceMargin: id=<%i> set at value=<%i>\n", idAX12, speed);
+  else {
+    error=-1;
+    printf("setCWComplianceMargin: id=<%i> error: <%i>\n", idAX12, bufferIn[4]);
+    bf(bufferIn, n);
+  }
+
+  return error;
+}
+
+int Dynamixel::setCCWComplianceMargin(SerialPort *serialPort, int idAX12, int margin) 
+{
+  int error=0;
+
+  int n=getSetCCWComplianceMarginCommand(idAX12, speed);
+  //bf(buffer,n);
+  long l=serialPort->sendArray(buffer,n);
+  Utils::sleepMS(waitTimeForResponse);
+
+  memset(bufferIn,0,BufferSize);
+  n=serialPort->getArray(bufferIn, n);
+  //bf(bufferIn,n);
+  memset(bufferIn,0,BufferSize);
+  n=serialPort->getArray(bufferIn, setResponseLength);
+  //bf(bufferIn,setResponseLength);
+
+  if (n>4 && bufferIn[4] == 0)
+    printf("setCCWComplianceMargin: id=<%i> set at value=<%i>\n", idAX12, speed);
+  else {
+    error=-1;
+    printf("setCCWComplianceMargin: id=<%i> error: <%i>\n", idAX12, bufferIn[4]);
+    bf(bufferIn, n);
+  }
+
+  return error;
+}
+
+
 void Dynamixel::bf (byte *buffer, int n)
 {
   printf ("Response (length <%i>): ",n);
