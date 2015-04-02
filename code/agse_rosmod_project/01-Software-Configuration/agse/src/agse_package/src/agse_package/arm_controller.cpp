@@ -177,7 +177,7 @@ void arm_controller::Finding_PB_StateFunc()
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
   static float armRotationStep = 30.0f; // degrees between steps of the state search
-  static float radialPosStep = 1000.0f;    // amount to move by in radius
+  static float radialPosStep = 5000.0f;    // amount to move by in radius
 
   static float positionRadius = 100.0f; // once center of PB is in this radius, we are done
   
@@ -256,10 +256,10 @@ void arm_controller::Finding_PB_StateFunc()
 		  // if pbY > 0 : rotate CW, else if pbY < 0 rotate CCW
 		  if ( pbY > 0 )
 		    {
-		      initArmRotation -= armRotationStep / 6.0f;
+		      initArmRotation -= armRotationStep / 12.0f;
 		    } else
 		    {
-		      initArmRotation += armRotationStep / 6.0f;
+		      initArmRotation += armRotationStep / 12.0f;
 		    }
 		  // if pbX > 0 : retract radius, else if pbX < 0 extend radius
 		  if ( pbX > 0 )
@@ -314,7 +314,7 @@ void arm_controller::Finding_Sample_StateFunc()
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
   static float armRotationStep = 30.0f; // degrees between steps of the state search
-  static float radialPosStep = 1000.0f;    // amount to move by in radius
+  static float radialPosStep = 5000.0f;    // amount to move by in radius
 
   static float positionRadius = 100.0f; // once center of sample is in this radius, we are done
   
@@ -393,10 +393,10 @@ void arm_controller::Finding_Sample_StateFunc()
 		  // if sY > 0 : rotate CW, else if sY < 0 CCW
 		  if ( sY > 0 )
 		    {
-		      initArmRotation -= armRotationStep / 6.0f;
+		      initArmRotation -= armRotationStep / 12.0f;
 		    } else
 		    {
-		      initArmRotation += armRotationStep / 6.0f;
+		      initArmRotation += armRotationStep / 12.0f;
 		    }
 		  // if sX > 0 : retract radius, else if sX < 0 extend
 		  if ( sX > 0 )
