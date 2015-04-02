@@ -18,7 +18,7 @@ void servo_controller::Init(const ros::TimerEvent& event)
   armServoID = 10;
   gripperRotationID = 11;
   gripperPositionID = 1;
-  if (serialPort.connect(portName)!=0)
+  if (serialPort.connect(portName,9600)!=0)
     {
       // Command line args for servo control
       for (int i = 0; i < node_argc; i++) 

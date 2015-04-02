@@ -10,118 +10,71 @@
 
 #include "agse_package/SerialPort.h"
 
+SerialPort::SerialPort() { // : timer(io) {
+  port = new boost::asio::serial_port(io);
+  //  timeout = this_timeout;
+}
+/*
 
-int SerialPort::connect() {
-	return connect("//dev//ttyTHS0");
+void SerialPort::read_complete(const boost::system::error_code& error,
+			       size_t bytes_transferred) {
+ 
+  //  read_error = (error || bytes_transferred == 0);
+  
+  timer.cancel();
 }
 
-int SerialPort::connect(char *device) {
-	struct termios terminalAttributes;
+void SerialPort::time_out(const boost::system::error_code& error) {
 
-	/*
-	 * http://linux.die.net/man/2/open
-	 *
-	 * Open the serial port
-	 * read/write
-	 * not become the process's controlling terminal
-	 * When possible, the file is opened in nonblocking mode
-	 *
-	 */
-	fileDescriptor = open(device, O_RDWR | O_NOCTTY | O_NDELAY | O_FSYNC );
+  if (error) {
+    std::cout << "Some error" << std::endl;
+    return;
+  }
+  std::cout << "Timer timed out!!" << std::endl;
+  port->cancel();
+}
+*/
+int SerialPort::connect() {
+  port->open("/dev/ttyO5");
+  port->set_option(boost::asio::serial_port_base::baud_rate(9600));
+  return 1;
+}
 
-	// clear terminalAttributes data
-	memset(&terminalAttributes, 0, sizeof(struct termios));
-
-	/*	http://linux.die.net/man/3/termios
-	 *
-	 *  control modes: c_cflag flag constants:
-	 *
-	 * 9600 bauds
-	 * 8 bits per word
-	 * Ignore modem control lines.
-	 * Enable receiver.
-	 */
-
-	terminalAttributes.c_cflag = B9600 | CS8 | CLOCAL | CREAD; // B57600
-
-	/*
-	 * input modes: c_iflag flag constants:
-	 *
-	 * Ignore framing errors and parity errors.
-	 * (XSI) Map NL to CR-NL on output.
-	 */
-	terminalAttributes.c_iflag = IGNPAR |  ONLCR;
-
-	/*
-	 * output modes: flag constants defined in POSIX.1
-	 *
-	 * Enable implementation-defined output processing.
-	 */
-
-	terminalAttributes.c_oflag = OPOST;
-
-	/*
-	 * Canonical and noncanonical mode
-	 *
-	 * min time
-	 * min bytes to read
-	 */
-
-	//terminalAttributes.c_lflag = ICANON;
-	terminalAttributes.c_cc[VTIME] = 0;
-	terminalAttributes.c_cc[VMIN] = 1;
-
-	/*
-	 * http://linux.die.net/man/3/tcsetattr
-	 * Set the port to our state
-	 *
-	 * the change occurs immediately
-	 */
-
-	tcsetattr(fileDescriptor, TCSANOW, &terminalAttributes);
-
-	/*
-	 * http://linux.die.net/man/3/tcflush
-	 *
-	 * flushes data written but not transmitted.
-	 * flushes data received but not read.
-	 */
-
-	tcflush(fileDescriptor, TCOFLUSH);
-	tcflush(fileDescriptor, TCIFLUSH);
-
-	return fileDescriptor;
+int SerialPort::connect(char *device, int baud) {
+  port->open(device);
+  port->set_option(boost::asio::serial_port_base::baud_rate(baud));
+  return 1;
 }
 
 void SerialPort::disconnect(void)
 {
-    close(fileDescriptor);
-    printf("\nPort 1 has been CLOSED and %d is the file description\n", fileDescriptor);
+  port->close();
 }
 
 int SerialPort::sendArray(unsigned char *buffer, int len) {
-	int n=write(fileDescriptor, buffer, len);
-	clear();
-	return n;
+  int n = boost::asio::write( *port,
+			      boost::asio::buffer(buffer,len));
+  return n;
 }
 
 int SerialPort::getArray (unsigned char *buffer, int len)
 {
-	int n1=bytesToRead();
-	int n=read(fileDescriptor, buffer, len);
-	return n;
+  char rcvChar;
+  int i = 0;
+  //  std::cout << "Inside getArray" << "; Timeout: " << timeout << std::endl;
+  /*
+  boost::asio::async_read(*port, boost::asio::buffer(&rcvChar, 1), 
+			  boost::bind(&SerialPort::read_complete, 
+				      this, 
+				      boost::asio::placeholders::error, 
+				      boost::asio::placeholders::bytes_transferred)); 
+
+  timer.expires_from_now(boost::posix_time::milliseconds(timeout));
+  timer.async_wait(boost::bind(&SerialPort::time_out,
+			       this, boost::asio::placeholders::error));
+  */
+  while ( i < len && boost::asio::read( *port, boost::asio::buffer(&rcvChar,1) ) == 1 )
+    buffer[i++] = rcvChar;
+  return i;
 }
 
-void SerialPort::clear()
-{
-	tcflush(fileDescriptor, TCIFLUSH);
-	tcflush(fileDescriptor, TCOFLUSH);
-}
-
-int SerialPort::bytesToRead()
-{
-	int bytes=0;
-	ioctl(fileDescriptor, FIONREAD, &bytes);
-
-	return bytes;
-}

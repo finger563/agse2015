@@ -172,110 +172,24 @@ int Dynamixel::getSetAX12PositionCommand(byte id, short goal)
   return pos;
 }
 
-int Dynamixel::getReadAX12TemperatureCommand(byte id)
-{
-  //OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 �PARAMETER N CHECK SUM
-  int pos = 0;
-
-  buffer[pos++] = 0xff;
-  buffer[pos++] = 0xff;
-  buffer[pos++] = id;
-
-  // length = 4
-  buffer[pos++] = 4;
-
-  //the instruction, read => 2
-  buffer[pos++] = 2;
-
-  // pos registers 36 and 37
-  buffer[pos++] = 0x2b;
-
-  //bytes to read
-  buffer[pos++] = 1;
-
-  byte checksum = checkSumatory(buffer, pos);
-  buffer[pos++] = checksum;
-
-  return pos;
-}
-
-int Dynamixel::getSetLedCommand(SerialPort *serialPort, byte id, bool onOff)
-{
-  //OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 �PARAMETER N CHECK SUM
-  int pos = 0;
-  byte numberOfParameters = 0;
-
-  buffer[pos++] = 0xff;
-  buffer[pos++] = 0xff;
-  buffer[pos++] = id;
-
-  // length = (Numbers of parameters) + 3
-  buffer[pos++] = 4; 
-
-  //the instruction, send => 3
-  buffer[pos++] = 3;
-
-  // led register
-  buffer[pos++] = 25;
-
-  byte ledOnOff = 0;
-  if (onOff)
-    ledOnOff = 1;
-
-  buffer[pos++] = ledOnOff;
-  
-  byte checksum = checkSumatory(buffer, pos);
-  buffer[pos++] = checksum;
-
-  long l=serialPort->sendArray(buffer,pos);
-  Utils::sleepMS(waitTimeForResponse);
-  int n;
-  memset(bufferIn,0,BufferSize);
-  n=serialPort->getArray(bufferIn, 8);
-  memset(bufferIn,0,BufferSize);
-  n=serialPort->getArray(bufferIn, 6);
-  //bf(bufferIn,n);
-  printf("setLED: id=<%i> LED=<%s>\n", id, ledOnOff ? "ON" : "OFF" );
-
-  return pos;
-}
-
-int Dynamixel::getReadLedCommand(byte id)
-{
-  //OXFF 0XFF ID LENGTH INSTRUCTION PARAMETER1 �PARAMETER N CHECK SUM
-  int pos = 0;
-  byte numberOfParameters = 0;
-
-  buffer[pos++] = 0xff;
-  buffer[pos++] = 0xff;
-  buffer[pos++] = id;
-
-  // length
-  buffer[pos++] = 3;
-
-  //the instruction, read => 2
-  buffer[pos++] = 2;
-
-  // led register
-  buffer[pos++] = 25;
-
-  byte checksum = checkSumatory(buffer, pos);
-  buffer[pos++] = checksum;
-
-  return pos;
-}
+int setResponseLength = 6;
+int getResponseLength = 8;
 
 int Dynamixel::getPosition(SerialPort *serialPort, int idAX12) 
 {
   int ret=0;
 
   int n=getReadAX12PositionCommand(idAX12);
+  bf(buffer,n);
   long l=serialPort->sendArray(buffer,n);
   Utils::sleepMS(waitTimeForResponse);
 
   memset(bufferIn,0,BufferSize);
-  n=serialPort->getArray(bufferIn, 8);
-  //bf(bufferIn,8);
+  n=serialPort->getArray(bufferIn, n);
+  bf(bufferIn,n);
+  memset(bufferIn,0,BufferSize);
+  n=serialPort->getArray(bufferIn, getResponseLength);
+  bf(bufferIn,getResponseLength);
 
   short pos = -1;
   if (n>7)
@@ -297,11 +211,16 @@ int Dynamixel::setPosition(SerialPort *serialPort, int idAX12, int position)
   int error=0;
 
   int n=getSetAX12PositionCommand(idAX12, position);
+  bf(buffer,n);
   long l=serialPort->sendArray(buffer,n);
   Utils::sleepMS(waitTimeForResponse);
 
   memset(bufferIn,0,BufferSize);
-  n=serialPort->getArray(bufferIn, 8);
+  n=serialPort->getArray(bufferIn, n);
+  bf(bufferIn,n);
+  memset(bufferIn,0,BufferSize);
+  n=serialPort->getArray(bufferIn, setResponseLength);
+  bf(bufferIn,setResponseLength);
 
   if (n>4 && bufferIn[4] == 0)
     printf("setPosition: id=<%i> set at pos=<%i>\n", idAX12, position);
@@ -312,24 +231,6 @@ int Dynamixel::setPosition(SerialPort *serialPort, int idAX12, int position)
   }
 
   return error;
-}
-
-int Dynamixel::sendTossModeCommand(SerialPort *serialPort)
-{
-  byte tossModeCommandBuffer[15];
-  tossModeCommandBuffer[0]='t';
-  tossModeCommandBuffer[1]='\n';
-  tossModeCommandBuffer[2]=0;
-
-  int n=serialPort->sendArray(tossModeCommandBuffer, 2);
-  Utils::sleepMS(waitTimeForResponse);
-  int n1=serialPort->bytesToRead();
-  serialPort->getArray(tossModeCommandBuffer, 15);
-
-  serialPort->clear();
-  Utils::sleepMS(1);
-
-  return n;
 }
 
 void Dynamixel::bf (byte *buffer, int n)
