@@ -254,18 +254,18 @@ void arm_controller::Finding_PB_StateFunc()
 		{
 		  // move to detected position (i.e. set goals to detected position)
 		  // if pbY > 0 : rotate CW, else if pbY < 0 rotate CCW
-		  if ( pbY > 0 )
+		  if ( pbY > positionRadius )
 		    {
 		      initArmRotation -= armRotationStep / 12.0f;
-		    } else
+		    } else if ( pbY < positionRadius )
 		    {
 		      initArmRotation += armRotationStep / 12.0f;
 		    }
 		  // if pbX > 0 : retract radius, else if pbX < 0 extend radius
-		  if ( pbX > 0 )
+		  if ( pbX > positionRadius )
 		    {
 		      initRadialPos -= radialPosStep;
-		    } else
+		    } else if ( pbX < positionRadius )
 		    {
 		      initRadialPos += radialPosStep;
 		    }
@@ -391,18 +391,18 @@ void arm_controller::Finding_Sample_StateFunc()
 		{
 		  // move to detected position (i.e. set goals to detected position)
 		  // if sY > 0 : rotate CW, else if sY < 0 CCW
-		  if ( sY > 0 )
+		  if ( sY > positionRadius )
 		    {
 		      initArmRotation -= armRotationStep / 12.0f;
-		    } else
+		    } else if ( sY < positionRadius )
 		    {
 		      initArmRotation += armRotationStep / 12.0f;
 		    }
 		  // if sX > 0 : retract radius, else if sX < 0 extend
-		  if ( sX > 0 )
+		  if ( sX > positionRadius )
 		    {
 		      initRadialPos -= radialPosStep;
-		    } else
+		    } else if ( sX < positionRadius )
 		    {
 		      initRadialPos += radialPosStep;
 		    }
