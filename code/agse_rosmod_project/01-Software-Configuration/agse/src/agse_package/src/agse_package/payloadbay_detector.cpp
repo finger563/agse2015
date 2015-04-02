@@ -46,6 +46,7 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
 
     if (Markers.size() > 0) {
       for (unsigned int i=0;i<Markers.size();i++) {
+	printf("MARKER XY = %f, %f\n",Markers[i].getCenter().x,Markers[i].getCenter().y);
 	Centers.push_back(Markers[i].getCenter());
 	center += Centers[i];
 	if (i>0)
