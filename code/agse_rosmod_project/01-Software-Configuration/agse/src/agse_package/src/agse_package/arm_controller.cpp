@@ -179,7 +179,7 @@ void arm_controller::Finding_PB_StateFunc()
   static float armRotationStep = 15.0f; // degrees between steps of the state search
   static float radialPosStep = 5000.0f;    // amount to move by in radius
 
-  static float positionRadius = 300.0f; // once center of PB is in this radius, we are done
+  static float positionRadius = 200.0f; // once center of PB is in this radius, we are done
   
   static bool foundPB = false;
   static agse_package::payloadBayState internalPBState; // used within this state; global state set when done
@@ -299,6 +299,7 @@ void arm_controller::Opening_PB_StateFunc()
   // send the command to the PB through UART to open the PB,
   // OPTIONAL : use image based detection to confirm PB opens
   // transition to next state (FINDING_SAMPLE) if PB responds well
+  currentState = FINDING_SAMPLE;
 }
 
 void arm_controller::Finding_Sample_StateFunc()
