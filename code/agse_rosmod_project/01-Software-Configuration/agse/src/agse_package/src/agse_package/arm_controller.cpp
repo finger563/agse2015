@@ -75,7 +75,7 @@ void arm_controller::UpdateArmPosition()
 
 bool arm_controller::CheckGoals()
 {
-#if AGSE_DEBUG
+#if 1//AGSE_DEBUG
   ROS_INFO("RADIAL GOAL: %d",goalRadialPos);
   ROS_INFO("RADIUS : %d",currentRadialPos);
   ROS_INFO("HEIGHT GOAL: %d",goalVerticalPos);
