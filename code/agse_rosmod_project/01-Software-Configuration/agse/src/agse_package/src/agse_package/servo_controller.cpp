@@ -18,6 +18,11 @@ void servo_controller::Init(const ros::TimerEvent& event)
   armServoID = 10;
   gripperRotationID = 11;
   gripperPositionID = 1;
+
+  armServoSpeed = 512; // half speed; full speed is either 0 or 1023
+  gripperRotationSpeed = 0;
+  gripperPositionSpeed = 0;
+
   if (serialPort.connect(portName,9600)!=0)
     {
       // Command line args for servo control
@@ -25,13 +30,23 @@ void servo_controller::Init(const ros::TimerEvent& event)
 	{
 	  if (!strcmp(node_argv[i], "-unpaused"))
 	    paused = false;
-	  else if (!strcmp(node_argv[i], "-a"))
+	  else if (!strcmp(node_argv[i], "-theta"))
 	    armRotationGoal = atof(node_argv[i+1]);
-	  else if (!strcmp(node_argv[i], "-r"))
+	  else if (!strcmp(node_argv[i], "-gRot"))
 	    gripperRotationGoal = atof(node_argv[i+1]);
-	  else if (!strcmp(node_argv[i], "-p"))
+	  else if (!strcmp(node_argv[i], "-gPos"))
 	    gripperPosGoal = atof(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-armSpeed"))
+	    armServoSpeed = atoi(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-gRotSpeed"))
+	    gripperRotationSpeed = atoi(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-gPosSpeed"))
+	    gripperPositionSpeed = atoi(node_argv[i+1]);
 	}
+
+      dynamixel.setSpeed(&serialPort, armServoID, armServoSpeed);
+      dynamixel.setSpeed(&serialPort, gripperRotationID, gripperRotationSpeed);
+      dynamixel.setSpeed(&serialPort, gripperPositionID, gripperPositionSpeed);
     }
   else
     {
