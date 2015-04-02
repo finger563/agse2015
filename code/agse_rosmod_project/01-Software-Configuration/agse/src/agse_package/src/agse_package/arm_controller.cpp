@@ -9,11 +9,13 @@ void arm_controller::UpdateSensorData()
   // output: current
   agse_package::radialPos rPos;
   rPos.request.update = false;
+  rPos.request.setZeroPosition = false;
   radialPos_client.call(rPos);
   currentRadialPos = rPos.response.current;
 
   agse_package::verticalPos vPos;
   vPos.request.update = false;
+  vPos.request.setZeroPosition = false;
   verticalPos_client.call(vPos);
   currentVerticalPos = vPos.response.current;
 
@@ -86,22 +88,64 @@ bool arm_controller::CheckGoals()
 
 void arm_controller::Init_StateFunc()
 {
-  // Whatever should be here, not quite sure if this is needed.
-  // perhaps do calibration (hit limit switches) of linear actuators
-  currentState = FINDING_PB;
-
-  call_at_timer = true;
+  // Init zeroes out the positions of the linear actuators for calibration
+  static bool zeroedHeight = false;
+  static bool zeroedRadius = false;
+  call_at_timer = true; // WE WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if (!zeroedHeight)
+    {
+      agse_package::verticalPos vPos;
+      vPos.request.update = true;
+      vPos.request.setZeroPosition = false;
+      vPos.request.goal = currentVerticalPos - 10000;
+      verticalPos_client.call(vPos);
+      if (vPos.response.lowerLimitReached)
+	{
+	  vPos.request.update = false;
+	  vPos.request.setZeroPosition = true;
+	  verticalPos_client.call(vPos);
+	  zeroedHeight = true;
+	}
+    }
+  else if (!zeroedRadius)
+    {
+      agse_package::radialPos rPos;
+      rPos.request.update = true;
+      rPos.request.setZeroPosition = false;
+      rPos.request.goal = currentRadialPos - 10000;
+      radialPos_client.call(rPos);
+      if (rPos.response.lowerLimitReached)
+	{
+	  rPos.request.update = false;
+	  rPos.request.setZeroPosition = true;
+	  radialPos_client.call(rPos);
+	  zeroedRadius = true;
+	}
+    }
+  else
+    {
+      agse_package::verticalPos vPos;
+      vPos.request.update = true;
+      vPos.request.setZeroPosition = false;
+      vPos.request.goal = 0;
+      verticalPos_client.call(vPos);
+      agse_package::radialPos rPos;
+      rPos.request.update = true;
+      rPos.request.setZeroPosition = false;
+      rPos.request.goal = 0;
+      radialPos_client.call(rPos);
+      currentState = FINDING_PB;
+    }
 }
 
 void arm_controller::Finding_PB_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
-  static float initVerticalPos     = maxVerticalPos;
+  static float initVerticalPos     = minVerticalPos;
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = (maxGripperRotation + minGripperRotation) / 2.0f;
   static float initGripperPos      = gripperPosOpened;
@@ -109,7 +153,7 @@ void arm_controller::Finding_PB_StateFunc()
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
   static float armRotationStep = 30.0f; // degrees between steps of the state search
-  static float radialPosStep = 1.0f;    // amount to move by in radius
+  static float radialPosStep = 1000.0f;    // amount to move by in radius
 
   static float positionRadius = 100.0f; // once center of PB is in this radius, we are done
   
@@ -192,14 +236,16 @@ void arm_controller::Finding_PB_StateFunc()
 		    {
 		      initRadialPos -= radialPosStep;
 		    }
+		  goalRadialPos = initRadialPos;
 		  // if pbX > 0 : rotate CW, else if pbX < 0 rotate CCW
 		  if ( pbX > 0 )
 		    {
-		      initArmRotation -= armRotationStep / 2.0f;
+		      initArmRotation -= armRotationStep / 6.0f;
 		    } else
 		    {
-		      initArmRotation += armRotationStep / 2.0f;
+		      initArmRotation += armRotationStep / 6.0f;
 		    }
+		  goalArmRotation = initArmRotation;
 		}
 	    }
 	}
@@ -214,8 +260,7 @@ void arm_controller::Finding_PB_StateFunc()
 
 void arm_controller::Opening_PB_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -235,13 +280,12 @@ void arm_controller::Opening_PB_StateFunc()
 
 void arm_controller::Finding_Sample_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
-  static float initVerticalPos     = maxVerticalPos;
+  static float initVerticalPos     = minVerticalPos;
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = (maxGripperRotation + minGripperRotation) / 2.0f;
   static float initGripperPos      = gripperPosOpened;
@@ -249,7 +293,7 @@ void arm_controller::Finding_Sample_StateFunc()
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
   static float armRotationStep = 30.0f; // degrees between steps of the state search
-  static float radialPosStep = 1.0f;    // amount to move by in radius
+  static float radialPosStep = 1000.0f;    // amount to move by in radius
 
   static float positionRadius = 100.0f; // once center of sample is in this radius, we are done
   
@@ -332,14 +376,16 @@ void arm_controller::Finding_Sample_StateFunc()
 		    {
 		      initRadialPos -= radialPosStep;
 		    }
+		  goalRadialPos = initRadialPos;
 		  // if sX > 0 : rotate CW, else if sX < 0 rotate CCW
 		  if ( sX > 0 )
 		    {
-		      initArmRotation -= armRotationStep / 2.0f;
+		      initArmRotation -= armRotationStep / 6.0f;
 		    } else
 		    {
-		      initArmRotation += armRotationStep / 2.0f;
+		      initArmRotation += armRotationStep / 6.0f;
 		    }
+		  goalArmRotation = initArmRotation;
 		}
 	    }
 	}
@@ -354,15 +400,14 @@ void arm_controller::Finding_Sample_StateFunc()
 
 void arm_controller::Grabbing_Sample_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
-  static float sampleZPlane = minVerticalPos;
+  static float sampleZPlane = maxVerticalPos;
   static bool atSample = false;
   static bool grabbedSample = false;
 
@@ -374,7 +419,7 @@ void arm_controller::Grabbing_Sample_StateFunc()
   if ( !atSample )
     {
       // Orient gripper to sample (based on sample.orientation.theta)
-      goalGripperRotation = sample.orientation.theta;
+      goalGripperRotation = sample.orientation.theta + gripperRotationOffset;
       // Go down to proper Z level for the sample (HOW DO WE DETERMINE THIS)
       goalVerticalPos = sampleZPlane;
       atSample = true;
@@ -386,17 +431,15 @@ void arm_controller::Grabbing_Sample_StateFunc()
     } else
     {
       // move up some amount
-      goalVerticalPos = maxVerticalPos;
+      goalVerticalPos = minVerticalPos;
       // transition to next state (CARRYING_SAMPLE)
       currentState = CARRYING_SAMPLE;
     }
-
 }
 
 void arm_controller::Carrying_Sample_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -404,6 +447,7 @@ void arm_controller::Carrying_Sample_StateFunc()
   // update the arm's goal variables based on the result of the image processing
   // update the current state of the arm if necessary
   static bool atPayloadBay = false;
+  static float payloadBayZPlane = (maxVerticalPos+minVerticalPos)/4;
 
   // starting with:
   // * already have the sample
@@ -417,10 +461,11 @@ void arm_controller::Carrying_Sample_StateFunc()
       goalArmRotation = payloadBay.pos.theta;
       goalRadialPos = payloadBay.pos.r;
       // change gripper rotation to payloadBay's orientation (payloadBay.orientation.theta)
-      goalGripperRotation = payloadBay.orientation.theta;
+      goalGripperRotation = payloadBay.orientation.theta + gripperRotationOffset;
     } else
     {
       // move down in Z to proper height for PB (HOW DO WE DETERMINE THIS? FROM MARKERS?)
+      goalVerticalPos = payloadBayZPlane;
       // transition to next state (INSERTING_SAMPLE)
       currentState = INSERTING_SAMPLE;
     }
@@ -428,8 +473,7 @@ void arm_controller::Carrying_Sample_StateFunc()
 
 void arm_controller::Inserting_Sample_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -450,8 +494,7 @@ void arm_controller::Inserting_Sample_StateFunc()
 
 void arm_controller::Closing_PB_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -465,7 +508,7 @@ void arm_controller::Closing_PB_StateFunc()
 
   // State logic:
   // move up some amount (to max height)
-  goalVerticalPos = maxVerticalPos;
+  goalVerticalPos = minVerticalPos;
   // send the command to the PB through UART to close the PB,
   // OPTIONAL : use image based detection to confirm PB closes
   // transition to next state (MOVING_AWAY) if PB responds well
@@ -474,8 +517,7 @@ void arm_controller::Closing_PB_StateFunc()
 
 void arm_controller::Moving_Away_StateFunc()
 {
-
-  call_at_timer = false;
+  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -512,37 +554,49 @@ void arm_controller::Init(const ros::TimerEvent& event)
   paused = true;
 
   currentState = INIT;
+  call_at_timer = true;  // set this to true to ensure that states are entered
+
+  // need to initialize the offsets with measurements from the system
+  radialOffset          = 0.0;
+  verticalOffset        = 0.0;
+  armRotationOffset     = 0.0f;
+  gripperRotationOffset = 0.0f;
+  gripperPosOffset      = 0.0f;
+
+  // need to initialize the offsets with measurements from the system
+  radiusBetweenGripperAndCamera = -500;
+  angleBetweenGripperAndCamera = 5.0f;
 
   // need to initialize the min and max sensor values
-  maxRadialPos       = 4000;
-  maxVerticalPos     = 3000;
+  maxRadialPos       = 100000;
+  maxVerticalPos     = 100000;
   maxArmRotation     = 330.0f;
-  maxGripperRotation = 90.0f;
-  maxGripperPos      = 180.0f;
+  maxGripperRotation = 180.0f;
+  maxGripperPos      = 260.0f;
 
-  minRadialPos       = 300;
-  minVerticalPos     = 100;
+  minRadialPos       = 0;
+  minVerticalPos     = 0;
   minArmRotation     = 0.0f;
   minGripperRotation = 0.0f;
-  minGripperPos      = 0.0f;
+  minGripperPos      = 190.0f;
 
   // need to initialize the gripper's state sensor values
-  gripperPosOpened = 0.0f;
-  gripperPosClosed = 90.0f;
+  gripperPosOpened = 250.0f;
+  gripperPosClosed = 200.0f;
 
   // need to properly initialize the current sensor readings
-  currentRadialPos        = -1.0f;
-  currentVerticalPos      = -1.0f;
+  currentRadialPos        = -1.0;
+  currentVerticalPos      = -1.0;
   currentArmRotation      = -1.0f;
   currentGripperRotation  = -1.0f;
   currentGripperPos       = -1.0f;
 
   // need to properly initialize the current actuator goals
-  goalRadialPos        = -1.0f;
-  goalVerticalPos      = -1.0f;
-  goalArmRotation      = -1.0f;
-  goalGripperRotation  = -1.0f;
-  goalGripperPos       = -1.0f;
+  goalRadialPos        = minRadialPos;
+  goalVerticalPos      = minVerticalPos;
+  goalArmRotation      = minArmRotation;
+  goalGripperRotation  = minGripperRotation;
+  goalGripperPos       = gripperPosOpened;
 
   // need to properly initialize the sample and payloadBay
   sample.pos.r     = -1.0f;
@@ -558,17 +612,40 @@ void arm_controller::Init(const ros::TimerEvent& event)
   payloadBay.orientation.phi   = -1.0f;
 
   // need to initialize the epsilons for the goal/current feedback loops
-  radialEpsilon          = -1.0f;
-  verticalEpsilon        = -1.0f;
-  armRotationEpsilon     = -1.0f;
-  gripperRotationEpsilon = -1.0f;
-  gripperPosEpsilon      = -1.0f;
-  // need to initialize the offsets with measurements from the system
-  radialOffset          = -1.0f;
-  verticalOffset        = -1.0f;
-  armRotationOffset     = -1.0f;
-  gripperRotationOffset = -1.0f;
-  gripperPosOffset      = -1.0f;
+  radialEpsilon          = 100;
+  verticalEpsilon        = 100;
+  armRotationEpsilon     = 1.0f;
+  gripperRotationEpsilon = 1.0f;
+  gripperPosEpsilon      = 1.0f;
+
+  // command line args parsing for arm_controller:
+  for (int i=0; i < node_argc; i++) 
+    {
+      if (!strcmp(node_argv[i], "-unpaused"))
+	{
+	  paused = false;
+	}
+      if (!strcmp(node_argv[i], "-r"))
+	{
+	  goalRadialPos = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-theta"))
+	{
+	  goalArmRotation = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-z"))
+	{
+	  goalVerticalPos = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-gRot"))
+	{
+	  goalGripperRotation = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-gPos"))
+	{
+	  goalGripperPos = atoi(node_argv[i+1]);
+	}
+    }
 
     // Stop Init Timer
     initOneShotTimer.stop();
@@ -645,6 +722,7 @@ arm_controller::~arm_controller()
     armTimer.stop();
     sampleState_pub.shutdown();
     payloadBayState_pub.shutdown();
+    armState_pub.shutdown();
     controlInputs_sub.shutdown();
     sampleStateFromImage_client.shutdown();
     radialPos_client.shutdown();
@@ -676,8 +754,8 @@ void arm_controller::startUp()
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
     advertiseName = "controlInputs";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("controlInputs_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["controlInputs_sub"];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -691,58 +769,64 @@ void arm_controller::startUp()
     // Configure all publishers associated with this component
     // publisher: sampleState_pub
     advertiseName = "sampleState";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("sampleState_pub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["sampleState_pub"];
     this->sampleState_pub = nh.advertise<agse_package::sampleState>
 	(advertiseName.c_str(), 1000);	
     // publisher: payloadBayState_pub
     advertiseName = "payloadBayState";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("payloadBayState_pub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["payloadBayState_pub"];
     this->payloadBayState_pub = nh.advertise<agse_package::payloadBayState>
+	(advertiseName.c_str(), 1000);	
+    // publisher: armState_pub
+    advertiseName = "armState";
+    if ( portGroupMap != NULL && portGroupMap->find("armState_pub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["armState_pub"];
+    this->armState_pub = nh.advertise<agse_package::armState>
 	(advertiseName.c_str(), 1000);	
 
     // Configure all required services associated with this component
     // client: sampleStateFromImage_client
     advertiseName = "sampleStateFromImage";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->sampleStateFromImage_client = nh.serviceClient<agse_package::sampleStateFromImage>
 	(advertiseName.c_str()); 
     // client: radialPos_client
     advertiseName = "radialPos";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->radialPos_client = nh.serviceClient<agse_package::radialPos>
 	(advertiseName.c_str()); 
     // client: armRotation_client
     advertiseName = "armRotation";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->armRotation_client = nh.serviceClient<agse_package::armRotation>
 	(advertiseName.c_str()); 
     // client: gripperRotation_client
     advertiseName = "gripperRotation";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->gripperRotation_client = nh.serviceClient<agse_package::gripperRotation>
 	(advertiseName.c_str()); 
     // client: verticalPos_client
     advertiseName = "verticalPos";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->verticalPos_client = nh.serviceClient<agse_package::verticalPos>
 	(advertiseName.c_str()); 
     // client: gripperPos_client
     advertiseName = "gripperPos";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->gripperPos_client = nh.serviceClient<agse_package::gripperPos>
 	(advertiseName.c_str()); 
     // client: payloadBayStateFromImage_client
     advertiseName = "payloadBayStateFromImage";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
     this->payloadBayStateFromImage_client = nh.serviceClient<agse_package::payloadBayStateFromImage>
 	(advertiseName.c_str()); 
 
@@ -760,9 +844,32 @@ void arm_controller::startUp()
     // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(0.02),
+             (ros::Duration(0.2),
 	     boost::bind(&arm_controller::armTimerCallback, this, _1),
 	     &this->compQueue);
     this->armTimer = nh.createTimer(timer_options);
 
+
+    /*
+     * Identify present working directory of node executable
+     */
+    std::string s = node_argv[0];
+    std::string exec_path = s;
+    std::string delimiter = "/";
+    std::string exec, pwd;
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        exec = s.substr(0, pos);
+        s.erase(0, pos + delimiter.length());
+    }
+    exec = s.substr(0, pos);
+    pwd = exec_path.erase(exec_path.find(exec), exec.length());
+    // Establish the log file name
+    std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
+
+    // Create the log file & open file stream
+    LOGGER.CREATE_FILE(log_file_path);
+
+    // Establish log levels of LOGGER
+    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }

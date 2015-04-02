@@ -20,20 +20,18 @@ void servo_controller::Init(const ros::TimerEvent& event)
   gripperPositionID = 1;
   if (serialPort.connect(portName)!=0)
     {
-
       // Command line args for servo control
-      for (int i = 0; i < node_argc; i++) {
-	if (!strcmp(node_argv[i], "-a"))
-	  armRotationGoal = atof(node_argv[i+1]);
-	else if (!strcmp(node_argv[i], "-r"))
-	  gripperRotationGoal = atof(node_argv[i+1]);
-	else if (!strcmp(node_argv[i], "-p"))
-	  gripperPosGoal = atof(node_argv[i+1]);
-      }
-
-      //      armRotationGoal = 30.0f;
-      //gripperRotationGoal = 90.0f;
-      //gripperPosGoal = 0.0f;
+      for (int i = 0; i < node_argc; i++) 
+	{
+	  if (!strcmp(node_argv[i], "-unpaused"))
+	    paused = false;
+	  else if (!strcmp(node_argv[i], "-a"))
+	    armRotationGoal = atof(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-r"))
+	    gripperRotationGoal = atof(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-p"))
+	    gripperPosGoal = atof(node_argv[i+1]);
+	}
     }
   else
     {
@@ -102,11 +100,7 @@ bool servo_controller::gripperRotationCallback(agse_package::gripperRotation::Re
 void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for servoTimer 
-  if (paused) {
-
-    //armRotationGoal = Dynamixel::posToAngle( rand() % 1023 );
-    //gripperRotationGoal = Dynamixel::posToAngle( rand() % 1023 );
-    //gripperPosGoal = Dynamixel::posToAngle( rand() % 1023 );
+  if (!paused) {
 
     int pos; // temp value to store position from servo
     
@@ -166,8 +160,8 @@ void servo_controller::startUp()
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
     advertiseName = "controlInputs";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("controlInputs_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["controlInputs_sub"];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -181,8 +175,8 @@ void servo_controller::startUp()
     // Configure all provided services associated with this component
     // server: armRotation_server
     advertiseName = "armRotation";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("armRotation_server") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["armRotation_server"];
     ros::AdvertiseServiceOptions armRotation_server_options;
     armRotation_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::armRotation>
@@ -193,8 +187,8 @@ void servo_controller::startUp()
     this->armRotation_server = nh.advertiseService(armRotation_server_options);
     // server: gripperPos_server
     advertiseName = "gripperPos";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("gripperPos_server") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["gripperPos_server"];
     ros::AdvertiseServiceOptions gripperPos_server_options;
     gripperPos_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::gripperPos>
@@ -205,8 +199,8 @@ void servo_controller::startUp()
     this->gripperPos_server = nh.advertiseService(gripperPos_server_options);
     // server: gripperRotation_server
     advertiseName = "gripperRotation";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("gripperRotation_server") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["gripperRotation_server"];
     ros::AdvertiseServiceOptions gripperRotation_server_options;
     gripperRotation_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::gripperRotation>
@@ -235,4 +229,27 @@ void servo_controller::startUp()
 	     &this->compQueue);
     this->servoTimer = nh.createTimer(timer_options);
 
+
+    /*
+     * Identify present working directory of node executable
+     */
+    std::string s = node_argv[0];
+    std::string exec_path = s;
+    std::string delimiter = "/";
+    std::string exec, pwd;
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        exec = s.substr(0, pos);
+        s.erase(0, pos + delimiter.length());
+    }
+    exec = s.substr(0, pos);
+    pwd = exec_path.erase(exec_path.find(exec), exec.length());
+    // Establish the log file name
+    std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
+
+    // Create the log file & open file stream
+    LOGGER.CREATE_FILE(log_file_path);
+
+    // Establish log levels of LOGGER
+    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }

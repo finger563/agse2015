@@ -16,38 +16,44 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   paused = true;
 
   // THESE NEED TO BE UPDATED
-  epsilon = 10;
+  epsilon = 100;
   motorForwardPin = 89; //86;  // connected to GPIO2_22, pin P8_27
   motorBackwardPin = 88; //87; // connected to GPIO2_23, pin P8_29
-
-  // Limit Switch Pin GPIO P8_20 & P8_21
-  
+  lowerLimitSwitchPin = 62;       // connected to GPIO1_31, pin P8_21
   
   adcPin = 1;  // connected to ADC1, pin P9_40
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);
   gpio_export(motorBackwardPin);
+  gpio_export(lowerLimitSwitchPin);
   gpio_set_dir(motorForwardPin,OUTPUT_PIN);
   gpio_set_dir(motorBackwardPin,OUTPUT_PIN);
+  gpio_set_dir(lowerLimitSwitchPin,INPUT_PIN);
   // set up the encoder module
   vm_eqep_period = 1000000000L;
   verticalMotoreQEP.initialize("/sys/devices/ocp.3/48302000.epwmss/48302180.eqep", eQEP::eQEP_Mode_Absolute);
   verticalMotoreQEP.set_period(vm_eqep_period);
-  // initialize the goal position to 0
 
-  // Command line args for vertical goal
-  for (int i = 0; i < node_argc; i++) {
-    if (!strcmp(node_argv[i], "-v"))
-      verticalGoal = atoi(node_argv[i+1]);
-    if (!strcmp(node_argv[i], "-e")) {
-      epsilon = atoi(node_argv[i+1]);
+  // Command line args for radial goal
+  for (int i = 0; i < node_argc; i++)
+    {
+      if (!strcmp(node_argv[i], "-unpaused"))
+	{
+	  paused = false;
+	}
+      if (!strcmp(node_argv[i], "-v"))
+	{
+	  verticalGoal = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-e"))
+	{
+	  epsilon = atoi(node_argv[i+1]);
+	}
     }
-  }
 
   ROS_INFO("VERTICAL GOAL SET TO : %d",verticalGoal);
 
-  //verticalGoal = 1000;
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -73,6 +79,17 @@ bool vertical_actuator_controller::verticalPosCallback(agse_package::verticalPos
     {
       verticalGoal = req.goal;
     }
+  if (req.setZeroPosition == true)
+    {
+      verticalMotoreQEP.set_position(0);
+    }
+  unsigned int limitSwitchPressed = 0;
+  gpio_get_value(lowerLimitSwitchPin,&limitSwitchPressed);
+  if (limitSwitchPressed)
+    res.lowerLimitReached = true;
+  else
+    res.lowerLimitReached = false;
+  res.upperLimitReached = false;
   res.current = verticalCurrent;
   return true;
 }
@@ -83,7 +100,7 @@ bool vertical_actuator_controller::verticalPosCallback(agse_package::verticalPos
 void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for verticalPosTimer 
-  if (paused)
+  if (!paused)
     {
       // read current value for vertical position (encoder)
       verticalCurrent = verticalMotoreQEP.get_position();
@@ -150,8 +167,8 @@ void vertical_actuator_controller::startUp()
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
     advertiseName = "controlInputs";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("controlInputs_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["controlInputs_sub"];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -165,8 +182,8 @@ void vertical_actuator_controller::startUp()
     // Configure all provided services associated with this component
     // server: verticalPos_server
     advertiseName = "verticalPos";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("verticalPos_server") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["verticalPos_server"];
     ros::AdvertiseServiceOptions verticalPos_server_options;
     verticalPos_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::verticalPos>
@@ -195,4 +212,27 @@ void vertical_actuator_controller::startUp()
 	     &this->compQueue);
     this->verticalPosTimer = nh.createTimer(timer_options);
 
+
+    /*
+     * Identify present working directory of node executable
+     */
+    std::string s = node_argv[0];
+    std::string exec_path = s;
+    std::string delimiter = "/";
+    std::string exec, pwd;
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        exec = s.substr(0, pos);
+        s.erase(0, pos + delimiter.length());
+    }
+    exec = s.substr(0, pos);
+    pwd = exec_path.erase(exec_path.find(exec), exec.length());
+    // Establish the log file name
+    std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
+
+    // Create the log file & open file stream
+    LOGGER.CREATE_FILE(log_file_path);
+
+    // Establish log levels of LOGGER
+    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }

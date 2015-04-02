@@ -15,6 +15,18 @@ else()
 endif()
 ## End Global Marker
 
+## Check C++11 / C++0x
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "-std=c++11")
+elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "-std=c++0x")
+else()
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+endif()
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -75,6 +87,8 @@ add_message_files(
   payloadBayPosition.msg
 
   payloadBayOrientation.msg
+
+  armState.msg
 
 )
 
@@ -139,6 +153,8 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
 ## Start Include Directories Marker
+  /usr/include/opencv2
+  ${OpenCV_INCLUDE_DIRS}
   /usr/include/opencv2
   ${OpenCV_INCLUDE_DIRS}
 ## End Include Directories Marker
@@ -212,7 +228,7 @@ include_directories(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable( arm src/agse_package/arm_main.cpp src/agse_package/Component.cpp 
+add_executable( arm src/agse_package/arm_main.cpp src/agse_package/Component.cpp src/agse_package/Logger.cpp
                 src/agse_package/arm_controller.cpp  
 		## Start arm CPP Marker
 		## End arm CPP Marker
@@ -223,7 +239,7 @@ target_link_libraries(arm
                       ## End arm Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(arm agse_package_generate_messages_cpp)
-add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp 
+add_executable( positioning src/agse_package/positioning_main.cpp src/agse_package/Component.cpp src/agse_package/Logger.cpp
                 src/agse_package/radial_actuator_controller.cpp  
                 src/agse_package/vertical_actuator_controller.cpp  
 		## Start positioning CPP Marker
@@ -237,19 +253,12 @@ target_link_libraries(positioning
                       ## End positioning Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(positioning agse_package_generate_messages_cpp)
-add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package/Component.cpp 
+add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package/Component.cpp src/agse_package/Logger.cpp
                 src/agse_package/user_input_controller.cpp  
 		## Start user_input CPP Marker
 		src/agse_package/gpio.cpp
                 ## End user_input CPP Marker
               )
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-## Start Include Directories Marker
-  /usr/include/opencv2
-  ${OpenCV_INCLUDE_DIRS}
-## End Include Directories Marker
-)
 target_link_libraries(user_input 
                       ## Start user_input Target Link Libraries Marker
                       opencv_core 
@@ -265,7 +274,7 @@ target_link_libraries(user_input
                       ## End user_input Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(user_input agse_package_generate_messages_cpp)
-add_executable( imager src/agse_package/imager_main.cpp src/agse_package/Component.cpp 
+add_executable( imager src/agse_package/imager_main.cpp src/agse_package/Component.cpp src/agse_package/Logger.cpp
                 src/agse_package/image_sensor.cpp  
 		## Start imager CPP Marker
 		## End imager CPP Marker
@@ -276,7 +285,7 @@ target_link_libraries(imager
                       ## End imager Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(imager agse_package_generate_messages_cpp)
-add_executable( detector src/agse_package/detector_main.cpp src/agse_package/Component.cpp 
+add_executable( detector src/agse_package/detector_main.cpp src/agse_package/Component.cpp src/agse_package/Logger.cpp
                 src/agse_package/image_processor.cpp  
 		## Start detector CPP Marker
 		src/agse_package/sample_detector.cpp
@@ -311,13 +320,13 @@ target_link_libraries(detector
                       ## End detector Target Link Libraries Marker
                       ${catkin_LIBRARIES})
 add_dependencies(detector agse_package_generate_messages_cpp)
-add_executable( servos src/agse_package/servos_main.cpp src/agse_package/Component.cpp 
+add_executable( servos src/agse_package/servos_main.cpp src/agse_package/Component.cpp src/agse_package/Logger.cpp
                 src/agse_package/servo_controller.cpp  
 		## Start servos CPP Marker
 		src/agse_package/Dynamixel.cpp
 		src/agse_package/SerialPort.cpp
 		src/agse_package/Utils.cpp
-		## End servos CPP Marker
+                ## End servos CPP Marker
               )
 target_link_libraries(servos 
                       ## Start servos Target Link Libraries Marker

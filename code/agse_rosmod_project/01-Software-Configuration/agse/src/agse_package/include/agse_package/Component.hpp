@@ -1,18 +1,18 @@
 ﻿#ifndef COMPONENT_HPP
 #define COMPONENT_HPP
 
+#include <iostream>
+#include <string>
 #include "ros/ros.h"
-
-#include "agse_package/xmlParser.hpp"
-
-// required for the callback queue
 #include <ros/callback_queue.h>
+#include "agse_package/xmlParser.hpp"
+#include "agse_package/Logger.hpp"
 
 class Component
 {
     public:
         // Component Constructor
-        Component(std::string nodeName, std::string compName, int argc, char **argv);
+        Component(std::string hostName, std::string nodeName, std::string compName, int argc, char **argv);
 
 	// StartUp will be completely generated
 	virtual void startUp() = 0;
@@ -27,12 +27,14 @@ class Component
 	~Component();
 
     protected:
+        std::string hostName;
         std::string nodeName;
         std::string compName;
         int node_argc;
         char **node_argv;
 	ros::Timer initOneShotTimer;  // timer for calling init
 	ros::CallbackQueue compQueue; // single callbackQueue for the component
+        Logger LOGGER;
 };
 
 #endif

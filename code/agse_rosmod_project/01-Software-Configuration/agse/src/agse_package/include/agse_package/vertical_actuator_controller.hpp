@@ -23,7 +23,7 @@ class vertical_actuator_controller : public Component
 {
     public:
         // Component vertical_actuator_controller Constructor
-        vertical_actuator_controller(std::string nodeName, std::string compName, int argc, char **argv) : Component(nodeName, compName, argc, argv) {}
+        vertical_actuator_controller(std::string hostName, std::string nodeName, std::string compName, int argc, char **argv) : Component(hostName, nodeName, compName, argc, argv) {}
 
         // These functions' business logic will be filled in by the user:
 
@@ -77,6 +77,8 @@ class vertical_actuator_controller : public Component
   unsigned int motorForwardPin;
   // pin that motor backward is connected to
   unsigned int motorBackwardPin;
+  // pin that lower limit switch is connected to
+  unsigned int lowerLimitSwitchPin;
   // ADC the motor potentiometer is connected to (for the prototype)
   int adcPin;
   // enhanced Quadrature Encoder Pulse eQEP module for the vertical actuator

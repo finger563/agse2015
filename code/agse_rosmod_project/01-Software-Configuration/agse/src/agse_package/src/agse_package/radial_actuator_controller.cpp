@@ -16,39 +16,44 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   paused = true;
 
   // THESE NEED TO BE UPDATED
-  epsilon = 10;
+  epsilon = 100;
   motorForwardPin = 87; //88;     // connected to GPIO2_24, pin P8_28
   motorBackwardPin = 86; //89;    // connected to GPIO2_25, pin P8_30
-
-  // Limit Switch Pin GPIO P8_20 & P8_21
-  
+  lowerLimitSwitchPin = 63;       // connected to GPIO1_31, pin P8_20
   
   adcPin = 0;  // connected to ADC0, pin P9_39
 
   // set up the pins to control the h-bridge
   gpio_export(motorForwardPin);
   gpio_export(motorBackwardPin);
+  gpio_export(lowerLimitSwitchPin);
   gpio_set_dir(motorForwardPin,OUTPUT_PIN);
   gpio_set_dir(motorBackwardPin,OUTPUT_PIN);
+  gpio_set_dir(lowerLimitSwitchPin,INPUT_PIN);
   // set up the encoder module
   rm_eqep_period = 1000000000L;
   radialMotoreQEP.initialize("/sys/devices/ocp.3/48304000.epwmss/48304180.eqep", eQEP::eQEP_Mode_Absolute);
   radialMotoreQEP.set_period(rm_eqep_period);
-  // initialize the goal position to 0
 
   // Command line args for radial goal
-  for (int i = 0; i < node_argc; i++) {
-    if (!strcmp(node_argv[i], "-r")) {
-      radialGoal = atoi(node_argv[i+1]);
+  for (int i = 0; i < node_argc; i++)
+    {
+      if (!strcmp(node_argv[i], "-unpaused"))
+	{
+	  paused = false;
+	}
+      if (!strcmp(node_argv[i], "-r"))
+	{
+	  radialGoal = atoi(node_argv[i+1]);
+	}
+      if (!strcmp(node_argv[i], "-e"))
+	{
+	  epsilon = atoi(node_argv[i+1]);
+	}
     }
-    if (!strcmp(node_argv[i], "-e")) {
-      epsilon = atoi(node_argv[i+1]);
-    }
-  }
 
   ROS_INFO("RADIAL GOAL SET TO : %d",radialGoal);
 
-  //  radialGoal = 1000;
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -74,6 +79,17 @@ bool radial_actuator_controller::radialPosCallback(agse_package::radialPos::Requ
     {
       radialGoal = req.goal;
     }
+  if (req.setZeroPosition == true)
+    {
+      radialMotoreQEP.set_position(0);
+    }
+  unsigned int limitSwitchPressed = 0;
+  gpio_get_value(lowerLimitSwitchPin,&limitSwitchPressed);
+  if (limitSwitchPressed)
+    res.lowerLimitReached = true;
+  else
+    res.lowerLimitReached = false;
+  res.upperLimitReached = false;
   res.current = radialCurrent;
   return true;
 }
@@ -84,7 +100,7 @@ bool radial_actuator_controller::radialPosCallback(agse_package::radialPos::Requ
 void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for radialPosTimer 
-  if (paused)
+  if (!paused)
     {
       // read current value for radial position (encoder)
       radialCurrent = radialMotoreQEP.get_position();
@@ -151,8 +167,8 @@ void radial_actuator_controller::startUp()
     // Configure all subscribers associated with this component
     // subscriber: controlInputs_sub
     advertiseName = "controlInputs";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("controlInputs_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["controlInputs_sub"];
     ros::SubscribeOptions controlInputs_sub_options;
     controlInputs_sub_options = 
 	ros::SubscribeOptions::create<agse_package::controlInputs>
@@ -166,8 +182,8 @@ void radial_actuator_controller::startUp()
     // Configure all provided services associated with this component
     // server: radialPos_server
     advertiseName = "radialPos";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName) != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName];
+    if ( portGroupMap != NULL && portGroupMap->find("radialPos_server") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["radialPos_server"];
     ros::AdvertiseServiceOptions radialPos_server_options;
     radialPos_server_options = 
 	ros::AdvertiseServiceOptions::create<agse_package::radialPos>
@@ -196,4 +212,27 @@ void radial_actuator_controller::startUp()
 	     &this->compQueue);
     this->radialPosTimer = nh.createTimer(timer_options);
 
+
+    /*
+     * Identify present working directory of node executable
+     */
+    std::string s = node_argv[0];
+    std::string exec_path = s;
+    std::string delimiter = "/";
+    std::string exec, pwd;
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        exec = s.substr(0, pos);
+        s.erase(0, pos + delimiter.length());
+    }
+    exec = s.substr(0, pos);
+    pwd = exec_path.erase(exec_path.find(exec), exec.length());
+    // Establish the log file name
+    std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
+
+    // Create the log file & open file stream
+    LOGGER.CREATE_FILE(log_file_path);
+
+    // Establish log levels of LOGGER
+    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }

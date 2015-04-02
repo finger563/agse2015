@@ -17,6 +17,8 @@
 #include "agse_package/controlInputs.h"
 #include "agse_package/sampleState.h"
 #include "agse_package/payloadBayState.h"
+#include "agse_package/armState.h"
+#include "agse_package/captureImage.h"
 
 //# Start User Globals Marker
 
@@ -26,7 +28,7 @@ class user_input_controller : public Component
 {
     public:
         // Component user_input_controller Constructor
-        user_input_controller(std::string nodeName, std::string compName, int argc, char **argv) : Component(nodeName, compName, argc, argv) {}
+        user_input_controller(std::string hostName, std::string nodeName, std::string compName, int argc, char **argv) : Component(hostName, nodeName, compName, argc, argv) {}
 
         // These functions' business logic will be filled in by the user:
 
@@ -38,6 +40,9 @@ class user_input_controller : public Component
  
 	// OnOneData Subscription handler for payloadBayState_sub subscriber 
 	void payloadBayState_sub_OnOneData(const agse_package::payloadBayState::ConstPtr& received_data); 
+ 
+	// OnOneData Subscription handler for armState_sub subscriber 
+	void armState_sub_OnOneData(const agse_package::armState::ConstPtr& received_data); 
  
 
 	// Callback for userInputTimer timer
@@ -64,39 +69,50 @@ class user_input_controller : public Component
 	// ROS Subscriber - payloadBayState_sub
 	ros::Subscriber payloadBayState_sub; 
 
+	// ROS Subscriber - armState_sub
+	ros::Subscriber armState_sub; 
+
 
 	// ROS Publisher - controlInputs_pub
 	ros::Publisher controlInputs_pub;
 
 
+	// ROS Service Client - captureImage_client
+	ros::ServiceClient captureImage_client;
+
         //# Start User Private Variables Marker
-        bool paused;
+  bool paused;
+  bool halted;
+  bool manual;
 
-        // Pins for Pause (AMBER) Missile Switch
+  // used to keep track of AGSE state
+  agse_package::armState arm;
+  agse_package::sampleState sample;
+  agse_package::payloadBayState payloadBay;
+
+  // Pins for Pause (AMBER) Missile Switch
   unsigned int pauseSwitchPin; //63
-  unsigned int pauseSwitch_LEDPin; //62
-
-        // Pins for Manual Override (RED) Missile Switch
+  // Pins for Manual Override (RED) Missile Switch
   unsigned int manualSwitchPin; //37
-  unsigned int manualSwitch_LEDPin; //36
- 
-        // Pins for halt (BLUE) Missile Switch
+  // Pins for halt (BLUE) Missile Switch
   unsigned int haltSwitchPin; //33
-  unsigned int haltSwitch_LEDPin; //32
 
-        // Pin for Pause LED
+  // variable to keep track of switch states
+  unsigned int pauseSwitchState;
+  unsigned int haltSwitchState;
+  unsigned int manualSwitchState;
+
+  // Pin for Pause LED
   unsigned int pauseLED; //76
-        // Pin for Alarm LED
-        unsigned int alarmLED;
-        // Pin for Sample LED
-        unsigned int sampleLED[3];
-        // Pin for Bay LED
-        unsigned int bayLED[3];
-        // Pin for Init LED
-        unsigned int initLED[3];
-
-        // variable to keep track of switch state
-        unsigned int pauseSwitchState;
+  unsigned int pauseLEDBlinkDelay;
+  // Pin for Alarm LED
+  unsigned int alarmLED;
+  // Pin for Sample LED
+  unsigned int sampleLED[3];
+  // Pin for Bay LED
+  unsigned int bayLED[3];
+  // Pin for Init LED
+  unsigned int initLED[3];
 
   // Four Images to show in UIP
   IplImage * img1;
