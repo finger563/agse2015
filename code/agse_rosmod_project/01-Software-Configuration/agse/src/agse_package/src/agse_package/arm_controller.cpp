@@ -42,12 +42,14 @@ void arm_controller::UpdateArmPosition()
   // output: current
   agse_package::radialPos rPos;
   rPos.request.update = true;
+  rPos.request.setZeroPosition = false;
   rPos.request.goal = goalRadialPos;
   radialPos_client.call(rPos);
   currentRadialPos = rPos.response.current;
 
   agse_package::verticalPos vPos;
   vPos.request.update = true;
+  vPos.request.setZeroPosition = false;
   vPos.request.goal = goalVerticalPos;
   verticalPos_client.call(vPos);
   currentVerticalPos = vPos.response.current;
@@ -73,16 +75,17 @@ void arm_controller::UpdateArmPosition()
 
 bool arm_controller::CheckGoals()
 {
-  if ( abs(goalRadialPos - currentRadialPos) > radialEpsilon && goalRadialPos >= 0.0f )
+  if ( abs(goalRadialPos - currentRadialPos) > radialEpsilon )
     return false;
-  if ( abs(goalVerticalPos - currentVerticalPos) > verticalEpsilon && goalVerticalPos >= 0.0f  )
+  if ( abs(goalVerticalPos - currentVerticalPos) > verticalEpsilon )
     return false;
-  if ( abs(goalArmRotation - currentArmRotation) > armRotationEpsilon && goalArmRotation >= 0.0f )
+  if ( abs(goalArmRotation - currentArmRotation) > armRotationEpsilon )
     return false;
-  if ( abs(goalGripperRotation - currentGripperRotation) > gripperRotationEpsilon && goalGripperRotation >= 0.0f )
+  if ( abs(goalGripperRotation - currentGripperRotation) > gripperRotationEpsilon )
     return false;
-  if ( abs(goalGripperPos - currentGripperPos) > gripperPosEpsilon && goalGripperPos >= 0.0f )
+  if ( abs(goalGripperPos - currentGripperPos) > gripperPosEpsilon )
     return false;
+  ROS_INFO("REACHED GOALS");
   return true;
 }
 
@@ -151,10 +154,6 @@ void arm_controller::Init_StateFunc()
 
 void arm_controller::Finding_PB_StateFunc()
 {
-  ROS_INFO("FINDING PAYLOAD BAY");
-  if ( !CheckGoals() )
-    return;
-
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
@@ -273,10 +272,6 @@ void arm_controller::Finding_PB_StateFunc()
 
 void arm_controller::Opening_PB_StateFunc()
 {
-  ROS_INFO("OPENING PAYLOAD BAY");
-  if ( !CheckGoals() )
-    return;
-
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -295,10 +290,6 @@ void arm_controller::Opening_PB_StateFunc()
 
 void arm_controller::Finding_Sample_StateFunc()
 {
-  ROS_INFO("FINDING SAMPLE");
-  if ( !CheckGoals() )
-    return;
-
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
@@ -417,10 +408,6 @@ void arm_controller::Finding_Sample_StateFunc()
 
 void arm_controller::Grabbing_Sample_StateFunc()
 {
-  ROS_INFO("GRABBING SAMPLE");
-  if ( !CheckGoals() )
-    return;
-
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -458,10 +445,6 @@ void arm_controller::Grabbing_Sample_StateFunc()
 
 void arm_controller::Carrying_Sample_StateFunc()
 {
-  ROS_INFO("CARRYING SAMPLE");
-  if ( !CheckGoals() )
-    return;
-
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -494,10 +477,6 @@ void arm_controller::Carrying_Sample_StateFunc()
 
 void arm_controller::Inserting_Sample_StateFunc()
 {
-  ROS_INFO("INSERTING SAMPLE");
-  if ( !CheckGoals() )
-    return;
-
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -517,10 +496,6 @@ void arm_controller::Inserting_Sample_StateFunc()
 
 void arm_controller::Closing_PB_StateFunc()
 {
-  ROS_INFO("CLOSING PAYLOAD BAY");
-  if ( !CheckGoals() )
-    return;
-
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -542,9 +517,6 @@ void arm_controller::Closing_PB_StateFunc()
 
 void arm_controller::Moving_Away_StateFunc()
 {
-  if ( !CheckGoals() )
-    return;
-
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   // perform any image processing required using the detector
@@ -701,35 +673,51 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
 	  Init_StateFunc();
 	  break;
 	case FINDING_PB:
-	  Finding_PB_StateFunc();
+	  ROS_INFO("FINDING PAYLOAD BAY");
+	  if ( CheckGoals() )
+	    Finding_PB_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case OPENING_PB:
-	  Opening_PB_StateFunc();
+	  ROS_INFO("OPENING PAYLOAD BAY");
+	  if ( CheckGoals() )
+	    Opening_PB_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case FINDING_SAMPLE:
-	  Finding_Sample_StateFunc();
+	  ROS_INFO("FINDING SAMPLE");
+	  if ( CheckGoals() )
+	    Finding_Sample_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case GRABBING_SAMPLE:
-	  Grabbing_Sample_StateFunc();
+	  ROS_INFO("GRABBING SAMPLE");
+	  if ( CheckGoals() )
+	    Grabbing_Sample_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case CARRYING_SAMPLE:
-	  Carrying_Sample_StateFunc();
+	  ROS_INFO("CARRYING SAMPLE");
+	  if ( CheckGoals() )
+	    Carrying_Sample_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case INSERTING_SAMPLE:
-	  Inserting_Sample_StateFunc();
+	  ROS_INFO("INSERTING SAMPLE");
+	  if ( CheckGoals() )
+	    Inserting_Sample_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case CLOSING_PB:
-	  Closing_PB_StateFunc();
+	  ROS_INFO("CLOSING PAYLOAD BAY");
+	  if ( CheckGoals() )
+	    Closing_PB_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case MOVING_AWAY:
-	  Moving_Away_StateFunc();
+	  ROS_INFO("MOVING AWAY");
+	  if ( CheckGoals() )
+	    Moving_Away_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	default:
