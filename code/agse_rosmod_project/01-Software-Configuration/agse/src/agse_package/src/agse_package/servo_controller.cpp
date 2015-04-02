@@ -63,10 +63,10 @@ void servo_controller::Init(const ros::TimerEvent& event)
       // Min: 0; Max: 254
       dynamixel.setCWComplianceMargin(&serialPort, armServoID, complianceMargin);
       dynamixel.setCCWComplianceMargin(&serialPort, armServoID, complianceMargin);
-      dynamixel.setCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);
-      dynamixel.setCCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);
-      dynamixel.setCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
-      dynamixel.setCCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
+      //dynamixel.setCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);
+      //dynamixel.setCCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);
+      //dynamixel.setCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
+      //dynamixel.setCCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
 
       dynamixel.setCWComplianceSlope(&serialPort, armServoID, complianceSlope);
       dynamixel.setCCWComplianceSlope(&serialPort, armServoID, complianceSlope);

@@ -51,8 +51,14 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
 	if (i>0)
 	  angle += atan2(Centers[i].y-Centers[i-1].y,Centers[i].x-Centers[i-1].x);
       }
-      angle = angle/((float)(Centers.size()-1)) * 180.0f / M_PI;
-      center = center * (1.0f / (float)Centers.size());
+      if (Centers.size() > 1)
+	{
+	  angle = angle/((float)(Centers.size()-1)) * 180.0f / M_PI;
+	  center = center * (1.0f / (float)Centers.size());
+	}
+      else
+	angle = 0;
+
 
       Scalar color = Scalar(255, 
 			    255, 
@@ -62,6 +68,7 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
       object.state = DETECTED;
       if (Markers.size() == 1)
 	object.state = PARTIAL;
+      printf("CENTER XY = %f,%f\n",center.x,center.y);
       object.x = center.x;
       object.y = center.y;
       object.angle = angle;

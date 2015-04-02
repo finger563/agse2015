@@ -176,7 +176,7 @@ void arm_controller::Finding_PB_StateFunc()
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
-  static float armRotationStep = 30.0f; // degrees between steps of the state search
+  static float armRotationStep = 15.0f; // degrees between steps of the state search
   static float radialPosStep = 5000.0f;    // amount to move by in radius
 
   static float positionRadius = 100.0f; // once center of PB is in this radius, we are done
@@ -313,7 +313,7 @@ void arm_controller::Finding_Sample_StateFunc()
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
-  static float armRotationStep = 30.0f; // degrees between steps of the state search
+  static float armRotationStep = 15.0f; // degrees between steps of the state search
   static float radialPosStep = 5000.0f;    // amount to move by in radius
 
   static float positionRadius = 100.0f; // once center of sample is in this radius, we are done
