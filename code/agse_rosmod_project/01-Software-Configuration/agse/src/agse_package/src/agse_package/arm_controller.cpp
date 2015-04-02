@@ -625,9 +625,9 @@ void arm_controller::Init(const ros::TimerEvent& event)
   // need to initialize the epsilons for the goal/current feedback loops
   radialEpsilon          = 100;
   verticalEpsilon        = 100;
-  armRotationEpsilon     = 1.0f;
-  gripperRotationEpsilon = 1.0f;
-  gripperPosEpsilon      = 1.0f;
+  armRotationEpsilon     = 4.0f;
+  gripperRotationEpsilon = 4.0f;
+  gripperPosEpsilon      = 4.0f;
 
   // command line args parsing for arm_controller:
   for (int i=0; i < node_argc; i++) 
