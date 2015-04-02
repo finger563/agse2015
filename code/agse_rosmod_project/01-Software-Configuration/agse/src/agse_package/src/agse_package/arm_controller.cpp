@@ -97,7 +97,7 @@ void arm_controller::Init_StateFunc()
       agse_package::verticalPos vPos;
       vPos.request.update = true;
       vPos.request.setZeroPosition = false;
-      vPos.request.goal = currentVerticalPos - 10000;
+      vPos.request.goal = currentVerticalPos - 50000;
       verticalPos_client.call(vPos);
       if (vPos.response.lowerLimitReached)
 	{
@@ -114,7 +114,7 @@ void arm_controller::Init_StateFunc()
       agse_package::radialPos rPos;
       rPos.request.update = true;
       rPos.request.setZeroPosition = false;
-      rPos.request.goal = currentRadialPos - 10000;
+      rPos.request.goal = currentRadialPos - 50000;
       radialPos_client.call(rPos);
       if (rPos.response.lowerLimitReached)
 	{

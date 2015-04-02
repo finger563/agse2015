@@ -78,10 +78,13 @@ bool vertical_actuator_controller::verticalPosCallback(agse_package::verticalPos
     // Business Logic for verticalPos_server Server providing verticalPos Service
   if (req.update == true)
     {
+      ROS_INFO("GOT NEW HEIGHT GOAL: %d",req.goal);
+      ROS_INFO("CURRENT HEIGHT: %d",verticalCurrent);
       verticalGoal = req.goal;
     }
   if (req.setZeroPosition == true)
     {
+      ROS_INFO("ZEROED HEIGHT ENCODER");
       verticalMotoreQEP.set_position(0);
     }
   res.lowerLimitReached = lowerLimitReached;
@@ -108,7 +111,7 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
       gpio_get_value(motorBackwardPin,&backwardPinState);
       if (backwardPinState && !limitSwitchState)
 	{
-	  ROS_INFO("LOWER LIMIT REACHED");
+	  ROS_INFO("LOWER LIMIT REACHED: HEIGHT");
 	  lowerLimitReached = true;
 	}
       // update motor based on current value

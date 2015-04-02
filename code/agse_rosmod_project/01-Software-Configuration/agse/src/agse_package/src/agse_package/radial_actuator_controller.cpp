@@ -78,10 +78,13 @@ bool radial_actuator_controller::radialPosCallback(agse_package::radialPos::Requ
     // Business Logic for radialPos_server Server providing radialPos Service
   if (req.update == true)
     {
+      ROS_INFO("GOT NEW RADIAL GOAL: %d",req.goal);
+      ROS_INFO("CURRENT RADIUS: %d",radialCurrent);
       radialGoal = req.goal;
     }
   if (req.setZeroPosition == true)
     {
+      ROS_INFO("ZEROED RADIUS ENCODER");
       radialMotoreQEP.set_position(0);
     }
   res.lowerLimitReached = lowerLimitReached;
@@ -108,7 +111,7 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
       gpio_get_value(motorBackwardPin,&backwardPinState);
       if (backwardPinState && !limitSwitchState)
 	{
-	  ROS_INFO("LOWER LIMIT REACHED");
+	  ROS_INFO("LOWER LIMIT REACHED: RADIUS");
 	  lowerLimitReached = true;
 	}
       // update motor based on current value
