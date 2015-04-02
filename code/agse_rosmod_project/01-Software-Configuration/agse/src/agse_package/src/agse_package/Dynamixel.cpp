@@ -180,16 +180,16 @@ int Dynamixel::getPosition(SerialPort *serialPort, int idAX12)
   int ret=0;
 
   int n=getReadAX12PositionCommand(idAX12);
-  bf(buffer,n);
+  //bf(buffer,n);
   long l=serialPort->sendArray(buffer,n);
   Utils::sleepMS(waitTimeForResponse);
 
   memset(bufferIn,0,BufferSize);
   n=serialPort->getArray(bufferIn, n);
-  bf(bufferIn,n);
+  //bf(bufferIn,n);
   memset(bufferIn,0,BufferSize);
   n=serialPort->getArray(bufferIn, getResponseLength);
-  bf(bufferIn,getResponseLength);
+  //bf(bufferIn,getResponseLength);
 
   short pos = -1;
   if (n>7)
@@ -211,16 +211,16 @@ int Dynamixel::setPosition(SerialPort *serialPort, int idAX12, int position)
   int error=0;
 
   int n=getSetAX12PositionCommand(idAX12, position);
-  bf(buffer,n);
+  //bf(buffer,n);
   long l=serialPort->sendArray(buffer,n);
   Utils::sleepMS(waitTimeForResponse);
 
   memset(bufferIn,0,BufferSize);
   n=serialPort->getArray(bufferIn, n);
-  bf(bufferIn,n);
+  //bf(bufferIn,n);
   memset(bufferIn,0,BufferSize);
   n=serialPort->getArray(bufferIn, setResponseLength);
-  bf(bufferIn,setResponseLength);
+  //bf(bufferIn,setResponseLength);
 
   if (n>4 && bufferIn[4] == 0)
     printf("setPosition: id=<%i> set at pos=<%i>\n", idAX12, position);
