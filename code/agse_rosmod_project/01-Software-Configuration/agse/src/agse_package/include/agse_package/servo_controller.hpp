@@ -100,6 +100,9 @@ class servo_controller : public Component
   int gripperRotationSpeed;
   int gripperPositionSpeed;
 
+  // compliance margin
+  int complianceMargin;
+
   // goal Position for the arm servo
   float armRotationGoal;
   // current position of the arm servo

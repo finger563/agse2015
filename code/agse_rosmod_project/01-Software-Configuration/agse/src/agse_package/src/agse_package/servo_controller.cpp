@@ -19,7 +19,7 @@ void servo_controller::Init(const ros::TimerEvent& event)
   gripperRotationID = 11;
   gripperPositionID = 1;
 
-  armServoSpeed = 512; // half speed; full speed is either 0 or 1023
+  armServoSpeed = 20; // half speed; full speed is either 0 or 1023
   gripperRotationSpeed = 0;
   gripperPositionSpeed = 0;
 
@@ -38,6 +38,8 @@ void servo_controller::Init(const ros::TimerEvent& event)
 	    gripperPosGoal = atof(node_argv[i+1]);
 	  else if (!strcmp(node_argv[i], "-armSpeed"))
 	    armServoSpeed = atoi(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-margin"))
+	    complianceMargin  = atoi(node_argv[i+1]);
 	  else if (!strcmp(node_argv[i], "-gRotSpeed"))
 	    gripperRotationSpeed = atoi(node_argv[i+1]);
 	  else if (!strcmp(node_argv[i], "-gPosSpeed"))
@@ -47,6 +49,17 @@ void servo_controller::Init(const ros::TimerEvent& event)
       dynamixel.setSpeed(&serialPort, armServoID, armServoSpeed);
       dynamixel.setSpeed(&serialPort, gripperRotationID, gripperRotationSpeed);
       dynamixel.setSpeed(&serialPort, gripperPositionID, gripperPositionSpeed);
+
+      // Setting a compliance margin
+      // Min: 0; Max: 254
+      dynamixel.setCWComplianceMargin(&serialPort, armServoID, complianceMargin);
+      dynamixel.setCCWComplianceMargin(&serialPort, armServoID, complianceMargin);
+      dynamixel.setCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);
+      dynamixel.setCCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);
+      dynamixel.setCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
+      dynamixel.setCCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
+
+
     }
   else
     {
