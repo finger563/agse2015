@@ -83,14 +83,7 @@ bool radial_actuator_controller::radialPosCallback(agse_package::radialPos::Requ
     {
       radialMotoreQEP.set_position(0);
     }
-  unsigned int limitSwitchState = 0;
-  unsigned int backwardPinState = 0;
-  gpio_get_value(lowerLimitSwitchPin,&limitSwitchState);
-  gpio_get_value(motorBackwardPin,&backwardPinState);
-  if (backwardPinState && !limitSwitchState)
-    res.lowerLimitReached = true;
-  else
-    res.lowerLimitReached = false;
+  res.lowerLimitReached = lowerLimitReached;
   res.upperLimitReached = false;
   res.current = radialCurrent;
   return true;
@@ -108,11 +101,19 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
       radialCurrent = radialMotoreQEP.get_position();
       //ROS_INFO("Raidal Actuator Encoder Reading: %d",radialCurrent);
 
+      unsigned int limitSwitchState = 0;
+      unsigned int backwardPinState = 0;
+      gpio_get_value(lowerLimitSwitchPin,&limitSwitchState);
+      gpio_get_value(motorBackwardPin,&backwardPinState);
+      if (backwardPinState && !limitSwitchState)
+	lowerLimitReached = true;
+
       // update motor based on current value
       if ( abs(radialGoal-radialCurrent) > epsilon ) // if there's significant reason to move
 	{
 	  if (radialGoal > radialCurrent) 
 	    {
+	      lowerLimitReached = false;
 	      gpio_set_value(motorBackwardPin,LOW);
 	      gpio_set_value(motorForwardPin,HIGH);
 	    }

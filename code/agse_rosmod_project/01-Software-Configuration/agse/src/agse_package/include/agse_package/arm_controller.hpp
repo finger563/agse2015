@@ -117,6 +117,7 @@ class arm_controller : public Component
   bool CheckGoals();
 
   ArmState currentState;
+  agse_package::armState arm;
   agse_package::sampleState sample;
   agse_package::payloadBayState payloadBay;
 

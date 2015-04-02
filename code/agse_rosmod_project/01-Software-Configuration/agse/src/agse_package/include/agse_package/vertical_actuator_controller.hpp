@@ -79,6 +79,8 @@ class vertical_actuator_controller : public Component
   unsigned int motorBackwardPin;
   // pin that lower limit switch is connected to
   unsigned int lowerLimitSwitchPin;
+  // state variable to keep track of whether we've reached the limit or not
+  bool lowerLimitReached;
   // ADC the motor potentiometer is connected to (for the prototype)
   int adcPin;
   // enhanced Quadrature Encoder Pulse eQEP module for the vertical actuator

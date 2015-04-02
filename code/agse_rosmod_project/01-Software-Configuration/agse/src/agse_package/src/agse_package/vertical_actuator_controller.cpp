@@ -83,14 +83,7 @@ bool vertical_actuator_controller::verticalPosCallback(agse_package::verticalPos
     {
       verticalMotoreQEP.set_position(0);
     }
-  unsigned int limitSwitchState = 0;
-  unsigned int backwardPinState = 0;
-  gpio_get_value(lowerLimitSwitchPin,&limitSwitchState);
-  gpio_get_value(motorBackwardPin,&backwardPinState);
-  if (backwardPinState && !limitSwitchState)
-    res.lowerLimitReached = true;
-  else
-    res.lowerLimitReached = false;
+  res.lowerLimitReached = lowerLimitReached;
   res.upperLimitReached = false;
   res.current = verticalCurrent;
   return true;
@@ -108,11 +101,19 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
       verticalCurrent = verticalMotoreQEP.get_position();
       //ROS_INFO("Vertical Actuator Encoder Reading: %d",verticalCurrent);
 
+      unsigned int limitSwitchState = 0;
+      unsigned int backwardPinState = 0;
+      gpio_get_value(lowerLimitSwitchPin,&limitSwitchState);
+      gpio_get_value(motorBackwardPin,&backwardPinState);
+      if (backwardPinState && !limitSwitchState)
+	lowerLimitReached = true;
+
       // update motor based on current value
       if ( abs(verticalGoal-verticalCurrent) > epsilon ) // if there's significant reason to move
 	{
 	  if (verticalGoal > verticalCurrent) 
 	    {
+	      lowerLimitReached = false;
 	      gpio_set_value(motorBackwardPin,LOW);
 	      gpio_set_value(motorForwardPin,HIGH);
 	    }

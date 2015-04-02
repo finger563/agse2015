@@ -91,7 +91,6 @@ void arm_controller::Init_StateFunc()
   // Init zeroes out the positions of the linear actuators for calibration
   static bool zeroedHeight = false;
   static bool zeroedRadius = false;
-  call_at_timer = true; // WE WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
   if (!zeroedHeight)
     {
       agse_package::verticalPos vPos;
@@ -140,7 +139,8 @@ void arm_controller::Init_StateFunc()
 
 void arm_controller::Finding_PB_StateFunc()
 {
-  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if ( !CheckGoals() )
+    return;
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -260,7 +260,8 @@ void arm_controller::Finding_PB_StateFunc()
 
 void arm_controller::Opening_PB_StateFunc()
 {
-  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if ( !CheckGoals() )
+    return;
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -280,7 +281,8 @@ void arm_controller::Opening_PB_StateFunc()
 
 void arm_controller::Finding_Sample_StateFunc()
 {
-  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if ( !CheckGoals() )
+    return;
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -400,7 +402,8 @@ void arm_controller::Finding_Sample_StateFunc()
 
 void arm_controller::Grabbing_Sample_StateFunc()
 {
-  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if ( !CheckGoals() )
+    return;
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -439,7 +442,8 @@ void arm_controller::Grabbing_Sample_StateFunc()
 
 void arm_controller::Carrying_Sample_StateFunc()
 {
-  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if ( !CheckGoals() )
+    return;
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -473,7 +477,8 @@ void arm_controller::Carrying_Sample_StateFunc()
 
 void arm_controller::Inserting_Sample_StateFunc()
 {
-  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if ( !CheckGoals() )
+    return;
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -494,7 +499,8 @@ void arm_controller::Inserting_Sample_StateFunc()
 
 void arm_controller::Closing_PB_StateFunc()
 {
-  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if ( !CheckGoals() )
+    return;
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -517,7 +523,8 @@ void arm_controller::Closing_PB_StateFunc()
 
 void arm_controller::Moving_Away_StateFunc()
 {
-  call_at_timer = false; // WE DO NOT WANT TO CALL THIS STATE FUNCTION EVERY TIMER INVOCATION
+  if ( !CheckGoals() )
+    return;
 
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
@@ -554,7 +561,6 @@ void arm_controller::Init(const ros::TimerEvent& event)
   paused = true;
 
   currentState = INIT;
-  call_at_timer = true;  // set this to true to ensure that states are entered
 
   // need to initialize the offsets with measurements from the system
   radialOffset          = 0.0;
@@ -670,9 +676,6 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
   if (!paused)
     {
       UpdateSensorData();
-      // If we haven't gotten where the state said we should go, return
-      if ( !CheckGoals() && !call_at_timer )
-	return;
       switch (currentState)
 	{
 	case INIT:
@@ -707,6 +710,8 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
 	}
       sampleState_pub.publish(sample);
       payloadBayState_pub.publish(payloadBay);
+      arm.state = currentState;
+      armState_pub.publish(arm);
       UpdateArmPosition();
     }
 }

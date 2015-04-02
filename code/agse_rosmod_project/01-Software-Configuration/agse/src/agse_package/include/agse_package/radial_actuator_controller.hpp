@@ -80,6 +80,8 @@ class radial_actuator_controller : public Component
   unsigned int motorBackwardPin;
   // pin that lowerLimitSwitch is connected to
   unsigned int lowerLimitSwitchPin;
+  // state variable to keep track of whether we've reached the limit or not
+  bool lowerLimitReached;
   // ADC the motor potentiometer is connected to (for the prototype)
   int adcPin;
   // enhanced quadrature encoder pulse module for the radial actuator
