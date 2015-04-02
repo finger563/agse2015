@@ -62,8 +62,6 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_export(initLED[2]);
   gpio_set_dir(initLED[2], OUTPUT_PIN);  
 
-  gpio_set_value(initLED, HIGH);
-
   // SAMPLE MAIN LED
   sampleLED[0] = 26; // P8_14 - Blue
   sampleLED[1] = 47; // P8_15 - Green
@@ -216,10 +214,13 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   switch (arm.state) {
   case 0:
     // INIT
-    gpio_set_value(initLED, HIGH);
+    gpio_set_value(initLED[0], HIGH);
     break;
   case 1:
     // FINDING_PB
+    gpio_set_value(initLED[0], LOW); // Switch OFF Blue
+    gpio_set_value(initLED[1], HIGH); // Switch ON Green
+
     gpio_set_value(pbLED[0], HIGH); // Blue
     break;
   case 2:
