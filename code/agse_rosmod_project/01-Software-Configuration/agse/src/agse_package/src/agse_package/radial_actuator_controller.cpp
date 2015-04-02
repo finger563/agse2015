@@ -19,7 +19,7 @@ void radial_actuator_controller::Init(const ros::TimerEvent& event)
   epsilon = 100;
   motorForwardPin = 87; //88;     // connected to GPIO2_24, pin P8_28
   motorBackwardPin = 86; //89;    // connected to GPIO2_25, pin P8_30
-  lowerLimitSwitchPin = 63;       // connected to GPIO1_31, pin P8_20
+  lowerLimitSwitchPin = 27;       // connected to GPIO0_27, pin P8_17
   
   adcPin = 0;  // connected to ADC0, pin P9_39
 
@@ -83,9 +83,11 @@ bool radial_actuator_controller::radialPosCallback(agse_package::radialPos::Requ
     {
       radialMotoreQEP.set_position(0);
     }
-  unsigned int limitSwitchPressed = 0;
-  gpio_get_value(lowerLimitSwitchPin,&limitSwitchPressed);
-  if (limitSwitchPressed)
+  unsigned int limitSwitchState = 0;
+  unsigned int backwardPinState = 0;
+  gpio_get_value(lowerLimitSwitchPin,&limitSwitchState);
+  gpio_get_value(motorBackwardPin,&backwardPinState);
+  if (backwardPinState && !limitSwitchState)
     res.lowerLimitReached = true;
   else
     res.lowerLimitReached = false;
@@ -105,11 +107,6 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
       // read current value for radial position (encoder)
       radialCurrent = radialMotoreQEP.get_position();
       //ROS_INFO("Raidal Actuator Encoder Reading: %d",radialCurrent);
-
-      //unsigned int adcVal = 0;
-      //adc_get_value(adcPin,&adcVal);
-      //radialCurrent = adcVal;
-      //ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
 
       // update motor based on current value
       if ( abs(radialGoal-radialCurrent) > epsilon ) // if there's significant reason to move

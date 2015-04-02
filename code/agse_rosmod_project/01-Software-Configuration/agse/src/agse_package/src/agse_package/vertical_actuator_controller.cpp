@@ -19,7 +19,7 @@ void vertical_actuator_controller::Init(const ros::TimerEvent& event)
   epsilon = 100;
   motorForwardPin = 89; //86;  // connected to GPIO2_22, pin P8_27
   motorBackwardPin = 88; //87; // connected to GPIO2_23, pin P8_29
-  lowerLimitSwitchPin = 62;       // connected to GPIO1_31, pin P8_21
+  lowerLimitSwitchPin = 65;       // connected to GPIO2_01, pin P8_18
   
   adcPin = 1;  // connected to ADC1, pin P9_40
 
@@ -83,9 +83,11 @@ bool vertical_actuator_controller::verticalPosCallback(agse_package::verticalPos
     {
       verticalMotoreQEP.set_position(0);
     }
-  unsigned int limitSwitchPressed = 0;
-  gpio_get_value(lowerLimitSwitchPin,&limitSwitchPressed);
-  if (limitSwitchPressed)
+  unsigned int limitSwitchState = 0;
+  unsigned int backwardPinState = 0;
+  gpio_get_value(lowerLimitSwitchPin,&limitSwitchState);
+  gpio_get_value(motorBackwardPin,&backwardPinState);
+  if (backwardPinState && !limitSwitchState)
     res.lowerLimitReached = true;
   else
     res.lowerLimitReached = false;
@@ -105,11 +107,6 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
       // read current value for vertical position (encoder)
       verticalCurrent = verticalMotoreQEP.get_position();
       //ROS_INFO("Vertical Actuator Encoder Reading: %d",verticalCurrent);
-
-      //unsigned int adcVal = 0;
-      //adc_get_value(adcPin,&adcVal);
-      //verticalCurrent = adcVal;
-      //ROS_INFO("Got ADC %d value : %d",adcPin,adcVal);
 
       // update motor based on current value
       if ( abs(verticalGoal-verticalCurrent) > epsilon ) // if there's significant reason to move
