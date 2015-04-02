@@ -201,7 +201,7 @@ void arm_controller::Finding_PB_StateFunc()
       agse_package::payloadBayStateFromImage pbStateImage;
       if ( payloadBayStateFromImage_client.call(pbStateImage) )
 	{
-	  ROS_INFO("GOT PAYLOAD BAY STATE: %f , %f, %f",pbStateImage.response.status, pbStateImage.response.x, pbStateImage.response.y, pbStateImage.response.angle);
+	  ROS_INFO("GOT PAYLOAD BAY STATE: %d, %f , %f, %f",pbStateImage.response.status, pbStateImage.response.x, pbStateImage.response.y, pbStateImage.response.angle);
 	  switch (pbStateImage.response.status)
 	    {
 	    case DETECTED:
@@ -338,7 +338,7 @@ void arm_controller::Finding_Sample_StateFunc()
       agse_package::sampleStateFromImage sStateImage;
       if ( payloadBayStateFromImage_client.call(sStateImage) )
 	{
-	  ROS_INFO("GOT SAMPLE STATE: %f , %f, %f",sStateImage.response.status, sStateImage.response.x, sStateImage.response.y, sStateImage.response.angle);
+	  ROS_INFO("GOT SAMPLE STATE: %d, %f , %f, %f",sStateImage.response.status, sStateImage.response.x, sStateImage.response.y, sStateImage.response.angle);
 	  switch (sStateImage.response.status)
 	    {
 	    case DETECTED:
