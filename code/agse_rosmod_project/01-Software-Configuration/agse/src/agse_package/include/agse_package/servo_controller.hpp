@@ -95,6 +95,11 @@ class servo_controller : public Component
   int gripperRotationID;
   int gripperPositionID;
 
+  // speeds for the servo motors
+  int armServoSpeed;
+  int gripperRotationSpeed;
+  int gripperPositionSpeed;
+
   // goal Position for the arm servo
   float armRotationGoal;
   // current position of the arm servo
