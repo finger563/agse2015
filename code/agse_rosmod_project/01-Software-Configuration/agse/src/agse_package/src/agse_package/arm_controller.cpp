@@ -138,12 +138,20 @@ void arm_controller::Init_StateFunc()
       rPos.request.setZeroPosition = false;
       rPos.request.goal = 0;
       radialPos_client.call(rPos);
+
+      goalRadialPos = minRadialPos;
+      goalVerticalPos = minVerticalPos;
+      goalArmRotation = currentArmRotation;
+      goalGripperRotation = currentGripperRotation;
+      goalGripperPos = gripperPosOpened;
+
       currentState = FINDING_PB;
     }
 }
 
 void arm_controller::Finding_PB_StateFunc()
 {
+  ROS_INFO("FINDING PAYLOAD BAY");
   if ( !CheckGoals() )
     return;
 
@@ -265,6 +273,7 @@ void arm_controller::Finding_PB_StateFunc()
 
 void arm_controller::Opening_PB_StateFunc()
 {
+  ROS_INFO("OPENING PAYLOAD BAY");
   if ( !CheckGoals() )
     return;
 
@@ -286,6 +295,7 @@ void arm_controller::Opening_PB_StateFunc()
 
 void arm_controller::Finding_Sample_StateFunc()
 {
+  ROS_INFO("FINDING SAMPLE");
   if ( !CheckGoals() )
     return;
 
@@ -407,6 +417,7 @@ void arm_controller::Finding_Sample_StateFunc()
 
 void arm_controller::Grabbing_Sample_StateFunc()
 {
+  ROS_INFO("GRABBING SAMPLE");
   if ( !CheckGoals() )
     return;
 
@@ -447,6 +458,7 @@ void arm_controller::Grabbing_Sample_StateFunc()
 
 void arm_controller::Carrying_Sample_StateFunc()
 {
+  ROS_INFO("CARRYING SAMPLE");
   if ( !CheckGoals() )
     return;
 
@@ -482,6 +494,7 @@ void arm_controller::Carrying_Sample_StateFunc()
 
 void arm_controller::Inserting_Sample_StateFunc()
 {
+  ROS_INFO("INSERTING SAMPLE");
   if ( !CheckGoals() )
     return;
 
@@ -504,6 +517,7 @@ void arm_controller::Inserting_Sample_StateFunc()
 
 void arm_controller::Closing_PB_StateFunc()
 {
+  ROS_INFO("CLOSING PAYLOAD BAY");
   if ( !CheckGoals() )
     return;
 
