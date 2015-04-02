@@ -26,6 +26,10 @@ void servo_controller::Init(const ros::TimerEvent& event)
   complianceMargin = 0;
   complianceSlope = 0x50;
 
+  armRotationGoal = 0;
+  gripperRotationGoal = 250.0f;
+  gripperPosGoal = 180.0f;
+
   if (serialPort.connect(portName,9600)!=0)
     {
       // Command line args for servo control
@@ -43,6 +47,8 @@ void servo_controller::Init(const ros::TimerEvent& event)
 	    armServoSpeed = atoi(node_argv[i+1]);
 	  else if (!strcmp(node_argv[i], "-margin"))
 	    complianceMargin  = atoi(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-slope"))
+	    complianceSlope = atoi(node_argv[i+1]);
 	  else if (!strcmp(node_argv[i], "-gRotSpeed"))
 	    gripperRotationSpeed = atoi(node_argv[i+1]);
 	  else if (!strcmp(node_argv[i], "-gPosSpeed"))
@@ -62,7 +68,8 @@ void servo_controller::Init(const ros::TimerEvent& event)
       dynamixel.setCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
       dynamixel.setCCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
 
-
+      dynamixel.setCWComplianceSlope(&serialPort, armServoID, complianceSlope);
+      dynamixel.setCCWComplianceSlope(&serialPort, armServoID, complianceSlope);
     }
   else
     {
