@@ -13,11 +13,13 @@
 void image_processor::Init(const ros::TimerEvent& event)
 {
     // Initialize 
+  paused = true;
   // initialize both the sample detector code
   // and the payload bay (marker) detector code
     sampleDetector.init();
     payloadBayDetector.init( 0.75f, "camera.yml");
 
+    #if 0
     agse_package::captureImage arg;
     if (this->captureImage_client.call(arg)) {
       ROS_INFO("Image width: %d, height: %d, size: %d", 
@@ -39,6 +41,16 @@ void image_processor::Init(const ros::TimerEvent& event)
       ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
       ROS_INFO("PayloadBay: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
     }
+    #endif
+
+    // Command line args for image processor
+    for (int i = 0; i < node_argc; i++)
+      {
+	if (!strcmp(node_argv[i], "-unpaused"))
+	  {
+	    paused = false;
+	  }
+      }
 
     // Stop Init Timer
     initOneShotTimer.stop();
@@ -81,6 +93,7 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 	res.x = sample.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
 	res.y = sample.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
 	res.angle = sample.angle;
+	ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
 	return true;
       }
       else {
@@ -116,6 +129,7 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 	res.x = payloadBay.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
 	res.y = payloadBay.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
 	res.angle = payloadBay.angle;
+	ROS_INFO("PayloadBay: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
 	return true;
       }
       else {

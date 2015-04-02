@@ -75,6 +75,7 @@ void arm_controller::UpdateArmPosition()
 
 bool arm_controller::CheckGoals()
 {
+#if AGSE_DEBUG
   ROS_INFO("RADIAL GOAL: %d",goalRadialPos);
   ROS_INFO("RADIUS : %d",currentRadialPos);
   ROS_INFO("HEIGHT GOAL: %d",goalVerticalPos);
@@ -85,6 +86,7 @@ bool arm_controller::CheckGoals()
   ROS_INFO("GRIPPER ROTATION : %f",currentGripperRotation);
   ROS_INFO("GRIPPER POSITION GOAL: %f",goalGripperPos);
   ROS_INFO("GRIPPER POSITION : %f",currentGripperPos);
+#endif
   if ( abs(goalRadialPos - currentRadialPos) > radialEpsilon )
     return false;
   if ( abs(goalVerticalPos - currentVerticalPos) > verticalEpsilon )
@@ -199,6 +201,7 @@ void arm_controller::Finding_PB_StateFunc()
       agse_package::payloadBayStateFromImage pbStateImage;
       if ( payloadBayStateFromImage_client.call(pbStateImage) )
 	{
+	  ROS_INFO("GOT PAYLOAD BAY STATE: %f , %f, %f",pbStateImage.response.status, pbStateImage.response.x, pbStateImage.response.y, pbStateImage.response.angle);
 	  switch (pbStateImage.response.status)
 	    {
 	    case DETECTED:
@@ -335,6 +338,7 @@ void arm_controller::Finding_Sample_StateFunc()
       agse_package::sampleStateFromImage sStateImage;
       if ( payloadBayStateFromImage_client.call(sStateImage) )
 	{
+	  ROS_INFO("GOT SAMPLE STATE: %f , %f, %f",sStateImage.response.status, sStateImage.response.x, sStateImage.response.y, sStateImage.response.angle);
 	  switch (sStateImage.response.status)
 	    {
 	    case DETECTED:
@@ -575,8 +579,8 @@ void arm_controller::Init(const ros::TimerEvent& event)
   angleBetweenGripperAndCamera = 5.0f;
 
   // need to initialize the min and max sensor values
-  maxRadialPos       = 100000;
-  maxVerticalPos     = 100000;
+  maxRadialPos       = 275000;
+  maxVerticalPos     = 495000;
   maxArmRotation     = 330.0f;
   maxGripperRotation = 180.0f;
   maxGripperPos      = 260.0f;
