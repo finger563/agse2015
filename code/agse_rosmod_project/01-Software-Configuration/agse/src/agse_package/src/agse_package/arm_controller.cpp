@@ -253,23 +253,23 @@ void arm_controller::Finding_PB_StateFunc()
 		} else // need to center the payload
 		{
 		  // move to detected position (i.e. set goals to detected position)
-		  // if pbY > 0 : extend radius, else if pbY < 0 retract radius
+		  // if pbY > 0 : rotate CW, else if pbY < 0 rotate CCW
 		  if ( pbY > 0 )
 		    {
-		      initRadialPos += radialPosStep;
+		      initArmRotation += armRotationStep / 6.0f;
 		    } else
-		    {
-		      initRadialPos -= radialPosStep;
-		    }
-		  goalRadialPos = initRadialPos;
-		  // if pbX > 0 : rotate CW, else if pbX < 0 rotate CCW
-		  if ( pbX > 0 )
 		    {
 		      initArmRotation -= armRotationStep / 6.0f;
+		    }
+		  // if pbX > 0 : retract radius, else if pbX < 0 extend radius
+		  if ( pbX > 0 )
+		    {
+		      initRadialPos -= radialPosStep;
 		    } else
 		    {
-		      initArmRotation += armRotationStep / 6.0f;
+		      initRadialPos += radialPosStep;
 		    }
+		  goalRadialPos = initRadialPos;
 		  goalArmRotation = initArmRotation;
 		}
 	    }
@@ -390,23 +390,23 @@ void arm_controller::Finding_Sample_StateFunc()
 		} else // need to center the payload
 		{
 		  // move to detected position (i.e. set goals to detected position)
-		  // if sY > 0 : extend radius, else if sY < 0 retract radius
+		  // if sY > 0 : rotate CW, else if sY < 0 CCW
 		  if ( sY > 0 )
 		    {
-		      initRadialPos += radialPosStep;
+		      initArmRotation += armRotationStep / 6.0f;
 		    } else
-		    {
-		      initRadialPos -= radialPosStep;
-		    }
-		  goalRadialPos = initRadialPos;
-		  // if sX > 0 : rotate CW, else if sX < 0 rotate CCW
-		  if ( sX > 0 )
 		    {
 		      initArmRotation -= armRotationStep / 6.0f;
+		    }
+		  // if sX > 0 : retract radius, else if sX < 0 extend
+		  if ( sX > 0 )
+		    {
+		      initRadialPos -= radialPosStep;
 		    } else
 		    {
-		      initArmRotation += armRotationStep / 6.0f;
+		      initRadialPos += radialPosStep;
 		    }
+		  goalRadialPos = initRadialPos;
 		  goalArmRotation = initArmRotation;
 		}
 	    }
