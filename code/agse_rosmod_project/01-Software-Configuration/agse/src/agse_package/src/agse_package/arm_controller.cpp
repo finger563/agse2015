@@ -154,7 +154,7 @@ void arm_controller::Init_StateFunc()
 
       goalRadialPos = minRadialPos;
       goalVerticalPos = minVerticalPos;
-      goalArmRotation = currentArmRotation;
+      goalArmRotation = minArmRotation;
       goalGripperRotation = currentGripperRotation;
       goalGripperPos = gripperPosOpened;
 
