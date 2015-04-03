@@ -78,7 +78,7 @@ bool vertical_actuator_controller::verticalPosCallback(agse_package::verticalPos
     // Business Logic for verticalPos_server Server providing verticalPos Service
   if (req.update == true)
     {
-      ROS_INFO("GOT NEW HEIGHT GOAL: %d",req.goal);
+      ROS_INFO("GOT NEW HEIGHT GOAL: %d",(int)req.goal);
       ROS_INFO("CURRENT HEIGHT: %d",verticalCurrent);
       verticalGoal = req.goal;
     }

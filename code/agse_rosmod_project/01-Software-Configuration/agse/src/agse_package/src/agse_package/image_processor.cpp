@@ -147,6 +147,8 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 // Destructor - required for clean shutdown when process is killed
 image_processor::~image_processor()
 {
+    payloadBayDetectionImages_pub.shutdown();
+    sampleDetectionImages_pub.shutdown();
     controlInputs_sub.shutdown();
     sampleStateFromImage_server.shutdown();
     payloadBayStateFromImage_server.shutdown();
@@ -185,6 +187,20 @@ void image_processor::startUp()
 	     ros::VoidPtr(),
              &this->compQueue);
     this->controlInputs_sub = nh.subscribe(controlInputs_sub_options);
+
+    // Configure all publishers associated with this component
+    // publisher: payloadBayDetectionImages_pub
+    advertiseName = "payloadBayDetectionImages";
+    if ( portGroupMap != NULL && portGroupMap->find("payloadBayDetectionImages_pub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["payloadBayDetectionImages_pub"];
+    this->payloadBayDetectionImages_pub = nh.advertise<agse_package::payloadBayDetectionImages>
+	(advertiseName.c_str(), 1000);	
+    // publisher: sampleDetectionImages_pub
+    advertiseName = "sampleDetectionImages";
+    if ( portGroupMap != NULL && portGroupMap->find("sampleDetectionImages_pub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["sampleDetectionImages_pub"];
+    this->sampleDetectionImages_pub = nh.advertise<agse_package::sampleDetectionImages>
+	(advertiseName.c_str(), 1000);	
 
     // Configure all provided services associated with this component
     // server: sampleStateFromImage_server

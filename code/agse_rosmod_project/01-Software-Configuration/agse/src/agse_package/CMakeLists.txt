@@ -90,6 +90,10 @@ add_message_files(
 
   armState.msg
 
+  payloadBayDetectionImages.msg
+
+  sampleDetectionImages.msg
+
 )
 
 # Generate services in the 'srv' folder
@@ -232,7 +236,7 @@ add_executable( arm src/agse_package/arm_main.cpp src/agse_package/Component.cpp
                 src/agse_package/arm_controller.cpp  
 		## Start arm CPP Marker
 		src/agse_package/SerialPort.cpp
-		## End arm CPP Marker
+                ## End arm CPP Marker
               )
 target_link_libraries(arm 
                       ## Start arm Target Link Libraries Marker

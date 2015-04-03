@@ -18,6 +18,8 @@
 #include "agse_package/sampleState.h"
 #include "agse_package/payloadBayState.h"
 #include "agse_package/armState.h"
+#include "agse_package/payloadBayDetectionImages.h"
+#include "agse_package/sampleDetectionImages.h"
 #include "agse_package/captureImage.h"
 
 //# Start User Globals Marker
@@ -43,6 +45,12 @@ class user_input_controller : public Component
  
 	// OnOneData Subscription handler for armState_sub subscriber 
 	void armState_sub_OnOneData(const agse_package::armState::ConstPtr& received_data); 
+ 
+	// OnOneData Subscription handler for payloadBayDetectionImages_sub subscriber 
+	void payloadBayDetectionImages_sub_OnOneData(const agse_package::payloadBayDetectionImages::ConstPtr& received_data); 
+ 
+	// OnOneData Subscription handler for sampleDetectionImages_sub subscriber 
+	void sampleDetectionImages_sub_OnOneData(const agse_package::sampleDetectionImages::ConstPtr& received_data); 
  
 
 	// Callback for userInputTimer timer
@@ -71,6 +79,12 @@ class user_input_controller : public Component
 
 	// ROS Subscriber - armState_sub
 	ros::Subscriber armState_sub; 
+
+	// ROS Subscriber - payloadBayDetectionImages_sub
+	ros::Subscriber payloadBayDetectionImages_sub; 
+
+	// ROS Subscriber - sampleDetectionImages_sub
+	ros::Subscriber sampleDetectionImages_sub; 
 
 
 	// ROS Publisher - controlInputs_pub

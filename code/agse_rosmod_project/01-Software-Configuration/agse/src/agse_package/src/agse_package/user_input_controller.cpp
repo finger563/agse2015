@@ -123,6 +123,22 @@ void user_input_controller::armState_sub_OnOneData(const agse_package::armState:
   arm = *received_data;
 }
 //# End armState_sub_OnOneData Marker
+// OnOneData Subscription handler for payloadBayDetectionImages_sub subscriber
+//# Start payloadBayDetectionImages_sub_OnOneData Marker
+void user_input_controller::payloadBayDetectionImages_sub_OnOneData(const agse_package::payloadBayDetectionImages::ConstPtr& received_data)
+{
+    // Business Logic for payloadBayDetectionImages_sub subscriber subscribing to topic payloadBayDetectionImages callback 
+
+}
+//# End payloadBayDetectionImages_sub_OnOneData Marker
+// OnOneData Subscription handler for sampleDetectionImages_sub subscriber
+//# Start sampleDetectionImages_sub_OnOneData Marker
+void user_input_controller::sampleDetectionImages_sub_OnOneData(const agse_package::sampleDetectionImages::ConstPtr& received_data)
+{
+    // Business Logic for sampleDetectionImages_sub subscriber subscribing to topic sampleDetectionImages callback 
+
+}
+//# End sampleDetectionImages_sub_OnOneData Marker
 
 // Callback for userInputTimer timer
 //# Start userInputTimerCallback Marker
@@ -256,6 +272,8 @@ user_input_controller::~user_input_controller()
     sampleState_sub.shutdown();
     payloadBayState_sub.shutdown();
     armState_sub.shutdown();
+    payloadBayDetectionImages_sub.shutdown();
+    sampleDetectionImages_sub.shutdown();
     captureImage_client.shutdown();
 //# Start Destructor Marker
 
@@ -317,6 +335,32 @@ void user_input_controller::startUp()
 	     ros::VoidPtr(),
              &this->compQueue);
     this->armState_sub = nh.subscribe(armState_sub_options);
+    // subscriber: payloadBayDetectionImages_sub
+    advertiseName = "payloadBayDetectionImages";
+    if ( portGroupMap != NULL && portGroupMap->find("payloadBayDetectionImages_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["payloadBayDetectionImages_sub"];
+    ros::SubscribeOptions payloadBayDetectionImages_sub_options;
+    payloadBayDetectionImages_sub_options = 
+	ros::SubscribeOptions::create<agse_package::payloadBayDetectionImages>
+	    (advertiseName.c_str(),
+	     1000,
+	     boost::bind(&user_input_controller::payloadBayDetectionImages_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->payloadBayDetectionImages_sub = nh.subscribe(payloadBayDetectionImages_sub_options);
+    // subscriber: sampleDetectionImages_sub
+    advertiseName = "sampleDetectionImages";
+    if ( portGroupMap != NULL && portGroupMap->find("sampleDetectionImages_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["sampleDetectionImages_sub"];
+    ros::SubscribeOptions sampleDetectionImages_sub_options;
+    sampleDetectionImages_sub_options = 
+	ros::SubscribeOptions::create<agse_package::sampleDetectionImages>
+	    (advertiseName.c_str(),
+	     1000,
+	     boost::bind(&user_input_controller::sampleDetectionImages_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->sampleDetectionImages_sub = nh.subscribe(sampleDetectionImages_sub_options);
 
     // Configure all publishers associated with this component
     // publisher: controlInputs_pub

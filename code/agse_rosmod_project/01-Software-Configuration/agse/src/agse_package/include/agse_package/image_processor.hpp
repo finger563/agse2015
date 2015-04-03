@@ -12,6 +12,8 @@
 #include "agse_package/payloadbay_detector.hpp"
 //# End User Includes Marker
 
+#include "agse_package/payloadBayDetectionImages.h"
+#include "agse_package/sampleDetectionImages.h"
 #include "agse_package/controlInputs.h"
 #include "agse_package/captureImage.h"
 #include "agse_package/sampleStateFromImage.h"
@@ -57,6 +59,13 @@ class image_processor : public Component
 
 	// ROS Subscriber - controlInputs_sub
 	ros::Subscriber controlInputs_sub; 
+
+
+	// ROS Publisher - payloadBayDetectionImages_pub
+	ros::Publisher payloadBayDetectionImages_pub;
+
+	// ROS Publisher - sampleDetectionImages_pub
+	ros::Publisher sampleDetectionImages_pub;
 
 
 	// ROS Service Server - sampleStateFromImage_server
