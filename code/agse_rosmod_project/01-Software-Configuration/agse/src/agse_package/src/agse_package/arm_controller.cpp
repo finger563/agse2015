@@ -175,7 +175,7 @@ void arm_controller::Finding_PB_StateFunc()
   static float initVerticalPos     = minVerticalPos;
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = gripperRotationSafe;
-  static float initGripperPos      = gripperPosOpened;
+  static float initGripperPos      = gripperPosClosed;
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
@@ -184,7 +184,7 @@ void arm_controller::Finding_PB_StateFunc()
   static float armRotationScale = 1.0f/500.0f;   // amount to move by in theta based on image space 
   static float radialPosScale = 50.0f;          // amount to move by in radius based on image space
 
-  static float positionRadius = 100.0f; // once center of PB is in this radius, we are done
+  static float positionRadius = 50.0f; // once center of PB is in this radius, we are done
   
   static bool foundPB = false;
   static agse_package::payloadBayState internalPBState; // used within this state; global state set when done
@@ -341,10 +341,10 @@ void arm_controller::Finding_Sample_StateFunc()
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
-  static float initVerticalPos     = minVerticalPos;
+  static float initVerticalPos     = minVerticalPos + 25000;
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = gripperRotationSafe;
-  static float initGripperPos      = gripperPosOpened;
+  static float initGripperPos      = gripperPosClosed;
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
@@ -353,7 +353,7 @@ void arm_controller::Finding_Sample_StateFunc()
   static float armRotationScale = 1.0f/500.0f;  // amount to move by in theta based on image space
   static float radialPosScale = 50.0f;         // amount to move by in radius based on image space
 
-  static float positionRadius = 100.0f; // once center of sample is in this radius, we are done
+  static float positionRadius = 50.0f; // once center of sample is in this radius, we are done
   
   static bool foundSample = false;
   static agse_package::sampleState internalSampleState; // used within this state; global state set when done
@@ -506,6 +506,8 @@ void arm_controller::Grabbing_Sample_StateFunc()
       goalGripperRotation = sample.orientation.theta + gripperRotationOffset;
       // Go down to proper Z level for the sample
       goalVerticalPos = sampleZPlane;
+      // Open The gripper
+      goalGripperPos = gripperPosOpened;
       atSample = true;
     } else if ( !grabbedSample )
     {
