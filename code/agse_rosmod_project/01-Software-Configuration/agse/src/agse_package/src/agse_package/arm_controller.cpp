@@ -482,6 +482,9 @@ void arm_controller::Grabbing_Sample_StateFunc()
   // State logic:
   if ( !atSample )
     {
+      // Take into account the offset between center of camera and center of gripper:
+      goalRadialPos = sample.pos.r + radiusBetweenGripperAndCamera;
+      goalArmRotation = sample.pos.theta + angleBetweenGripperAndCamera;
       // Orient gripper to sample (based on sample.orientation.theta)
       goalGripperRotation = sample.orientation.theta + gripperRotationOffset;
       // Go down to proper Z level for the sample
@@ -519,14 +522,15 @@ void arm_controller::Carrying_Sample_StateFunc()
   // State Logic:
   if ( !atPayloadBay )
     {
-      // move R,Theta to payloadBay's R,Theta
-      goalArmRotation = payloadBay.pos.theta;
-      goalRadialPos = payloadBay.pos.r;
+      // Go to Payload Bay's Radius and Angle
+      // Take into account the offset between center of camera and center of gripper:
+      goalRadialPos = payloadBay.pos.r + radiusBetweenGripperAndCamera;
+      goalArmRotation = payloadBay.pos.theta + angleBetweenGripperAndCamera;
       // change gripper rotation to payloadBay's orientation (payloadBay.orientation.theta)
       goalGripperRotation = payloadBay.orientation.theta + gripperRotationOffset;
     } else
     {
-      // move down in Z to proper height for PB (HOW DO WE DETERMINE THIS? FROM MARKERS?)
+      // move down in Z to proper height for PB
       goalVerticalPos = payloadBayZPlane;
       // transition to next state (INSERTING_SAMPLE)
       currentState = INSERTING_SAMPLE;
