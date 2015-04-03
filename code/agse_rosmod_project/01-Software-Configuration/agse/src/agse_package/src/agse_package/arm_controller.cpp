@@ -673,7 +673,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
   radialOffset          = 0.0;
   verticalOffset        = 0.0;
   armRotationOffset     = 0.0f;
-  gripperRotationOffset = 0.0f;
+  gripperRotationOffset = 15.0f;
   gripperPosOffset      = 0.0f;
 
   // need to initialize the offsets with measurements from the system
@@ -698,7 +698,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
   minGripperPos      = 190.0f;
 
   // Safe gripper rotation; won't hit vertical stage
-  gripperRotationSafe = 160.0f;
+  gripperRotationSafe = 180.0f + gripperRotationOffset;
 
   // need to initialize the gripper's state sensor values
   gripperPosOpened = 250.0f;
