@@ -19,36 +19,36 @@ void image_processor::Init(const ros::TimerEvent& event)
     sampleDetector.init();
     payloadBayDetector.init( 0.75f, "camera.yml");
 
-    #if 0
-    agse_package::captureImage arg;
-    if (this->captureImage_client.call(arg)) {
-      ROS_INFO("Image width: %d, height: %d, size: %d", 
-	       arg.response.width,
-	       arg.response.height,
-	       arg.response.imgVector.size());
-      Mat image = Mat( arg.response.height, 
-		       arg.response.width, 
-		       CV_8UC3, 
-		       arg.response.imgVector.data());
-      Mat detectedObjectsMask = Mat::zeros(image.size(), CV_8UC3);
-      DetectedObject sample = 
-	sampleDetector.run( image,
-			    detectedObjectsMask); 
-      DetectedObject payloadBay =
-	payloadBayDetector.run( image,
-				detectedObjectsMask); 
-      cv::imwrite("Sample-01-Raw.png", image+detectedObjectsMask);
-      ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
-      ROS_INFO("PayloadBay: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
-    }
-    #endif
-
     // Command line args for image processor
     for (int i = 0; i < node_argc; i++)
       {
 	if (!strcmp(node_argv[i], "-unpaused"))
 	  {
 	    paused = false;
+	  }
+	if (!strcmp(node_argv[i], "-detect"))
+	  {
+	    agse_package::captureImage arg;
+	    if (this->captureImage_client.call(arg)) {
+	      ROS_INFO("Image width: %d, height: %d, size: %d", 
+		       arg.response.width,
+		       arg.response.height,
+		       arg.response.imgVector.size());
+	      Mat image = Mat( arg.response.height, 
+			       arg.response.width, 
+			       CV_8UC3, 
+			       arg.response.imgVector.data());
+	      Mat detectedObjectsMask = Mat::zeros(image.size(), CV_8UC3);
+	      DetectedObject sample = 
+		sampleDetector.run( image,
+				    detectedObjectsMask); 
+	      DetectedObject payloadBay =
+		payloadBayDetector.run( image,
+					detectedObjectsMask); 
+	      cv::imwrite("Sample-01-Raw.png", image+detectedObjectsMask);
+	      ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
+	      ROS_INFO("PayloadBay: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
+	    }
 	  }
       }
 
@@ -94,6 +94,7 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 	res.y = sample.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
 	res.angle = sample.angle;
 	ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
+	cv::imwrite("Sample-01-Raw.png", image+detectedObjectsMask);
 	return true;
       }
       else {
@@ -130,6 +131,7 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 	res.y = payloadBay.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
 	res.angle = payloadBay.angle;
 	ROS_INFO("PayloadBay: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
+	cv::imwrite("PayloadBay-01-Raw.png", image+detectedObjectsMask);
 	return true;
       }
       else {

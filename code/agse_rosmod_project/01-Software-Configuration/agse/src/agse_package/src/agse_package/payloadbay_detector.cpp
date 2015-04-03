@@ -39,12 +39,12 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
       Markers[i].draw(maskOutput,Scalar(0,0,255),4);
     }
     //draw a 3d cube in each marker if there is 3d info
-    if (  CamParam.isValid() && MarkerSize!=-1)
+    if ( CamParam.isValid() && MarkerSize != -1 )
       for (unsigned int i=0;i<Markers.size();i++) {
 	CvDrawingUtils::draw3dAxis(maskOutput,Markers[i],CamParam);
       }
 
-    if (Markers.size() > 1) {
+    if (Markers.size() >= 1) {
       for (unsigned int i=0;i<Markers.size();i++) {
 	printf("MARKER XY = %f, %f\n",Markers[i].getCenter().x,Markers[i].getCenter().y);
 	Centers.push_back(Markers[i].getCenter());
