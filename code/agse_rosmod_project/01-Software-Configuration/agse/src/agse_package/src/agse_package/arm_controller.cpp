@@ -182,7 +182,7 @@ void arm_controller::Finding_PB_StateFunc()
   static float armRotationStep = 15.0f;     // degrees between steps of the state search (arm rotation)
   static float radialPosStep = 10000.0f;    // distance between steps of state search (radius)
   static float armRotationScale = 1.0f/500.0f;   // amount to move by in theta based on image space 
-  static float radialPosScale = 500.0f;          // amount to move by in radius based on image space
+  static float radialPosScale = 50.0f;          // amount to move by in radius based on image space
 
   static float positionRadius = 100.0f; // once center of PB is in this radius, we are done
   
@@ -283,12 +283,20 @@ void arm_controller::Finding_PB_StateFunc()
 		  if ( abs(pbY) > positionRadius )
 		    {
 		      initArmRotation += (-pbY) * armRotationScale;
+		      if ( initArmRotation > maxArmRotation )
+			initArmRotation = maxArmRotation;
+		      if ( initArmRotation < minArmRotation )
+			initArmRotation = minArmRotation;
 		    }
 		  // NOTE: IMAGE SPACE IS +X = RETRACT RADIUS
 		  // if pbX > 0 : retract radius, else if pbX < 0 extend radius
 		  if ( abs(pbX) > positionRadius )
 		    {
 		      initRadialPos += (-pbX) * radialPosScale;
+		      if ( initRadialPos > maxRadialPos )
+			initRadialPos = maxRadialPos;
+		      if ( initRadialPos < minRadialPos )
+			initRadialPos = minRadialPos;
 		    }
 		  goalRadialPos = initRadialPos;
 		  goalArmRotation = initArmRotation;
@@ -343,7 +351,7 @@ void arm_controller::Finding_Sample_StateFunc()
   static float armRotationStep = 15.0f;     // degrees between steps of the state search
   static float radialPosStep = 10000.0f;    // amount to move by in radius
   static float armRotationScale = 1.0f/500.0f;  // amount to move by in theta based on image space
-  static float radialPosScale = 500.0f;         // amount to move by in radius based on image space
+  static float radialPosScale = 50.0f;         // amount to move by in radius based on image space
 
   static float positionRadius = 100.0f; // once center of sample is in this radius, we are done
   
@@ -444,12 +452,20 @@ void arm_controller::Finding_Sample_StateFunc()
 		  if ( abs(sY) > positionRadius )
 		    {
 		      initArmRotation += (-sY) * armRotationScale;
+		      if ( initArmRotation > maxArmRotation )
+			initArmRotation = maxArmRotation;
+		      if ( initArmRotation < minArmRotation )
+			initArmRotation = minArmRotation;
 		    }
 		  // NOTE: IMAGE SPACE IS +X = RETRACT RADIUS
 		  // if sX > 0 : retract radius, else if sX < 0 extend
 		  if ( abs(sX) > positionRadius )
 		    {
 		      initRadialPos += (-sX) * radialPosScale;
+		      if ( initRadialPos > maxRadialPos )
+			initRadialPos = maxRadialPos;
+		      if ( initRadialPos < minRadialPos )
+			initRadialPos = minRadialPos;
 		    }
 		  goalRadialPos = initRadialPos;
 		  goalArmRotation = initArmRotation;
