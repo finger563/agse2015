@@ -88,7 +88,7 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 	Mat detectedObjectsMask = Mat::zeros(image.size(), CV_8UC3);
 	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
 	DetectedObject sample =
-	  sampleDetector.run(image,detectedObjectsMask); 
+	  sampleDetector.run(image,detectedObjectsMask,"autonomous_S"); 
 	res.status = sample.state;
 	res.x = sample.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
 	res.y = sample.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
@@ -124,7 +124,7 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 	Mat detectedObjectsMask = Mat::zeros(image.size(), CV_8UC3);
 	// NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
 	DetectedObject payloadBay =
-	  payloadBayDetector.run(image,detectedObjectsMask); 
+	  payloadBayDetector.run(image,detectedObjectsMask,"autonomous_PB"); 
 	res.status = payloadBay.state;
 	res.x = payloadBay.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
 	res.y = payloadBay.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
