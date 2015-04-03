@@ -171,7 +171,7 @@ void arm_controller::Finding_PB_StateFunc()
 {
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
-  static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
+  static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
   static float initVerticalPos     = minVerticalPos;
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = gripperRotationSafe;
@@ -351,7 +351,7 @@ void arm_controller::Finding_Sample_StateFunc()
 {
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
-  static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
+  static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
   static float initVerticalPos     = minVerticalPos + 25000;
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = gripperRotationSafe;
