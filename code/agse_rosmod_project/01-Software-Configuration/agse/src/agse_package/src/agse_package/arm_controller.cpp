@@ -2,6 +2,9 @@
 
 //# Start User Globals Marker
 
+const char* openPayloadBayString = "1";
+const char* closePayloadBayString = "0";
+
 void arm_controller::UpdateSensorData()
 {
   // all servers have 
@@ -317,6 +320,10 @@ void arm_controller::Opening_PB_StateFunc()
   // send the command to the PB through UART to open the PB,
   // OPTIONAL : use image based detection to confirm PB opens
   // transition to next state (FINDING_SAMPLE) if PB responds well
+  char buffer[20];
+  sprintf(buffer,"%s",openPayloadBayString);
+  serialPort.sendArray((unsigned char *)buffer,strlen(buffer));
+
   currentState = FINDING_SAMPLE;
 }
 
@@ -561,6 +568,10 @@ void arm_controller::Closing_PB_StateFunc()
   // move up some amount (to max height)
   goalVerticalPos = minVerticalPos;
   // send the command to the PB through UART to close the PB,
+  char buffer[20];
+  sprintf(buffer,"%s",closePayloadBayString);
+  serialPort.sendArray((unsigned char *)buffer,strlen(buffer));
+
   // OPTIONAL : use image based detection to confirm PB closes
   // transition to next state (MOVING_AWAY) if PB responds well
   currentState = MOVING_AWAY;
@@ -673,37 +684,48 @@ void arm_controller::Init(const ros::TimerEvent& event)
   payloadBay.orientation.theta = -1.0f;
   payloadBay.orientation.phi   = -1.0f;
 
-  // command line args parsing for arm_controller:
-  for (int i=0; i < node_argc; i++) 
+  // Jetson's USB-Serial Port for communicating with the ardunio
+  sprintf(portName,"//dev//ttyAMA0");
+  int baudRate = 9600;
+
+  if (serialPort.connect(portName,baudRate)!=0)
     {
-      if (!strcmp(node_argv[i], "-unpaused"))
+      // command line args parsing for arm_controller:
+      for (int i=0; i < node_argc; i++) 
 	{
-	  paused = false;
+	  if (!strcmp(node_argv[i], "-unpaused"))
+	    {
+	      paused = false;
+	    }
+	  if (!strcmp(node_argv[i], "-r"))
+	    {
+	      goalRadialPos = atoi(node_argv[i+1]);
+	    }
+	  if (!strcmp(node_argv[i], "-theta"))
+	    {
+	      goalArmRotation = atoi(node_argv[i+1]);
+	    }
+	  if (!strcmp(node_argv[i], "-z"))
+	    {
+	      goalVerticalPos = atoi(node_argv[i+1]);
+	    }
+	  if (!strcmp(node_argv[i], "-gRot"))
+	    {
+	      goalGripperRotation = atoi(node_argv[i+1]);
+	    }
+	  if (!strcmp(node_argv[i], "-gPos"))
+	    {
+	      goalGripperPos = atoi(node_argv[i+1]);
+	    }
+	  if (!strcmp(node_argv[i], "-servoEpsilon"))
+	    {
+	      armRotationEpsilon = atof(node_argv[i+1]);
+	    }
 	}
-      if (!strcmp(node_argv[i], "-r"))
-	{
-	  goalRadialPos = atoi(node_argv[i+1]);
-	}
-      if (!strcmp(node_argv[i], "-theta"))
-	{
-	  goalArmRotation = atoi(node_argv[i+1]);
-	}
-      if (!strcmp(node_argv[i], "-z"))
-	{
-	  goalVerticalPos = atoi(node_argv[i+1]);
-	}
-      if (!strcmp(node_argv[i], "-gRot"))
-	{
-	  goalGripperRotation = atoi(node_argv[i+1]);
-	}
-      if (!strcmp(node_argv[i], "-gPos"))
-	{
-	  goalGripperPos = atoi(node_argv[i+1]);
-	}
-      if (!strcmp(node_argv[i], "-servoEpsilon"))
-	{
-	  armRotationEpsilon = atof(node_argv[i+1]);
-	}
+    }
+  else
+    {
+      ROS_INFO("COULDN'T OPEN SERIAL PORT %s at %d",portName,baudRate);
     }
 
     // Stop Init Timer

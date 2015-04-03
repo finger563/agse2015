@@ -9,7 +9,7 @@
 // --------------------------------
 //# Start User Includes Marker
 #include "agse_package/detected_object.hpp"
-#include "agse_package/gpio.h"
+#include "agse_package/SerialPort.h"
 //# End User Includes Marker
 
 #include "agse_package/sampleState.h"
@@ -180,7 +180,9 @@ class arm_controller : public Component
   int sampleVerticalPos;
   int payloadBayVerticalPos;
 
-  bool call_at_timer; // We want Init_StateFunc to be called at each timer tick (not till CheckGoals = true)
+  // serial port we use on the Jetson TK1 for reading from / writing to the payload bay
+  SerialPort serialPort;
+  char portName[50];
 
         //# End User Private Variables Marker
 };

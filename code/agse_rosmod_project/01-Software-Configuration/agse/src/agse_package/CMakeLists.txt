@@ -231,6 +231,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable( arm src/agse_package/arm_main.cpp src/agse_package/Component.cpp src/agse_package/Logger.cpp
                 src/agse_package/arm_controller.cpp  
 		## Start arm CPP Marker
+		src/agse_package/SerialPort.cpp
 		## End arm CPP Marker
               )
 target_link_libraries(arm 

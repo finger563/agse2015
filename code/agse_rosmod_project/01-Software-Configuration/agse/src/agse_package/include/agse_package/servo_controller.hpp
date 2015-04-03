@@ -84,7 +84,7 @@ class servo_controller : public Component
         //# Start User Private Variables Marker
   bool paused;
 
-  // serial port we use on the Jetson TK1
+  // serial port we use on the BBB
   SerialPort serialPort;
   char portName[50];
   // object for reading/writing to AX-12A servos

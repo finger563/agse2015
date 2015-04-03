@@ -24,11 +24,11 @@ void servo_controller::Init(const ros::TimerEvent& event)
   gripperPositionSpeed = 0;
 
   complianceMargin = 0;
-  complianceSlope = 0x50;
+  complianceSlope = 10;
 
   armRotationGoal = 0;
-  gripperRotationGoal = 250.0f;
-  gripperPosGoal = 180.0f;
+  gripperRotationGoal = 180.0f;
+  gripperPosGoal = 250.0f;
 
   if (serialPort.connect(portName,9600)!=0)
     {
