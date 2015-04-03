@@ -143,6 +143,8 @@ class arm_controller : public Component
   float minGripperRotation;
   float minGripperPos;
 
+  float gripperRotationSafe;
+
   float gripperPosOpened;
   float gripperPosClosed;
   
@@ -173,6 +175,10 @@ class arm_controller : public Component
   // offsets measured between center of camera image and the center underneath the gripper (r,theta)
   float angleBetweenGripperAndCamera;
   int radiusBetweenGripperAndCamera;
+
+  // presets for the z-plane on which the sample and payload bay will lie (will be different)
+  int sampleVerticalPos;
+  int payloadBayVerticalPos;
 
   bool call_at_timer; // We want Init_StateFunc to be called at each timer tick (not till CheckGoals = true)
 
