@@ -682,11 +682,11 @@ void arm_controller::Init(const ros::TimerEvent& event)
   gripperPosOffset      = 0.0f;
 
   // need to initialize the offsets with measurements from the system
-  radiusBetweenGripperAndCamera = -500;
+  radiusBetweenGripperAndCamera = -5000;
   angleBetweenGripperAndCamera = 5.0f;
 
   // initialization of the z-plane for the payload bay and the sample
-  sampleVerticalPos = 0;
+  sampleVerticalPos = 498550;
   payloadBayVerticalPos = 165660;
 
   // need to initialize the min and max sensor values
