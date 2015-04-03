@@ -98,7 +98,7 @@ class arm_controller : public Component
 
         //# Start User Private Variables Marker
   bool paused;
-  
+  bool usingSerialPort;
   enum ArmState
     {
       INIT,
