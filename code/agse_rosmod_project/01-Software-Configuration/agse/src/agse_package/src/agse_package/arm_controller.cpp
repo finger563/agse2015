@@ -172,7 +172,7 @@ void arm_controller::Finding_PB_StateFunc()
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
-  static float initVerticalPos     = minVerticalPos + 35000;
+  static float initVerticalPos     = minVerticalPos + 50000;
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = gripperRotationSafe;
   static float initGripperPos      = gripperPosClosed;
@@ -186,6 +186,7 @@ void arm_controller::Finding_PB_StateFunc()
       goalGripperRotation = initGripperRotation;
       goalGripperPos = initGripperPos;
       firstRun = false;
+      return;
     }
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
@@ -366,6 +367,7 @@ void arm_controller::Finding_Sample_StateFunc()
       goalGripperRotation = initGripperRotation;
       goalGripperPos = initGripperPos;
       firstRun = false;
+      return;
     }
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
@@ -456,7 +458,7 @@ void arm_controller::Finding_Sample_StateFunc()
 	      internalSampleState.pos.r = currentRadialPos;
 	      internalSampleState.pos.theta = currentArmRotation;
 	      internalSampleState.pos.z = currentVerticalPos;
-	      internalSampleState.orientation.theta = sStateImage.response.angle;
+	      internalSampleState.orientation.theta = sStateImage.response.angle + 90.0f;
 	      // if the sample's current image-space position is within the allowable radius
 	      if ( abs(sX) <= positionRadius && abs(sY) <= positionRadius ) 
 		{
