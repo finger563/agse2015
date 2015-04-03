@@ -373,7 +373,7 @@ void arm_controller::Finding_Sample_StateFunc()
       // get image Processor result
       bool newTest = false;
       agse_package::sampleStateFromImage sStateImage;
-      if ( payloadBayStateFromImage_client.call(sStateImage) )
+      if ( sampleStateFromImage_client.call(sStateImage) )
 	{
 	  switch (sStateImage.response.status)
 	    {
