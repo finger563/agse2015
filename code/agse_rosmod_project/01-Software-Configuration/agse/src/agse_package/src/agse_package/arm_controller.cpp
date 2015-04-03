@@ -579,6 +579,7 @@ void arm_controller::Carrying_Sample_StateFunc()
       if ( payloadBay.orientation.theta > 180.0f )
 	payloadBay.orientation.theta -= 180.0f;
       goalGripperRotation = payloadBay.orientation.theta + gripperRotationOffset;
+      atPayloadBay = true;
     } else
     {
       // move down in Z to proper height for PB
