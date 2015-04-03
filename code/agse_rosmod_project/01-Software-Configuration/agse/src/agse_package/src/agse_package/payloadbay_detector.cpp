@@ -30,19 +30,15 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
     equalizeHist(grayscale, eq_gray);
     Mat eq_gray_filtered;
     threshold(eq_gray, eq_gray_filtered, 130, 255, 0);
-    cv::imwrite("Payload-Grayscale-Thresholded.png", eq_gray_filtered);
+    //cv::imwrite("Payload-Grayscale-Thresholded.png", eq_gray_filtered);
     
     MDetector.detect(image, Markers, CamParam, MarkerSize);
 
     //for each marker, draw info and its boundaries in the image
     for (unsigned int i=0;i<Markers.size();i++) {
       Markers[i].draw(maskOutput,Scalar(0,0,255),4);
+      CvDrawingUtils::draw3dAxis(maskOutput,Markers[i],CamParam);
     }
-    //draw a 3d cube in each marker if there is 3d info
-    if ( CamParam.isValid() && MarkerSize != -1 )
-      for (unsigned int i=0;i<Markers.size();i++) {
-	CvDrawingUtils::draw3dAxis(maskOutput,Markers[i],CamParam);
-      }
 
     if (Markers.size() >= 1) {
       for (unsigned int i=0;i<Markers.size();i++) {
@@ -75,17 +71,12 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
       object.angle = angle;
     }
 
-    cv::imwrite("Payload-THresholded.png", MDetector.getThresholdedImage());
-    
-
+    //cv::imwrite("Payload-THresholded.png", MDetector.getThresholdedImage());
     int nameLen = 0;
     if ( (nameLen = strlen(fname)) > 0 )
       {
-	char rawName[nameLen + 10];
 	char edgeName[nameLen + 20];
-	sprintf(rawName,"%s.png",fname);
 	sprintf(edgeName,"%s_edges.png",fname);
-	cv::imwrite(rawName,image);
 	cv::imwrite(edgeName, MDetector.getThresholdedImage());
       }
   } catch (std::exception &ex)
