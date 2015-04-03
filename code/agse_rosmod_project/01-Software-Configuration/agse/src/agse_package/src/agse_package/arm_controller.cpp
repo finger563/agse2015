@@ -655,7 +655,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
   // need to initialize the min and max sensor values
   maxRadialPos       = 275000;
   maxVerticalPos     = 495000;
-  maxArmRotation     = 330.0f;
+  maxArmRotation     = 285.0f;
   maxGripperRotation = 180.0f;
   maxGripperPos      = 260.0f;
 
