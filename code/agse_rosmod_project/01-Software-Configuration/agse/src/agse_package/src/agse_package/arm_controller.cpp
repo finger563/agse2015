@@ -503,6 +503,10 @@ void arm_controller::Grabbing_Sample_StateFunc()
       goalRadialPos = sample.pos.r + radiusBetweenGripperAndCamera;
       goalArmRotation = sample.pos.theta + angleBetweenGripperAndCamera;
       // Orient gripper to sample (based on sample.orientation.theta)
+      if ( sample.orientation.theta < 0 )
+	sample.orientation.theta += 180.0f;
+      if ( sample.orientation.theta > 180.0f )
+	sample.orientation.theta -= 180.0f;
       goalGripperRotation = sample.orientation.theta + gripperRotationOffset;
       // Go down to proper Z level for the sample
       goalVerticalPos = sampleZPlane;
@@ -546,6 +550,10 @@ void arm_controller::Carrying_Sample_StateFunc()
       goalRadialPos = payloadBay.pos.r + radiusBetweenGripperAndCamera;
       goalArmRotation = payloadBay.pos.theta + angleBetweenGripperAndCamera;
       // change gripper rotation to payloadBay's orientation (payloadBay.orientation.theta)
+      if ( payloadBay.orientation.theta < 0 )
+	payloadBay.orientation.theta += 180.0f;
+      if ( payloadBay.orientation.theta > 180.0f )
+	payloadBay.orientation.theta -= 180.0f;
       goalGripperRotation = payloadBay.orientation.theta + gripperRotationOffset;
     } else
     {
