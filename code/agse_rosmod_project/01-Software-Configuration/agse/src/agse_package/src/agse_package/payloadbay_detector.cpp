@@ -24,12 +24,12 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
     CamParam.resize(Size(height,width));
     
     // Converting to grayscale
-    Mat grayscale;
-    cvtColor(image, grayscale, CV_BGR2GRAY);
-    Mat eq_gray;
-    equalizeHist(grayscale, eq_gray);
-    Mat eq_gray_filtered;
-    threshold(eq_gray, eq_gray_filtered, 130, 255, 0);
+    //Mat grayscale;
+    //cvtColor(image, grayscale, CV_BGR2GRAY);
+    //Mat eq_gray;
+    //equalizeHist(grayscale, eq_gray);
+    //Mat eq_gray_filtered;
+    //threshold(eq_gray, eq_gray_filtered, 130, 255, 0);
     //cv::imwrite("Payload-Grayscale-Thresholded.png", eq_gray_filtered);
     
     MDetector.detect(image, Markers, CamParam, MarkerSize);

@@ -181,7 +181,7 @@ void arm_controller::Finding_PB_StateFunc()
 
   static float armRotationStep = 15.0f;     // degrees between steps of the state search (arm rotation)
   static float radialPosStep = 10000.0f;    // distance between steps of state search (radius)
-  static float armRotationScale = 1.0f/250.0f;   // amount to move by in theta based on image space 
+  static float armRotationScale = 1.0f/150.0f;   // amount to move by in theta based on image space 
   static float radialPosScale = 75.0f;          // amount to move by in radius based on image space
 
   static float positionRadius = 50.0f; // once center of PB is in this radius, we are done
@@ -350,7 +350,7 @@ void arm_controller::Finding_Sample_StateFunc()
 
   static float armRotationStep = 15.0f;     // degrees between steps of the state search
   static float radialPosStep = 10000.0f;    // amount to move by in radius
-  static float armRotationScale = 1.0f/250.0f;  // amount to move by in theta based on image space
+  static float armRotationScale = 1.0f/150.0f;  // amount to move by in theta based on image space
   static float radialPosScale = 75.0f;         // amount to move by in radius based on image space
 
   static float positionRadius = 50.0f; // once center of sample is in this radius, we are done
