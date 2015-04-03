@@ -176,6 +176,17 @@ void arm_controller::Finding_PB_StateFunc()
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = gripperRotationSafe;
   static float initGripperPos      = gripperPosClosed;
+  static bool firstRun = true;
+
+  if (firstRun)
+    {
+      goalRadialPos = initRadialPos;
+      goalVerticalPos = initVerticalPos;
+      goalArmRotation = initArmRotation;
+      goalGripperRotation = initGripperRotation;
+      goalGripperPos = initGripperPos;
+      firstRun = false;
+    }
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
@@ -345,6 +356,17 @@ void arm_controller::Finding_Sample_StateFunc()
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = gripperRotationSafe;
   static float initGripperPos      = gripperPosClosed;
+  static bool firstRun = true;
+
+  if (firstRun)
+    {
+      goalRadialPos = initRadialPos;
+      goalVerticalPos = initVerticalPos;
+      goalArmRotation = initArmRotation;
+      goalGripperRotation = initGripperRotation;
+      goalGripperPos = initGripperPos;
+      firstRun = false;
+    }
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
 
