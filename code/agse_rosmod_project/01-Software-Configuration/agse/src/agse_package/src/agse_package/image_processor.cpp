@@ -89,12 +89,18 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
 	DetectedObject sample =
 	  sampleDetector.run(image,detectedObjectsMask,"autonomous_S"); 
-	res.status = sample.state;
-	res.x = sample.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
-	res.y = sample.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
-	res.angle = sample.angle;
 	ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
 	cv::imwrite("Sample-01-Raw.png", image+detectedObjectsMask);
+	if ( sample.x >= 0 && sample.x <= arg.response.width &&
+	     sample.y >= 0 && sample.y <= arg.response.height )
+	  {
+	    res.status = sample.state;
+	    res.x = sample.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
+	    res.y = sample.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
+	    res.angle = sample.angle;
+	  }
+	else
+	  res.status = HIDDEN;
 	return true;
       }
       else {
@@ -126,12 +132,18 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
 	// NEED TO GET RETURN VALUES ABOUT DETECTED PAYLOAD BAY HERE
 	DetectedObject payloadBay =
 	  payloadBayDetector.run(image,detectedObjectsMask,"autonomous_PB"); 
-	res.status = payloadBay.state;
-	res.x = payloadBay.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
-	res.y = payloadBay.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
-	res.angle = payloadBay.angle;
 	ROS_INFO("PayloadBay: %d, (%f,%f), %f",payloadBay.state, payloadBay.x, payloadBay.y, payloadBay.angle);
 	cv::imwrite("PayloadBay-01-Raw.png", image+detectedObjectsMask);
+	if ( payloadBay.x >= 0 && payloadBay.x <= arg.response.width &&
+	     payloadBay.y >= 0 && payloadBay.y <= arg.response.height )
+	  {
+	    res.status = payloadBay.state;
+	    res.x = payloadBay.x - arg.response.width / 2;   // convert [0,w] -> [-w/2,w/2]
+	    res.y = payloadBay.y - arg.response.height / 2;  // convert [0,h] -> [-h/2,h/2]
+	    res.angle = payloadBay.angle;
+	  }
+	else
+	  res.status = HIDDEN;
 	return true;
       }
       else {
