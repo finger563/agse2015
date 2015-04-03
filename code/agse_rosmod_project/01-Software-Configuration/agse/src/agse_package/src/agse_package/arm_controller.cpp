@@ -345,6 +345,8 @@ void arm_controller::Opening_PB_StateFunc()
   if ( usingSerialPort )
     serialPort.sendArray((unsigned char *)buffer,strlen(buffer));
 
+  goalVerticalPos = minVerticalPos;
+
   currentState = FINDING_SAMPLE;
 }
 
@@ -353,8 +355,8 @@ void arm_controller::Finding_Sample_StateFunc()
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
   static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
-  static float initVerticalPos     = minVerticalPos + 35000;
-  static float initArmRotation     = minArmRotation;
+  static float initVerticalPos     = 311000;//minVerticalPos + 50000;
+  static float initArmRotation     = 100.0f;
   static float initGripperRotation = gripperRotationSafe;
   static float initGripperPos      = gripperPosClosed;
   static bool firstRun = true;
