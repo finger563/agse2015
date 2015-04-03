@@ -682,7 +682,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
 
   // initialization of the z-plane for the payload bay and the sample
   sampleVerticalPos = 0;
-  payloadBayVerticalPos = 0;
+  payloadBayVerticalPos = 165660;
 
   // need to initialize the min and max sensor values
   maxRadialPos       = 275000;
