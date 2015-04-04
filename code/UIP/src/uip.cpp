@@ -3,14 +3,23 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <ctime>
+
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+  // [[DispImage]] - the image in which input images are to be copied
+  IplImage *DispImage;
+  IplImage *Mode_1;    
+  IplImage *Mode_2;    
+  IplImage *Mode_3;    
+  IplImage *Mode_4;    
 
 void cvShowManyImages(char* title, int nArgs, ...) {
 
   // img - Used for getting the arguments 
   IplImage *img;
-
-  // [[DispImage]] - the image in which input images are to be copied
-  IplImage *DispImage;
 
   int size;
   int i;
@@ -114,16 +123,68 @@ void cvShowManyImages(char* title, int nArgs, ...) {
   // Create a new window, and show the Single Big Image
   cvNamedWindow( title, 1 );
   cvSetWindowProperty(title, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-  cvShowImage( title, DispImage);
 
-  cvWaitKey();
-  cvDestroyWindow(title);
+  
+  // Add font to image
+  CvFont sample_font = cvFontQt("Arial", 24, cvScalar(255, 0, 0), CV_FONT_BLACK, CV_STYLE_NORMAL, 0);
+  CvFont sample_state = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont sample_state_value = cvFontQt("Arial", 16, cvScalar(0, 0, 255), CV_FONT_BLACK, CV_STYLE_NORMAL, 0);
+  CvFont sample_center = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont sample_center_value = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont sample_radius = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont sample_radius_value = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont sample_angle = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont sample_angle_value = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont sample_depth = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont sample_depth_value = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+
+  CvFont pb_font = cvFontQt("Arial", 24, cvScalar(255, 0, 0), CV_FONT_BLACK, CV_STYLE_NORMAL, 0);
+  CvFont pb_state = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont pb_state_value = cvFontQt("Arial", 16, cvScalar(0, 0, 255), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont pb_center = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont pb_radius = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont pb_angle = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+  CvFont pb_depth = cvFontQt("Arial", 16, cvScalarAll(0), CV_FONT_BOLD, CV_STYLE_NORMAL, 0);
+
+  // Sample Detection Text
+  cvAddText (DispImage, "Sample Detection", cvPoint(410, 40), &sample_font);
+  cvAddText (DispImage, "Detection State       : ", cvPoint(410, 80), &sample_state);  
+  cvAddText (DispImage, "Searching...", cvPoint(650, 80), &sample_state_value);  
+  cvAddText (DispImage, "Sample Angle φ      : ", cvPoint(410, 110), &sample_center);  
+  cvAddText (DispImage, "Arm Radius r           : ", cvPoint(410, 140), &sample_radius);  
+  cvAddText (DispImage, "Arm Orientation θ   : ", cvPoint(410, 170), &sample_angle);  
+  cvAddText (DispImage, "Arm Depth z            : ", cvPoint(410, 200), &sample_depth);  
+
+  // Payload Bay Detection Text
+  cvAddText (DispImage, "Payload Bay Detection", cvPoint(410, 280), &pb_font);
+  cvAddText (DispImage, "Detection State       : ", cvPoint(410, 320), &pb_state);  
+  cvAddText (DispImage, "Searching...", cvPoint(650, 320), &pb_state_value);  
+  cvAddText (DispImage, "Bay Center O           : ", cvPoint(410, 350), &pb_center);  
+  cvAddText (DispImage, "Arm Radius r           : ", cvPoint(410, 380), &pb_radius);  
+  cvAddText (DispImage, "Arm Orientation θ   : ", cvPoint(410, 410), &pb_angle);  
+  cvAddText (DispImage, "Arm Depth z            : ", cvPoint(410, 440), &pb_depth);  
+  /*
+  unsigned int microseconds = 3000000;
+
+  while(true) {
+  cvShowManyImages("UIP", 4, img1, img2, img3, img4);
+  usleep(microseconds);
+  }
+  */
+
+   cvShowImage( title, DispImage);
+
+   //   cvShowImage(title, DispImage);
+   /*
+    cvWaitKey();
+   cvDestroyWindow(title);
 
   // End the number of arguments
-  va_end(args);
+   va_end(args);
 
   // Release the Image Memory
-  cvReleaseImage(&DispImage);
+   cvReleaseImage(&DispImage);
+   */
 }
 
 
@@ -133,7 +194,60 @@ int main() {
   IplImage *img2 = cvLoadImage("/home/debian/Desktop/UIP/input/02.png");
   IplImage *img3 = cvLoadImage("/home/debian/Desktop/UIP/input/03.png");
   IplImage *img4 = cvLoadImage("/home/debian/Desktop/UIP/input/04.png");
+  IplImage *img5 = cvLoadImage("/home/debian/Desktop/UIP/input/m2.png");
+  IplImage *img6 = cvLoadImage("/home/debian/Desktop/UIP/input/m4.png");
+
   cvShowManyImages("UIP", 4, img1, img2, img3, img4);
+
+  int key = 0;
+
+  while(true) {
+
+    key = cvWaitKey();
+
+    if (key == 65361) {
+      Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
+      cvResize(img1, Mode_1);
+      cvShowImage( "UIP", Mode_1);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 65363) {
+      Mode_2 = cvCreateImage( cvSize(800, 480), 8, 3);
+      cvResize(img3, Mode_2);
+      cvShowImage( "UIP", Mode_2);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 65362) {
+      Mode_3 = cvCreateImage( cvSize(800, 480), 8, 3);
+      cvResize(img5, Mode_3);
+      cvShowImage( "UIP", Mode_3);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 65364) {
+      Mode_4 = cvCreateImage( cvSize(800, 480), 8, 3);
+      cvResize(img6, Mode_4);
+      cvShowImage( "UIP", Mode_4);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 13) {
+      cvShowManyImages("UIP", 4, img1, img2, img3, img4);
+      key = 0;
+    }
+
+  }
+
 
   return 0;
 

@@ -5,7 +5,7 @@
 //# End User Globals Marker
 
 // -------------------------------------------------------
-// BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
+// BUSnINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
 // Init Function
@@ -22,7 +22,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   //////////////////////////////////////////////
 
   // PAUSE Switch - Amber
-  pauseSwitchPin = 22; // P8_18
+  pauseSwitchPin = 27; // P8_17
   gpio_export(pauseSwitchPin);
   gpio_set_dir(pauseSwitchPin,INPUT_PIN);
 
@@ -32,7 +32,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(manualSwitchPin,INPUT_PIN);
 
   // HALT Switch - Red
-  haltSwitchPin = 27; // P8_17
+  haltSwitchPin = 65; // P8_18
   gpio_export(haltSwitchPin);
   gpio_set_dir(haltSwitchPin,INPUT_PIN);
 
@@ -61,6 +61,8 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(initLED[1], OUTPUT_PIN);  
   gpio_export(initLED[2]);
   gpio_set_dir(initLED[2], OUTPUT_PIN);  
+
+  gpio_set_value(initLED[0], HIGH);
 
   // SAMPLE MAIN LED
   sampleLED[0] = 26; // P8_14 - Blue
@@ -276,7 +278,7 @@ user_input_controller::~user_input_controller()
     sampleDetectionImages_sub.shutdown();
     captureImage_client.shutdown();
 //# Start Destructor Marker
-
+    gpio_set_value(initLED[0], LOW);
 //# End Destructor Marker
 }
 
@@ -416,8 +418,8 @@ void user_input_controller::startUp()
     std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
 
     // Create the log file & open file stream
-    LOGGER.CREATE_FILE(log_file_path);
+    //    LOGGER.CREATE_FILE(log_file_path);
 
     // Establish log levels of LOGGER
-    LOGGER.SET_LOG_LEVELS(groupParser.logging);
+    //    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }
