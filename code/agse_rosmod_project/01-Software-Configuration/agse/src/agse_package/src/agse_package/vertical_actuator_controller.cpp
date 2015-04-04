@@ -135,6 +135,11 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
 	  gpio_set_value(motorBackwardPin,LOW);
 	}
     }
+  else 
+    {
+      gpio_set_value(motorForwardPin,LOW);
+      gpio_set_value(motorBackwardPin,LOW);      
+    }
 }
 //# End verticalPosTimerCallback Marker
 

@@ -135,6 +135,11 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
 	  gpio_set_value(motorBackwardPin,LOW);
 	}
     }
+  else 
+    {
+      gpio_set_value(motorForwardPin,LOW);
+      gpio_set_value(motorBackwardPin,LOW);      
+    }
 }
 //# End radialPosTimerCallback Marker
 
