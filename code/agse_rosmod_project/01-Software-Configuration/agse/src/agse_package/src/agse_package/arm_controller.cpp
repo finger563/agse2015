@@ -78,7 +78,7 @@ void arm_controller::UpdateArmPosition()
 
 bool arm_controller::CheckGoals()
 {
-#if 1//AGSE_DEBUG
+#if AGSE_DEBUG
   ROS_INFO("RADIAL GOAL: %d",goalRadialPos);
   ROS_INFO("RADIUS : %d",currentRadialPos);
   ROS_INFO("HEIGHT GOAL: %d",goalVerticalPos);
@@ -682,8 +682,8 @@ void arm_controller::Init(const ros::TimerEvent& event)
   gripperPosOffset      = 0.0f;
 
   // need to initialize the offsets with measurements from the system
-  radiusBetweenGripperAndCamera = -5000;
-  angleBetweenGripperAndCamera = 5.0f;
+  radiusBetweenGripperAndCamera = -10000;
+  angleBetweenGripperAndCamera = 10.0f;
 
   // initialization of the z-plane for the payload bay and the sample
   sampleVerticalPos = 498550;
