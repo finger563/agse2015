@@ -12,6 +12,7 @@
 //#include "agse_package/uip.h"
 #include "opencv/cv.h"
 #include "opencv/highgui.h"
+using namespace cv;
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
@@ -128,11 +129,29 @@ class user_input_controller : public Component
   // Pin for Init LED
   unsigned int initLED[3];
 
+  // Received Images
+  Mat pb_rawImage;
+  Mat pb_hsvImage;
+  Mat pb_gsImage;
+  Mat pb_bitwise;
+
+  Mat sample_rawImage;
+  Mat sample_hsvImage;
+  Mat sample_gsImage;
+  Mat sample_bitwise;
+
   // Four Images to show in UIP
-  IplImage * img1;
-  IplImage * img2;
-  IplImage * img3;
-  IplImage * img4;
+  IplImage * top_left;
+  IplImage * top_right;
+  IplImage * bottom_left;
+  IplImage * bottom_right;
+
+  // Fullscreen single images
+  IplImage * camera_feed;
+  IplImage * processed_image;
+
+  // Keyboard interrupt
+  int key;
 
         //# End User Private Variables Marker
 };

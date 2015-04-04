@@ -2,6 +2,7 @@
 
 //# Start User Globals Marker
 #include "agse_package/uip.h"
+using namespace cv;
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -91,13 +92,13 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   //////////////////////////////////////////////
 
   // The Four Images to show in UIP
-  img1 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/01.png");
-  img2 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/02.png");
-  img3 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/03.png");
-  img4 = cvLoadImage("/home/debian/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/04.png");
+  top_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
+  bottom_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
 
-    // Stop Init Timer
-    initOneShotTimer.stop();
+  key = 0;
+
+  // Stop Init Timer
+  initOneShotTimer.stop();
 }
 //# End Init Marker
 
@@ -130,6 +131,29 @@ void user_input_controller::armState_sub_OnOneData(const agse_package::armState:
 void user_input_controller::payloadBayDetectionImages_sub_OnOneData(const agse_package::payloadBayDetectionImages::ConstPtr& received_data)
 {
     // Business Logic for payloadBayDetectionImages_sub subscriber subscribing to topic payloadBayDetectionImages callback 
+  pb_rawImage = Mat(received_data->height, 
+		    received_data->width, 
+		    CV_8UC3, 
+		    const_cast<unsigned char*>(received_data->rawImgVector.data()));
+
+  pb_hsvImage = Mat(received_data->height, 
+		    received_data->width, 
+		    CV_8UC3, 
+		    const_cast<unsigned char*>(received_data->hsvThreshImgVector.data()));
+
+  pb_gsImage = Mat(received_data->height, 
+		   received_data->width, 
+		   CV_8UC3, 
+		   const_cast<unsigned char*>(received_data->gsThreshImgVector.data()));
+  
+  pb_bitwise = Mat(received_data->height, 
+		   received_data->width, 
+		   CV_8UC3, 
+		   const_cast<unsigned char*>(received_data->bitwiseAndImgVector.data()));
+
+  bottom_left = cvCreateImage(cvSize(pb_rawImage.cols, pb_rawImage.rows), 8, 3);
+  IplImage ipltemp = pb_rawImage;
+  cvCopy(&ipltemp, bottom_left);
 
 }
 //# End payloadBayDetectionImages_sub_OnOneData Marker
@@ -138,6 +162,29 @@ void user_input_controller::payloadBayDetectionImages_sub_OnOneData(const agse_p
 void user_input_controller::sampleDetectionImages_sub_OnOneData(const agse_package::sampleDetectionImages::ConstPtr& received_data)
 {
     // Business Logic for sampleDetectionImages_sub subscriber subscribing to topic sampleDetectionImages callback 
+  sample_rawImage = Mat(received_data->height, 
+			received_data->width, 
+			CV_8UC3, 
+			const_cast<unsigned char*>(received_data->rawImgVector.data()));
+
+  sample_hsvImage = Mat(received_data->height, 
+			received_data->width, 
+			CV_8UC3, 
+			const_cast<unsigned char*>(received_data->hsvThreshImgVector.data()));
+
+  sample_gsImage = Mat(received_data->height, 
+		       received_data->width, 
+		       CV_8UC3, 
+		       const_cast<unsigned char*>(received_data->gsThreshImgVector.data()));
+  
+  sample_bitwise = Mat(received_data->height, 
+		       received_data->width, 
+		       CV_8UC3, 
+		       const_cast<unsigned char*>(received_data->bitwiseAndImgVector.data()));
+
+  top_left = cvCreateImage(cvSize(sample_rawImage.cols, sample_rawImage.rows), 8, 3);
+  IplImage ipltemp = sample_rawImage;
+  cvCopy(&ipltemp, top_left);
 
 }
 //# End sampleDetectionImages_sub_OnOneData Marker
@@ -148,14 +195,72 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
   // Business Logic for userInputTimer 
 
-  // SHOW IMAGES HERE
-  //  gpio_set_value(pauseSwitch_LEDPin, HIGH);
-  //  cvShowManyImages("UIP", 4, img1, img2, img3, img4);
+    key = cvWaitKey();
 
-  // DRAW TEXT FOR SAMPLE STATE HERE
-  // DRAW TEXT FOR PAYLOAD BAY STATE HERE
+    if (key == 65361) {
+      Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
 
-  // HANDLE SCREEN BUTTONS HERE
+      // Mat to IplImage *
+      processed_image = cvCreateImage(cvSize(sample_hsvImage.cols, sample_hsvImage.rows), 8, 3);
+      IplImage ipltemp = sample_hsvImage;
+      cvCopy(&ipltemp, processed_image);
+
+      cvResize(processed_image, Mode_1);
+      cvShowImage( "UIP", Mode_1);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 65363) {
+      Mode_2 = cvCreateImage( cvSize(800, 480), 8, 3);
+
+      // Mat to IplImage *
+      processed_image = cvCreateImage(cvSize(sample_gsImage.cols, sample_gsImage.rows), 8, 3);
+      IplImage ipltemp = sample_gsImage;
+      cvCopy(&ipltemp, processed_image);
+
+      cvResize(processed_image, Mode_2);
+      cvShowImage( "UIP", Mode_2);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 65362) {
+      Mode_3 = cvCreateImage( cvSize(800, 480), 8, 3);
+
+      // Mat to IplImage *
+      processed_image = cvCreateImage(cvSize(pb_hsvImage.cols, pb_hsvImage.rows), 8, 3);
+      IplImage ipltemp = pb_hsvImage;
+      cvCopy(&ipltemp, processed_image);
+
+      cvResize(processed_image, Mode_3);
+      cvShowImage( "UIP", Mode_3);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 65364) {
+      Mode_4 = cvCreateImage( cvSize(800, 480), 8, 3);
+
+      // Mat to IplImage *
+      processed_image = cvCreateImage(cvSize(pb_gsImage.cols, pb_gsImage.rows), 8, 3);
+      IplImage ipltemp = pb_gsImage;
+      cvCopy(&ipltemp, processed_image);
+
+      cvResize(processed_image, Mode_4);
+      cvShowImage( "UIP", Mode_4);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 13) {
+      cvShowManyImages("UIP", 4, top_left, top_right, bottom_left, bottom_right);
+      key = 0;
+    }
 
   // HANDLE MISSILE SWITCHES HERE
   unsigned int previousSwitchState = pauseSwitchState;
