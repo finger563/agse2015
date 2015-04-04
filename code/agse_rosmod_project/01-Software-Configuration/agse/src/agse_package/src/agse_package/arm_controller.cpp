@@ -171,8 +171,8 @@ void arm_controller::Finding_PB_StateFunc()
 {
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
-  static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
-  static float initVerticalPos     = minVerticalPos;
+  static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
+  static float initVerticalPos     = minVerticalPos + 50000;
   static float initArmRotation     = minArmRotation;
   static float initGripperRotation = gripperRotationSafe;
   static float initGripperPos      = gripperPosClosed;
@@ -186,6 +186,7 @@ void arm_controller::Finding_PB_StateFunc()
       goalGripperRotation = initGripperRotation;
       goalGripperPos = initGripperPos;
       firstRun = false;
+      return;
     }
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
@@ -344,6 +345,8 @@ void arm_controller::Opening_PB_StateFunc()
   if ( usingSerialPort )
     serialPort.sendArray((unsigned char *)buffer,strlen(buffer));
 
+  goalVerticalPos = minVerticalPos;
+
   currentState = FINDING_SAMPLE;
 }
 
@@ -351,9 +354,9 @@ void arm_controller::Finding_Sample_StateFunc()
 {
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
-  static float initRadialPos       = (maxRadialPos + minRadialPos) / 2.0f;
-  static float initVerticalPos     = minVerticalPos + 25000;
-  static float initArmRotation     = minArmRotation;
+  static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
+  static float initVerticalPos     = 311000;//minVerticalPos + 50000;
+  static float initArmRotation     = 100.0f;
   static float initGripperRotation = gripperRotationSafe;
   static float initGripperPos      = gripperPosClosed;
   static bool firstRun = true;
@@ -366,6 +369,7 @@ void arm_controller::Finding_Sample_StateFunc()
       goalGripperRotation = initGripperRotation;
       goalGripperPos = initGripperPos;
       firstRun = false;
+      return;
     }
 
   static float maxSearchTime = 300.0f; // seconds we are allowed to search
@@ -456,7 +460,7 @@ void arm_controller::Finding_Sample_StateFunc()
 	      internalSampleState.pos.r = currentRadialPos;
 	      internalSampleState.pos.theta = currentArmRotation;
 	      internalSampleState.pos.z = currentVerticalPos;
-	      internalSampleState.orientation.theta = sStateImage.response.angle;
+	      internalSampleState.orientation.theta = sStateImage.response.angle + 90.0f;
 	      // if the sample's current image-space position is within the allowable radius
 	      if ( abs(sX) <= positionRadius && abs(sY) <= positionRadius ) 
 		{
@@ -577,6 +581,7 @@ void arm_controller::Carrying_Sample_StateFunc()
       if ( payloadBay.orientation.theta > 180.0f )
 	payloadBay.orientation.theta -= 180.0f;
       goalGripperRotation = payloadBay.orientation.theta + gripperRotationOffset;
+      atPayloadBay = true;
     } else
     {
       // move down in Z to proper height for PB
@@ -677,11 +682,11 @@ void arm_controller::Init(const ros::TimerEvent& event)
   gripperPosOffset      = 0.0f;
 
   // need to initialize the offsets with measurements from the system
-  radiusBetweenGripperAndCamera = -500;
+  radiusBetweenGripperAndCamera = -5000;
   angleBetweenGripperAndCamera = 5.0f;
 
   // initialization of the z-plane for the payload bay and the sample
-  sampleVerticalPos = 0;
+  sampleVerticalPos = 498550;
   payloadBayVerticalPos = 165660;
 
   // need to initialize the min and max sensor values

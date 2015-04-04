@@ -35,10 +35,12 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
     MDetector.detect(image, Markers, CamParam, MarkerSize);
 
     //for each marker, draw info and its boundaries in the image
+    /*
     for (unsigned int i=0;i<Markers.size();i++) {
       Markers[i].draw(maskOutput,Scalar(0,0,255),4);
       CvDrawingUtils::draw3dAxis(maskOutput,Markers[i],CamParam);
     }
+    */
 
     if (Markers.size() >= 1) {
       for (unsigned int i=0;i<Markers.size();i++) {
