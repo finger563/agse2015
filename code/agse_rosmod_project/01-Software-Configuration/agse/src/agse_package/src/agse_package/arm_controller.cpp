@@ -780,7 +780,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
 	}
     }
   // Jetson's USB-Serial Port for communicating with the ardunio
-  sprintf(portName,"//dev//ttyAMA0");
+  sprintf(portName,"//dev//ttyACM0");
   int baudRate = 9600;
   if ( usingSerialPort )
     {
