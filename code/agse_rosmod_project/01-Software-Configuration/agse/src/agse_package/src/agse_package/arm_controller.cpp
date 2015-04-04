@@ -547,7 +547,7 @@ void arm_controller::Grabbing_Sample_StateFunc()
     } else
     {
       // move up some amount
-      goalVerticalPos = minVerticalPos;
+      goalVerticalPos = payloadBayVerticalPos - 10000;
       // transition to next state (CARRYING_SAMPLE)
       currentState = CARRYING_SAMPLE;
     }
@@ -682,7 +682,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
   gripperPosOffset      = 0.0f;
 
   // need to initialize the offsets with measurements from the system
-  radiusBetweenGripperAndCamera = 10000;
+  radiusBetweenGripperAndCamera = 17500;
   angleBetweenGripperAndCamera = 10.0f;
 
   // initialization of the z-plane for the payload bay and the sample
