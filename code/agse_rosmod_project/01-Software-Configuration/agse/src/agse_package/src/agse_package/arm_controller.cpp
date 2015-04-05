@@ -303,7 +303,7 @@ void arm_controller::Finding_Sample_StateFunc()
 	      internalSampleState.pos.r = currentRadialPos;
 	      internalSampleState.pos.theta = currentArmRotation;
 	      internalSampleState.pos.z = currentVerticalPos;
-	      internalSampleState.orientation.theta = sStateImage.response.angle + 90.0f;
+	      internalSampleState.orientation.theta = sStateImage.response.angle + sampleOrientationOffset;
 	      // if the sample's current image-space position is within the allowable radius
 	      if ( abs(sX) <= positionRadius && abs(sY) <= positionRadius ) 
 		{
@@ -697,9 +697,11 @@ void arm_controller::Init(const ros::TimerEvent& event)
   gripperRotationOffset = 15.0f;
   gripperPosOffset      = 0.0f;
 
+  sampleOrientationOffset = 0.0f;
+
   // need to initialize the offsets with measurements from the system
   radiusBetweenGripperAndCamera = 30000;
-  arcLengthBetweenGripperAndCamera = 3 * 20000;  // 3 inches * 20000 counts per inch
+  arcLengthBetweenGripperAndCamera = int(2.5f * 20000.0f);  // 2.5 inches * 20000 counts per inch
 
   // initialization of the z-plane for the payload bay and the sample
   sampleVerticalPos = 498550;
