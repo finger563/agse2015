@@ -102,9 +102,9 @@ class arm_controller : public Component
   enum ArmState
     {
       INIT,
-      FINDING_PB,
       OPENING_PB,
       FINDING_SAMPLE,
+      FINDING_PB,
       GRABBING_SAMPLE,
       CARRYING_SAMPLE,
       INSERTING_SAMPLE,
@@ -172,8 +172,10 @@ class arm_controller : public Component
   float gripperRotationOffset; // difference between our 0 angle (plane of radius) and servo's 0 angle
   float gripperPosOffset; // difference between our 0 angle (open) and the servo's 0 angle
 
+  float sampleOrientationOffset;  // difference between angle gotten from image and gripper angle
+
   // offsets measured between center of camera image and the center underneath the gripper (r,theta)
-  float angleBetweenGripperAndCamera;
+  int arcLengthBetweenGripperAndCamera;
   int radiusBetweenGripperAndCamera;
 
   // presets for the z-plane on which the sample and payload bay will lie (will be different)

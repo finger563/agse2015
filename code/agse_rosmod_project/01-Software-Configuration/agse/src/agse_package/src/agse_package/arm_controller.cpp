@@ -163,6 +163,189 @@ void arm_controller::Init_StateFunc()
       goalGripperRotation = currentGripperRotation;
       goalGripperPos = gripperPosOpened;
 
+      currentState = OPENING_PB;
+    }
+}
+
+void arm_controller::Opening_PB_StateFunc()
+{
+  // initialize static members for initial values of this state
+  //   e.g. where the search starts, what the goals of the state are, etc.
+  // perform any image processing required using the detector
+  // update the arm's goal variables based on the result of the image processing
+  // update the current state of the arm if necessary
+
+  // starting with:
+  // * known PB position
+  // * directly above PB
+
+  // State logic:
+  // send the command to the PB through UART to open the PB,
+  // OPTIONAL : use image based detection to confirm PB opens
+  // transition to next state (FINDING_SAMPLE) if PB responds well
+  char buffer[20];
+  sprintf(buffer,"%s",openPayloadBayString);
+  if ( usingSerialPort )
+    serialPort.sendArray((unsigned char *)buffer,strlen(buffer));
+
+  //goalVerticalPos = minVerticalPos;
+
+  currentState = FINDING_SAMPLE;
+}
+
+void arm_controller::Finding_Sample_StateFunc()
+{
+  // initialize static members for initial values of this state
+  //   e.g. where the search starts, what the goals of the state are, etc.
+  static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
+  static float initVerticalPos     = 311000;//minVerticalPos + 50000;
+  static float initArmRotation     = 100.0f;
+  static float initGripperRotation = gripperRotationSafe;
+  static float initGripperPos      = gripperPosClosed;
+  static bool firstRun = true;
+
+  if (firstRun)
+    {
+      goalRadialPos = initRadialPos;
+      goalVerticalPos = initVerticalPos;
+      goalArmRotation = initArmRotation;
+      goalGripperRotation = initGripperRotation;
+      goalGripperPos = initGripperPos;
+      firstRun = false;
+      return;
+    }
+
+  static float maxSearchTime = 300.0f; // seconds we are allowed to search
+
+  static float armRotationStep = 15.0f;     // degrees between steps of the state search
+  static float radialPosStep = 10000.0f;    // amount to move by in radius
+  static float armRotationScale = 1.0f/150.0f;  // amount to move by in theta based on image space
+  static float radialPosScale = 75.0f;         // amount to move by in radius based on image space
+
+  static float positionRadius = 50.0f; // once center of sample is in this radius, we are done
+  
+  static bool foundSample = false;
+  static agse_package::sampleState internalSampleState; // used within this state; global state set when done
+  static float sX, sY; // image-space position of sample
+
+  // perform any image processing required using the detector
+  // update the arm's goal variables based on the result of the image processing
+  // update the current state of the arm if necessary
+
+  // starting with:
+  // * known payload bay position and orientation (not relevant to this state)
+
+  // State logic:
+  // if !foundSample or internalSampleState.pos.{r,z} not within radius
+  if ( !foundSample || abs(sX) > positionRadius || abs(sY) > positionRadius )
+    {
+      // get image Processor result
+      bool newTest = false;
+      agse_package::sampleStateFromImage sStateImage;
+      if ( sampleStateFromImage_client.call(sStateImage) )
+	{
+	  switch (sStateImage.response.status)
+	    {
+	    case DETECTED:
+	    case PARTIAL:
+	      newTest = true;
+	      ROS_INFO("FOUND SAMPLE: %d, %f , %f, %f",
+		       sStateImage.response.status, 
+		       sStateImage.response.x, 
+		       sStateImage.response.y, 
+		       sStateImage.response.angle);
+	      break;
+	    default: // covers the HIDDEN case too, already initialized to false
+	      ROS_INFO("NO SAMPLE FOUND");
+	      break;
+	    }
+	  // if result has no detection:
+	  if (!newTest)
+	    {
+	      if (!foundSample) // if never found Sample:
+		{
+		  // increment arm rotation by arm rotation step
+		  initArmRotation += armRotationStep;
+		  if (initArmRotation > maxArmRotation)
+		    {
+		      initArmRotation = minArmRotation;
+		      initRadialPos += radialPosStep;
+		      if (initRadialPos > maxRadialPos)
+			{
+			  initRadialPos = minRadialPos;
+			}
+		    }
+
+		  goalRadialPos = initRadialPos;
+		  goalVerticalPos = initVerticalPos;
+		  goalArmRotation = initArmRotation;
+		  goalGripperRotation = initGripperRotation;
+		  goalGripperPos = initGripperPos;
+		} else // else if found previously:
+		{
+		  // go half way between previous find location and current location
+		  float previousArmRotation = internalSampleState.pos.theta;
+		  int previousRadialPos = internalSampleState.pos.r;
+
+		  goalRadialPos = (goalRadialPos + previousRadialPos) / 2.0f;
+		  goalVerticalPos = initVerticalPos;
+		  goalArmRotation = (goalArmRotation + previousArmRotation) / 2.0f;
+		  goalGripperRotation = initGripperRotation;
+		  goalGripperPos = initGripperPos;
+		}
+	    } else // else if result has detection:
+	    {
+	      // update internal variables
+	      foundSample = true;
+	      sX = sStateImage.response.x;
+	      sY = sStateImage.response.y;
+	      // update the internalSampleState
+	      internalSampleState.pos.r = currentRadialPos;
+	      internalSampleState.pos.theta = currentArmRotation;
+	      internalSampleState.pos.z = currentVerticalPos;
+	      internalSampleState.orientation.theta = sStateImage.response.angle + sampleOrientationOffset;
+	      // if the sample's current image-space position is within the allowable radius
+	      if ( abs(sX) <= positionRadius && abs(sY) <= positionRadius ) 
+		{
+		  // we're not setting the goals; so this state should get triggered again immediately
+		  // and it will have:
+		  // * foundSample=true; 
+		  // * sX < positionRadius; 
+		  // * sY < positionRadius 
+		  // so will transition to next state
+		} else // need to center the payload
+		{
+		  // move to detected position (i.e. set goals to detected position)
+		  // NOTE: IMAGE SPACE IS +Y = DOWN; THIS MEANS +Y -> CCW
+		  // if sY > 0 : rotate CW, else if sY < 0 CCW
+		  if ( abs(sY) > positionRadius )
+		    {
+		      initArmRotation += (-sY) * armRotationScale;
+		      if ( initArmRotation > maxArmRotation )
+			initArmRotation = maxArmRotation;
+		      if ( initArmRotation < minArmRotation )
+			initArmRotation = minArmRotation;
+		    }
+		  // NOTE: IMAGE SPACE IS +X = RETRACT RADIUS
+		  // if sX > 0 : retract radius, else if sX < 0 extend
+		  if ( abs(sX) > positionRadius )
+		    {
+		      initRadialPos += (-sX) * radialPosScale;
+		      if ( initRadialPos > maxRadialPos )
+			initRadialPos = maxRadialPos;
+		      if ( initRadialPos < minRadialPos )
+			initRadialPos = minRadialPos;
+		    }
+		  goalRadialPos = initRadialPos;
+		  goalArmRotation = initArmRotation;
+		}
+	    }
+	}
+    } else // else sample has been found and is within radius
+    {
+      // set component's SampleState
+      sample = internalSampleState;
+      // transition to next state (GRABBING_SAMPLE)
       currentState = FINDING_PB;
     }
 }
@@ -177,6 +360,14 @@ void arm_controller::Finding_PB_StateFunc()
   static float initGripperRotation = gripperRotationSafe;
   static float initGripperPos      = gripperPosClosed;
   static bool firstRun = true;
+  static bool reachedHeight = false;
+
+  if (!reachedHeight)
+    {
+      goalVerticalPos = initVerticalPos;
+      reachedHeight = true;
+      return;
+    }
 
   if (firstRun)
     {
@@ -319,189 +510,6 @@ void arm_controller::Finding_PB_StateFunc()
     {
       // set component's PBState
       payloadBay = internalPBState;
-      // transition to next state (OPENING_PB)
-      currentState = OPENING_PB;
-    }
-}
-
-void arm_controller::Opening_PB_StateFunc()
-{
-  // initialize static members for initial values of this state
-  //   e.g. where the search starts, what the goals of the state are, etc.
-  // perform any image processing required using the detector
-  // update the arm's goal variables based on the result of the image processing
-  // update the current state of the arm if necessary
-
-  // starting with:
-  // * known PB position
-  // * directly above PB
-
-  // State logic:
-  // send the command to the PB through UART to open the PB,
-  // OPTIONAL : use image based detection to confirm PB opens
-  // transition to next state (FINDING_SAMPLE) if PB responds well
-  char buffer[20];
-  sprintf(buffer,"%s",openPayloadBayString);
-  if ( usingSerialPort )
-    serialPort.sendArray((unsigned char *)buffer,strlen(buffer));
-
-  goalVerticalPos = minVerticalPos;
-
-  currentState = FINDING_SAMPLE;
-}
-
-void arm_controller::Finding_Sample_StateFunc()
-{
-  // initialize static members for initial values of this state
-  //   e.g. where the search starts, what the goals of the state are, etc.
-  static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
-  static float initVerticalPos     = 311000;//minVerticalPos + 50000;
-  static float initArmRotation     = 100.0f;
-  static float initGripperRotation = gripperRotationSafe;
-  static float initGripperPos      = gripperPosClosed;
-  static bool firstRun = true;
-
-  if (firstRun)
-    {
-      goalRadialPos = initRadialPos;
-      goalVerticalPos = initVerticalPos;
-      goalArmRotation = initArmRotation;
-      goalGripperRotation = initGripperRotation;
-      goalGripperPos = initGripperPos;
-      firstRun = false;
-      return;
-    }
-
-  static float maxSearchTime = 300.0f; // seconds we are allowed to search
-
-  static float armRotationStep = 15.0f;     // degrees between steps of the state search
-  static float radialPosStep = 10000.0f;    // amount to move by in radius
-  static float armRotationScale = 1.0f/150.0f;  // amount to move by in theta based on image space
-  static float radialPosScale = 75.0f;         // amount to move by in radius based on image space
-
-  static float positionRadius = 50.0f; // once center of sample is in this radius, we are done
-  
-  static bool foundSample = false;
-  static agse_package::sampleState internalSampleState; // used within this state; global state set when done
-  static float sX, sY; // image-space position of sample
-
-  // perform any image processing required using the detector
-  // update the arm's goal variables based on the result of the image processing
-  // update the current state of the arm if necessary
-
-  // starting with:
-  // * known payload bay position and orientation (not relevant to this state)
-
-  // State logic:
-  // if !foundSample or internalSampleState.pos.{r,z} not within radius
-  if ( !foundSample || abs(sX) > positionRadius || abs(sY) > positionRadius )
-    {
-      // get image Processor result
-      bool newTest = false;
-      agse_package::sampleStateFromImage sStateImage;
-      if ( sampleStateFromImage_client.call(sStateImage) )
-	{
-	  switch (sStateImage.response.status)
-	    {
-	    case DETECTED:
-	    case PARTIAL:
-	      newTest = true;
-	      ROS_INFO("FOUND SAMPLE: %d, %f , %f, %f",
-		       sStateImage.response.status, 
-		       sStateImage.response.x, 
-		       sStateImage.response.y, 
-		       sStateImage.response.angle);
-	      break;
-	    default: // covers the HIDDEN case too, already initialized to false
-	      ROS_INFO("NO SAMPLE FOUND");
-	      break;
-	    }
-	  // if result has no detection:
-	  if (!newTest)
-	    {
-	      if (!foundSample) // if never found Sample:
-		{
-		  // increment arm rotation by arm rotation step
-		  initArmRotation += armRotationStep;
-		  if (initArmRotation > maxArmRotation)
-		    {
-		      initArmRotation = minArmRotation;
-		      initRadialPos += radialPosStep;
-		      if (initRadialPos > maxRadialPos)
-			{
-			  initRadialPos = minRadialPos;
-			}
-		    }
-
-		  goalRadialPos = initRadialPos;
-		  goalVerticalPos = initVerticalPos;
-		  goalArmRotation = initArmRotation;
-		  goalGripperRotation = initGripperRotation;
-		  goalGripperPos = initGripperPos;
-		} else // else if found previously:
-		{
-		  // go half way between previous find location and current location
-		  float previousArmRotation = internalSampleState.pos.theta;
-		  int previousRadialPos = internalSampleState.pos.r;
-
-		  goalRadialPos = (goalRadialPos + previousRadialPos) / 2.0f;
-		  goalVerticalPos = initVerticalPos;
-		  goalArmRotation = (goalArmRotation + previousArmRotation) / 2.0f;
-		  goalGripperRotation = initGripperRotation;
-		  goalGripperPos = initGripperPos;
-		}
-	    } else // else if result has detection:
-	    {
-	      // update internal variables
-	      foundSample = true;
-	      sX = sStateImage.response.x;
-	      sY = sStateImage.response.y;
-	      // update the internalSampleState
-	      internalSampleState.pos.r = currentRadialPos;
-	      internalSampleState.pos.theta = currentArmRotation;
-	      internalSampleState.pos.z = currentVerticalPos;
-	      internalSampleState.orientation.theta = sStateImage.response.angle + 90.0f;
-	      // if the sample's current image-space position is within the allowable radius
-	      if ( abs(sX) <= positionRadius && abs(sY) <= positionRadius ) 
-		{
-		  // we're not setting the goals; so this state should get triggered again immediately
-		  // and it will have:
-		  // * foundSample=true; 
-		  // * sX < positionRadius; 
-		  // * sY < positionRadius 
-		  // so will transition to next state
-		} else // need to center the payload
-		{
-		  // move to detected position (i.e. set goals to detected position)
-		  // NOTE: IMAGE SPACE IS +Y = DOWN; THIS MEANS +Y -> CCW
-		  // if sY > 0 : rotate CW, else if sY < 0 CCW
-		  if ( abs(sY) > positionRadius )
-		    {
-		      initArmRotation += (-sY) * armRotationScale;
-		      if ( initArmRotation > maxArmRotation )
-			initArmRotation = maxArmRotation;
-		      if ( initArmRotation < minArmRotation )
-			initArmRotation = minArmRotation;
-		    }
-		  // NOTE: IMAGE SPACE IS +X = RETRACT RADIUS
-		  // if sX > 0 : retract radius, else if sX < 0 extend
-		  if ( abs(sX) > positionRadius )
-		    {
-		      initRadialPos += (-sX) * radialPosScale;
-		      if ( initRadialPos > maxRadialPos )
-			initRadialPos = maxRadialPos;
-		      if ( initRadialPos < minRadialPos )
-			initRadialPos = minRadialPos;
-		    }
-		  goalRadialPos = initRadialPos;
-		  goalArmRotation = initArmRotation;
-		}
-	    }
-	}
-    } else // else sample has been found and is within radius
-    {
-      // set component's SampleState
-      sample = internalSampleState;
       // transition to next state (GRABBING_SAMPLE)
       currentState = GRABBING_SAMPLE;
     }
@@ -527,13 +535,18 @@ void arm_controller::Grabbing_Sample_StateFunc()
     {
       // Take into account the offset between center of camera and center of gripper:
       goalRadialPos = sample.pos.r + radiusBetweenGripperAndCamera;
-      goalArmRotation = sample.pos.theta + angleBetweenGripperAndCamera;
+      float angleOffset = 0;
+      angleOffset = atan2( arcLengthBetweenGripperAndCamera, goalRadialPos ) * 180.0f / M_PI;
+      ROS_INFO("ANGLE OFFSET = %f",angleOffset);
+      goalArmRotation = sample.pos.theta + angleOffset;
       // Orient gripper to sample (based on sample.orientation.theta)
       if ( sample.orientation.theta < 0 )
 	sample.orientation.theta += 180.0f;
       if ( sample.orientation.theta > 180.0f )
 	sample.orientation.theta -= 180.0f;
       goalGripperRotation = sample.orientation.theta + gripperRotationOffset;
+      if ( goalGripperRotation > 180.0f )
+	goalGripperRotation -= 180.0f;
       // Go down to proper Z level for the sample
       goalVerticalPos = sampleZPlane;
       // Open The gripper
@@ -574,7 +587,10 @@ void arm_controller::Carrying_Sample_StateFunc()
       // Go to Payload Bay's Radius and Angle
       // Take into account the offset between center of camera and center of gripper:
       goalRadialPos = payloadBay.pos.r + radiusBetweenGripperAndCamera;
-      goalArmRotation = payloadBay.pos.theta + angleBetweenGripperAndCamera;
+      float angleOffset = 0.0f;
+      angleOffset = atan2( arcLengthBetweenGripperAndCamera, goalRadialPos ) * 180.0f / M_PI;
+      ROS_INFO("ANGLE OFFSET = %f",angleOffset);
+      goalArmRotation = payloadBay.pos.theta + angleOffset;
       // change gripper rotation to payloadBay's orientation (payloadBay.orientation.theta)
       if ( payloadBay.orientation.theta < 0 )
 	payloadBay.orientation.theta += 180.0f;
@@ -681,9 +697,11 @@ void arm_controller::Init(const ros::TimerEvent& event)
   gripperRotationOffset = 15.0f;
   gripperPosOffset      = 0.0f;
 
+  sampleOrientationOffset = 0.0f;
+
   // need to initialize the offsets with measurements from the system
-  radiusBetweenGripperAndCamera = 17500;
-  angleBetweenGripperAndCamera = 10.0f;
+  radiusBetweenGripperAndCamera = 30000;
+  arcLengthBetweenGripperAndCamera = int(2.5f * 20000.0f);  // 2.5 inches * 20000 counts per inch
 
   // initialization of the z-plane for the payload bay and the sample
   sampleVerticalPos = 498550;
@@ -830,8 +848,8 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
 	  break;
 	case OPENING_PB:
 	  ROS_INFO("OPENING PAYLOAD BAY");
-	  if ( CheckGoals() )
-	    Opening_PB_StateFunc();
+	  //if ( CheckGoals() )
+	  Opening_PB_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case FINDING_SAMPLE:
