@@ -840,8 +840,8 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
 	  break;
 	case OPENING_PB:
 	  ROS_INFO("OPENING PAYLOAD BAY");
-	  if ( CheckGoals() )
-	    Opening_PB_StateFunc();
+	  //if ( CheckGoals() )
+	  Opening_PB_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case FINDING_SAMPLE:
