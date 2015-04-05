@@ -207,7 +207,7 @@ DetectedObject Sample_Detector::run( Mat& image,
       object.y = tracked_objects[0].center.y;
       object.angle = tracked_objects[0].angle;
       Size objSize = tracked_objects[0].size;
-      if ( objSize.width > objSize.height )
+      if ( objSize.height > objSize.width )
 	{
 	  object.angle += 90.0f;
 	}
