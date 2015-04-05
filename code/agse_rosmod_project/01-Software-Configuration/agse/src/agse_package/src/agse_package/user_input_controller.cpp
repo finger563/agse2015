@@ -194,15 +194,25 @@ void user_input_controller::sampleDetectionImages_sub_OnOneData(const agse_packa
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
   // Business Logic for userInputTimer 
-
     key = cvWaitKey();
 
     if (key == 65361) {
       Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
 
+      agse_package::captureImage arg;
+      Mat camera_feed;
+      if (this->captureImage_client.call(arg)) {
+
+	camera_feed = Mat(arg.response.height, 
+			  arg.response.width, 
+			  CV_8UC3, 
+			  arg.response.imgVector.data());
+
+      }
+
       // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(sample_hsvImage.cols, sample_hsvImage.rows), 8, 3);
-      IplImage ipltemp = sample_hsvImage;
+      processed_image = cvCreateImage(cvSize(camera_feed.cols, camera_feed.rows), 8, 3);
+      IplImage ipltemp = camera_feed;
       cvCopy(&ipltemp, processed_image);
 
       cvResize(processed_image, Mode_1);
