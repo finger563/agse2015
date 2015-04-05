@@ -193,10 +193,16 @@ void user_input_controller::sampleDetectionImages_sub_OnOneData(const agse_packa
 //# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
+
+  ROS_INFO("Timer Callback. Waiting for Key");
+
   // Business Logic for userInputTimer 
     key = cvWaitKey();
 
     if (key == 65361) {
+
+      ROS_INFO("Mode 1 Activated");
+
       Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
 
       agse_package::captureImage arg;
@@ -223,6 +229,9 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     }
 
     else if (key == 65363) {
+
+      ROS_INFO("Mode 2 Activated");
+
       Mode_2 = cvCreateImage( cvSize(800, 480), 8, 3);
 
       // Mat to IplImage *
@@ -238,6 +247,9 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     }
 
     else if (key == 65362) {
+
+      ROS_INFO("Mode 3 Activated");
+
       Mode_3 = cvCreateImage( cvSize(800, 480), 8, 3);
 
       // Mat to IplImage *
@@ -253,6 +265,9 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     }
 
     else if (key == 65364) {
+
+      ROS_INFO("Mode 4 Activated"); 
+
       Mode_4 = cvCreateImage( cvSize(800, 480), 8, 3);
 
       // Mat to IplImage *
@@ -268,6 +283,9 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     }
 
     else if (key == 13) {
+      
+      ROS_INFO("Mode 5 Activated");
+
       cvShowManyImages("UIP", 4, top_left, top_right, bottom_left, bottom_right);
       key = 0;
     }
@@ -292,7 +310,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     }
   previousSwitchState = haltSwitchState;
   gpio_get_value(haltSwitchPin, &haltSwitchState);
-  ROS_INFO("Halt Switch State: %d", haltSwitchState);
   if ( previousSwitchState != haltSwitchState )
     {
       halted = (haltSwitchState == HIGH) ? true : false;
@@ -306,7 +323,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     }
   previousSwitchState = manualSwitchState;
   gpio_get_value(manualSwitchPin, &manualSwitchState);
-  ROS_INFO("Manual Switch State: %d", manualSwitchState);
   if ( previousSwitchState != manualSwitchState )
     {
       manual= (manualSwitchState == HIGH) ? true : false;
@@ -324,6 +340,7 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   static int currentBlinkDelay = 0;
   if (paused)
     {
+      ROS_INFO("Lighting up Pause LED");
       gpio_set_value(pauseLED, HIGH);
     }
   else
@@ -338,6 +355,7 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     }
 
   if (halted) {
+    ROS_INFO("Lighting up Halt LED");
     gpio_set_value(alarmLED, HIGH);
   }
   else {
@@ -347,10 +365,12 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   switch (arm.state) {
   case 0:
     // INIT
+    ROS_INFO("ARM STATE: INIT");
     gpio_set_value(initLED[0], HIGH);
     break;
   case 1:
     // FINDING_PB
+    ROS_INFO("ARM STATE: FINDING PB");
     gpio_set_value(initLED[0], LOW); // Switch OFF Blue
     gpio_set_value(initLED[1], HIGH); // Switch ON Green
 
@@ -358,15 +378,18 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     break;
   case 2:
     // OPENING_PB
+    ROS_INFO("ARM STATE: OPENING PB");
     gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
     gpio_set_value(bayLED[1], HIGH); // Switch ON Green    
     break;
   case 3:
     // FINDING_SAMPLE
+    ROS_INFO("ARM STATE: FINDING SAMPLE");
     gpio_set_value(sampleLED[0], HIGH); // Switch ON Blue
     break;
   case 4:
     // GRABBING_SAMPLE
+    ROS_INFO("ARM STATE: GRABBING SAMPLE");
     gpio_set_value(sampleLED[0], LOW); // Switch OFF Blue
     gpio_set_value(sampleLED[1], HIGH); // Switch ON Green    
     break;
