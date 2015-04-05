@@ -173,7 +173,7 @@ class arm_controller : public Component
   float gripperPosOffset; // difference between our 0 angle (open) and the servo's 0 angle
 
   // offsets measured between center of camera image and the center underneath the gripper (r,theta)
-  float angleBetweenGripperAndCamera;
+  int arcLengthBetweenGripperAndCamera;
   int radiusBetweenGripperAndCamera;
 
   // presets for the z-plane on which the sample and payload bay will lie (will be different)

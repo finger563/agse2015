@@ -535,7 +535,10 @@ void arm_controller::Grabbing_Sample_StateFunc()
     {
       // Take into account the offset between center of camera and center of gripper:
       goalRadialPos = sample.pos.r + radiusBetweenGripperAndCamera;
-      goalArmRotation = sample.pos.theta + angleBetweenGripperAndCamera;
+      float angleOffset = 0;
+      angleOffset = atan2( arcLengthBetweenGripperAndCamera, goalRadialPos ) * 180.0f / M_PI;
+      ROS_INFO("ANGLE OFFSET = %f",angleOffset);
+      goalArmRotation = sample.pos.theta + angleOffset;
       // Orient gripper to sample (based on sample.orientation.theta)
       if ( sample.orientation.theta < 0 )
 	sample.orientation.theta += 180.0f;
@@ -584,7 +587,10 @@ void arm_controller::Carrying_Sample_StateFunc()
       // Go to Payload Bay's Radius and Angle
       // Take into account the offset between center of camera and center of gripper:
       goalRadialPos = payloadBay.pos.r + radiusBetweenGripperAndCamera;
-      goalArmRotation = payloadBay.pos.theta + angleBetweenGripperAndCamera;
+      float angleOffset = 0.0f;
+      angleOffset = atan2( arcLengthBetweenGripperAndCamera, goalRadialPos ) * 180.0f / M_PI;
+      ROS_INFO("ANGLE OFFSET = %f",angleOffset);
+      goalArmRotation = payloadBay.pos.theta + angleOffset;
       // change gripper rotation to payloadBay's orientation (payloadBay.orientation.theta)
       if ( payloadBay.orientation.theta < 0 )
 	payloadBay.orientation.theta += 180.0f;
@@ -692,8 +698,8 @@ void arm_controller::Init(const ros::TimerEvent& event)
   gripperPosOffset      = 0.0f;
 
   // need to initialize the offsets with measurements from the system
-  radiusBetweenGripperAndCamera = 20000;
-  angleBetweenGripperAndCamera = 10.0f;
+  radiusBetweenGripperAndCamera = 30000;
+  arcLengthBetweenGripperAndCamera = 3 * 20000;  // 3 inches * 20000 counts per inch
 
   // initialization of the z-plane for the payload bay and the sample
   sampleVerticalPos = 498550;
