@@ -102,9 +102,9 @@ class arm_controller : public Component
   enum ArmState
     {
       INIT,
-      FINDING_PB,
       OPENING_PB,
       FINDING_SAMPLE,
+      FINDING_PB,
       GRABBING_SAMPLE,
       CARRYING_SAMPLE,
       INSERTING_SAMPLE,
