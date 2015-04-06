@@ -1,4 +1,4 @@
-1#include "agse_package/user_input_controller.hpp"
+#include "agse_package/user_input_controller.hpp"
 
 //# Start User Globals Marker
 #include "agse_package/uip.h"
@@ -6,7 +6,7 @@ using namespace cv;
 //# End User Globals Marker
 
 // -------------------------------------------------------
-// BUSnINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
+// BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
 // Init Function
@@ -126,68 +126,6 @@ void user_input_controller::armState_sub_OnOneData(const agse_package::armState:
   arm = *received_data;
 }
 //# End armState_sub_OnOneData Marker
-// OnOneData Subscription handler for payloadBayDetectionImages_sub subscriber
-//# Start payloadBayDetectionImages_sub_OnOneData Marker
-void user_input_controller::payloadBayDetectionImages_sub_OnOneData(const agse_package::payloadBayDetectionImages::ConstPtr& received_data)
-{
-    // Business Logic for payloadBayDetectionImages_sub subscriber subscribing to topic payloadBayDetectionImages callback 
-  pb_rawImage = Mat(received_data->height, 
-		    received_data->width, 
-		    CV_8UC3, 
-		    const_cast<unsigned char*>(received_data->rawImgVector.data()));
-
-  pb_hsvImage = Mat(received_data->height, 
-		    received_data->width, 
-		    CV_8UC3, 
-		    const_cast<unsigned char*>(received_data->hsvThreshImgVector.data()));
-
-  pb_gsImage = Mat(received_data->height, 
-		   received_data->width, 
-		   CV_8UC3, 
-		   const_cast<unsigned char*>(received_data->gsThreshImgVector.data()));
-  
-  pb_bitwise = Mat(received_data->height, 
-		   received_data->width, 
-		   CV_8UC3, 
-		   const_cast<unsigned char*>(received_data->bitwiseAndImgVector.data()));
-
-  bottom_left = cvCreateImage(cvSize(pb_rawImage.cols, pb_rawImage.rows), 8, 3);
-  IplImage ipltemp = pb_rawImage;
-  cvCopy(&ipltemp, bottom_left);
-
-}
-//# End payloadBayDetectionImages_sub_OnOneData Marker
-// OnOneData Subscription handler for sampleDetectionImages_sub subscriber
-//# Start sampleDetectionImages_sub_OnOneData Marker
-void user_input_controller::sampleDetectionImages_sub_OnOneData(const agse_package::sampleDetectionImages::ConstPtr& received_data)
-{
-    // Business Logic for sampleDetectionImages_sub subscriber subscribing to topic sampleDetectionImages callback 
-  sample_rawImage = Mat(received_data->height, 
-			received_data->width, 
-			CV_8UC3, 
-			const_cast<unsigned char*>(received_data->rawImgVector.data()));
-
-  sample_hsvImage = Mat(received_data->height, 
-			received_data->width, 
-			CV_8UC3, 
-			const_cast<unsigned char*>(received_data->hsvThreshImgVector.data()));
-
-  sample_gsImage = Mat(received_data->height, 
-		       received_data->width, 
-		       CV_8UC3, 
-		       const_cast<unsigned char*>(received_data->gsThreshImgVector.data()));
-  
-  sample_bitwise = Mat(received_data->height, 
-		       received_data->width, 
-		       CV_8UC3, 
-		       const_cast<unsigned char*>(received_data->bitwiseAndImgVector.data()));
-
-  top_left = cvCreateImage(cvSize(sample_rawImage.cols, sample_rawImage.rows), 8, 3);
-  IplImage ipltemp = sample_rawImage;
-  cvCopy(&ipltemp, top_left);
-
-}
-//# End sampleDetectionImages_sub_OnOneData Marker
 
 // Callback for userInputTimer timer
 //# Start userInputTimerCallback Marker
@@ -433,9 +371,6 @@ user_input_controller::~user_input_controller()
     sampleState_sub.shutdown();
     payloadBayState_sub.shutdown();
     armState_sub.shutdown();
-    payloadBayDetectionImages_sub.shutdown();
-    sampleDetectionImages_sub.shutdown();
-    captureImage_client.shutdown();
 //# Start Destructor Marker
     gpio_set_value(initLED[0], LOW);
 //# End Destructor Marker
@@ -496,32 +431,6 @@ void user_input_controller::startUp()
 	     ros::VoidPtr(),
              &this->compQueue);
     this->armState_sub = nh.subscribe(armState_sub_options);
-    // subscriber: payloadBayDetectionImages_sub
-    advertiseName = "payloadBayDetectionImages";
-    if ( portGroupMap != NULL && portGroupMap->find("payloadBayDetectionImages_sub") != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)["payloadBayDetectionImages_sub"];
-    ros::SubscribeOptions payloadBayDetectionImages_sub_options;
-    payloadBayDetectionImages_sub_options = 
-	ros::SubscribeOptions::create<agse_package::payloadBayDetectionImages>
-	    (advertiseName.c_str(),
-	     1000,
-	     boost::bind(&user_input_controller::payloadBayDetectionImages_sub_OnOneData, this, _1),
-	     ros::VoidPtr(),
-             &this->compQueue);
-    this->payloadBayDetectionImages_sub = nh.subscribe(payloadBayDetectionImages_sub_options);
-    // subscriber: sampleDetectionImages_sub
-    advertiseName = "sampleDetectionImages";
-    if ( portGroupMap != NULL && portGroupMap->find("sampleDetectionImages_sub") != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)["sampleDetectionImages_sub"];
-    ros::SubscribeOptions sampleDetectionImages_sub_options;
-    sampleDetectionImages_sub_options = 
-	ros::SubscribeOptions::create<agse_package::sampleDetectionImages>
-	    (advertiseName.c_str(),
-	     1000,
-	     boost::bind(&user_input_controller::sampleDetectionImages_sub_OnOneData, this, _1),
-	     ros::VoidPtr(),
-             &this->compQueue);
-    this->sampleDetectionImages_sub = nh.subscribe(sampleDetectionImages_sub_options);
 
     // Configure all publishers associated with this component
     // publisher: controlInputs_pub
@@ -530,14 +439,6 @@ void user_input_controller::startUp()
         advertiseName += "_" + (*portGroupMap)["controlInputs_pub"];
     this->controlInputs_pub = nh.advertise<agse_package::controlInputs>
 	(advertiseName.c_str(), 1000);	
-
-    // Configure all required services associated with this component
-    // client: captureImage_client
-    advertiseName = "captureImage";
-    if ( portGroupMap != NULL && portGroupMap->find(advertiseName+"_client") != portGroupMap->end() )
-        advertiseName += "_" + (*portGroupMap)[advertiseName+"_client"];
-    this->captureImage_client = nh.serviceClient<agse_package::captureImage>
-	(advertiseName.c_str()); 
 
     // Create Init Timer
     ros::TimerOptions timer_options;
@@ -577,8 +478,8 @@ void user_input_controller::startUp()
     std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
 
     // Create the log file & open file stream
-    //    LOGGER.CREATE_FILE(log_file_path);
+    LOGGER.CREATE_FILE(log_file_path);
 
     // Establish log levels of LOGGER
-    //    LOGGER.SET_LOG_LEVELS(groupParser.logging);
+    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }

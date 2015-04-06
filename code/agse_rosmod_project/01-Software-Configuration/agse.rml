@@ -262,13 +262,10 @@ package agse_package
         // ROS Component - user_input_controller
 	component user_input_controller
 	{
-	    requires captureImage;
 	    publisher<controlInputs> controlInputs_pub;
      	    subscriber<sampleState> sampleState_sub;
      	    subscriber<payloadBayState> payloadBayState_sub;
      	    subscriber<armState> armState_sub;
-     	    subscriber<payloadBayDetectionImages> payloadBayDetectionImages_sub;
-     	    subscriber<sampleDetectionImages> sampleDetectionImages_sub;
 	    timer userInputTimer
 	    {
 	        period = 0.2s;
@@ -292,6 +289,17 @@ package agse_package
             provides captureImage;
      	    subscriber<controlInputs> controlInputs_sub;
 	}
+        // ROS Component - user_input_imager
+	component user_input_imager
+	{
+	    requires captureImage;
+     	    subscriber<payloadBayDetectionImages> payloadBayDetectionImages_sub;
+     	    subscriber<sampleDetectionImages> sampleDetectionImages_sub;
+	    timer uiImage_timer
+	    {
+	        period = 0.5s;
+	    }
+	}
     }
 
     // Set of ROS Nodes in this package
@@ -312,6 +320,7 @@ package agse_package
 	{
             // Instantiating components in ROS node
      	    component<user_input_controller> user_intput_controller_i;
+     	    component<user_input_imager> user_input_imager_i;
 	}
         node imager 
 	{

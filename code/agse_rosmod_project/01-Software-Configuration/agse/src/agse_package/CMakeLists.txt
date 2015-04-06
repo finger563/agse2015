@@ -260,6 +260,7 @@ target_link_libraries(positioning
 add_dependencies(positioning agse_package_generate_messages_cpp)
 add_executable( user_input src/agse_package/user_input_main.cpp src/agse_package/Component.cpp src/agse_package/Logger.cpp
                 src/agse_package/user_input_controller.cpp  
+                src/agse_package/user_input_imager.cpp  
 		## Start user_input CPP Marker
 		src/agse_package/gpio.cpp
                 ## End user_input CPP Marker
