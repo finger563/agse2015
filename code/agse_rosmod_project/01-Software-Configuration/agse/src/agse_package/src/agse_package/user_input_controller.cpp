@@ -1,12 +1,10 @@
 #include "agse_package/user_input_controller.hpp"
 
 //# Start User Globals Marker
-#include "agse_package/uip.h"
-using namespace cv;
 //# End User Globals Marker
 
 // -------------------------------------------------------
-// BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
+// BUSnINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
 // Init Function
@@ -87,27 +85,34 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_export(bayLED[2]);
   gpio_set_dir(bayLED[2], OUTPUT_PIN);  
 
-  //////////////////////////////////////////////
-  // UIP LCD SETUP
-  //////////////////////////////////////////////
-
-  // The Four Images to show in UIP
-  top_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
-  bottom_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
-
-  key = 0;
-
   // Stop Init Timer
   initOneShotTimer.stop();
 }
 //# End Init Marker
 
+// OnOneData Subscription handler for sampleState_sub subscriber
+//# Start sampleState_sub_OnOneData Marker
+void user_input_controller::sampleState_sub_OnOneData(const agse_package::sampleState::ConstPtr& received_data)
+{
+    // Business Logic for sampleState_sub subscriber subscribing to topic sampleState callback 
+  sample = *received_data;
+}
+//# End sampleState_sub_OnOneData Marker
+// OnOneData Subscription handler for payloadBayState_sub subscriber
+//# Start payloadBayState_sub_OnOneData Marker
+void user_input_controller::payloadBayState_sub_OnOneData(const agse_package::payloadBayState::ConstPtr& received_data)
+{
+    // Business Logic for payloadBayState_sub subscriber subscribing to topic payloadBayState callback 
+  payloadBay = *received_data;
+}
+//# End payloadBayState_sub_OnOneData Marker
 // OnOneData Subscription handler for armState_sub subscriber
 //# Start armState_sub_OnOneData Marker
 void user_input_controller::armState_sub_OnOneData(const agse_package::armState::ConstPtr& received_data)
 {
     // Business Logic for armState_sub subscriber subscribing to topic armState callback 
-  arm = *received_data;
+  arm.state = received_data->state;
+  ROS_INFO("Recived Arm State: %d", (int)arm.state);
 }
 //# End armState_sub_OnOneData Marker
 
@@ -116,7 +121,8 @@ void user_input_controller::armState_sub_OnOneData(const agse_package::armState:
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
 
-  ROS_INFO("Timer Callback. Waiting for Key");
+  //  key = 0;
+
   /*
   // Business Logic for userInputTimer 
     key = cvWaitKey();
@@ -308,7 +314,8 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     ROS_INFO("ARM STATE: FINDING PB");
     gpio_set_value(bayLED[0], HIGH); // Blue
 
-    // Blink Sample LED Green
+    // Blink Sample LED Gree
+    gpio_set_value(sampleLED[0], LOW); // Switch ON Blue
     if (currentBlinkDelay++ < pauseLEDBlinkDelay)
       gpio_set_value(sampleLED[1], LOW);
     else
@@ -323,7 +330,8 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     gpio_set_value(sampleLED[0], LOW); // Switch OFF Blue
     gpio_set_value(sampleLED[1], HIGH); // Switch ON Green    
 
-    // Blink Payload Bay LED Green
+    // Blink Payload Bay LED Gree
+    gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
     if (currentBlinkDelay++ < pauseLEDBlinkDelay)
       gpio_set_value(bayLED[1], LOW);
     else
@@ -352,9 +360,12 @@ user_input_controller::~user_input_controller()
 {
     userInputTimer.stop();
     controlInputs_pub.shutdown();
+    sampleState_sub.shutdown();
+    payloadBayState_sub.shutdown();
     armState_sub.shutdown();
 //# Start Destructor Marker
     gpio_set_value(initLED[0], LOW);
+    gpio_set_value(pauseLED, LOW);
 //# End Destructor Marker
 }
 
@@ -374,6 +385,32 @@ void user_input_controller::startUp()
     std::string advertiseName;
 
     // Configure all subscribers associated with this component
+    // subscriber: sampleState_sub
+    advertiseName = "sampleState";
+    if ( portGroupMap != NULL && portGroupMap->find("sampleState_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["sampleState_sub"];
+    ros::SubscribeOptions sampleState_sub_options;
+    sampleState_sub_options = 
+	ros::SubscribeOptions::create<agse_package::sampleState>
+	    (advertiseName.c_str(),
+	     1000,
+	     boost::bind(&user_input_controller::sampleState_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->sampleState_sub = nh.subscribe(sampleState_sub_options);
+    // subscriber: payloadBayState_sub
+    advertiseName = "payloadBayState";
+    if ( portGroupMap != NULL && portGroupMap->find("payloadBayState_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["payloadBayState_sub"];
+    ros::SubscribeOptions payloadBayState_sub_options;
+    payloadBayState_sub_options = 
+	ros::SubscribeOptions::create<agse_package::payloadBayState>
+	    (advertiseName.c_str(),
+	     1000,
+	     boost::bind(&user_input_controller::payloadBayState_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->payloadBayState_sub = nh.subscribe(payloadBayState_sub_options);
     // subscriber: armState_sub
     advertiseName = "armState";
     if ( portGroupMap != NULL && portGroupMap->find("armState_sub") != portGroupMap->end() )
@@ -387,7 +424,6 @@ void user_input_controller::startUp()
 	     ros::VoidPtr(),
              &this->compQueue);
     this->armState_sub = nh.subscribe(armState_sub_options);
-
     // Configure all publishers associated with this component
     // publisher: controlInputs_pub
     advertiseName = "controlInputs";
@@ -395,6 +431,8 @@ void user_input_controller::startUp()
         advertiseName += "_" + (*portGroupMap)["controlInputs_pub"];
     this->controlInputs_pub = nh.advertise<agse_package::controlInputs>
 	(advertiseName.c_str(), 1000);	
+
+    // Configure all required services associated with this component
 
     // Create Init Timer
     ros::TimerOptions timer_options;
@@ -434,8 +472,8 @@ void user_input_controller::startUp()
     std::string log_file_path = pwd + nodeName + "." + compName + ".log"; 
 
     // Create the log file & open file stream
-    LOGGER.CREATE_FILE(log_file_path);
+    //    LOGGER.CREATE_FILE(log_file_path);
 
     // Establish log levels of LOGGER
-    LOGGER.SET_LOG_LEVELS(groupParser.logging);
+    //    LOGGER.SET_LOG_LEVELS(groupParser.logging);
 }

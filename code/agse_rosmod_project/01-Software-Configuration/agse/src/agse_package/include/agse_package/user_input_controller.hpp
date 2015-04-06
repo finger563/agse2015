@@ -16,6 +16,8 @@ using namespace cv;
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
+#include "agse_package/sampleState.h"
+#include "agse_package/payloadBayState.h"
 #include "agse_package/armState.h"
 
 //# Start User Globals Marker
@@ -33,6 +35,12 @@ class user_input_controller : public Component
 	// Init() is always generated
 	void Init(const ros::TimerEvent& event);
 
+	// OnOneData Subscription handler for sampleState_sub subscriber 
+	void sampleState_sub_OnOneData(const agse_package::sampleState::ConstPtr& received_data); 
+ 
+	// OnOneData Subscription handler for payloadBayState_sub subscriber 
+	void payloadBayState_sub_OnOneData(const agse_package::payloadBayState::ConstPtr& received_data); 
+ 
 	// OnOneData Subscription handler for armState_sub subscriber 
 	void armState_sub_OnOneData(const agse_package::armState::ConstPtr& received_data); 
  
@@ -54,6 +62,12 @@ class user_input_controller : public Component
 	// ROS Timer - userInputTimer
 	ros::Timer userInputTimer;
 
+
+	// ROS Subscriber - sampleState_sub
+	ros::Subscriber sampleState_sub; 
+
+	// ROS Subscriber - payloadBayState_sub
+	ros::Subscriber payloadBayState_sub; 
 
 	// ROS Subscriber - armState_sub
 	ros::Subscriber armState_sub; 
@@ -96,30 +110,6 @@ class user_input_controller : public Component
   unsigned int bayLED[3];
   // Pin for Init LED
   unsigned int initLED[3];
-
-  // Received Images
-  Mat pb_rawImage;
-  Mat pb_hsvImage;
-  Mat pb_gsImage;
-  Mat pb_bitwise;
-
-  Mat sample_rawImage;
-  Mat sample_hsvImage;
-  Mat sample_gsImage;
-  Mat sample_bitwise;
-
-  // Four Images to show in UIP
-  IplImage * top_left;
-  IplImage * top_right;
-  IplImage * bottom_left;
-  IplImage * bottom_right;
-
-  // Fullscreen single images
-  IplImage * camera_feed;
-  IplImage * processed_image;
-
-  // Keyboard interrupt
-  int key;
 
         //# End User Private Variables Marker
 };
