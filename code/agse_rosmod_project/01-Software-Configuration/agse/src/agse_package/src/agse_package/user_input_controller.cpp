@@ -1,4 +1,4 @@
-#include "agse_package/user_input_controller.hpp"
+1#include "agse_package/user_input_controller.hpp"
 
 //# Start User Globals Marker
 #include "agse_package/uip.h"
@@ -195,7 +195,7 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
 
   ROS_INFO("Timer Callback. Waiting for Key");
-
+  /*
   // Business Logic for userInputTimer 
     key = cvWaitKey();
 
@@ -289,7 +289,7 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
       cvShowManyImages("UIP", 4, top_left, top_right, bottom_left, bottom_right);
       key = 0;
     }
-
+  */
   // HANDLE MISSILE SWITCHES HERE
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
@@ -369,29 +369,50 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     gpio_set_value(initLED[0], HIGH);
     break;
   case 1:
-    // FINDING_PB
-    ROS_INFO("ARM STATE: FINDING PB");
+    // OPENING_PB
     gpio_set_value(initLED[0], LOW); // Switch OFF Blue
     gpio_set_value(initLED[1], HIGH); // Switch ON Green
-
-    gpio_set_value(bayLED[0], HIGH); // Blue
-    break;
-  case 2:
-    // OPENING_PB
     ROS_INFO("ARM STATE: OPENING PB");
     gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
-    gpio_set_value(bayLED[1], HIGH); // Switch ON Green    
+    //    gpio_set_value(bayLED[1], HIGH); // Switch ON Green    
     break;
-  case 3:
+  case 2:
     // FINDING_SAMPLE
     ROS_INFO("ARM STATE: FINDING SAMPLE");
     gpio_set_value(sampleLED[0], HIGH); // Switch ON Blue
+    break;
+  case 3:
+    // FINDING_PB
+    ROS_INFO("ARM STATE: FINDING PB");
+    gpio_set_value(bayLED[0], HIGH); // Blue
+
+    // Blink Sample LED Green
+    if (currentBlinkDelay++ < pauseLEDBlinkDelay)
+      gpio_set_value(sampleLED[1], LOW);
+    else
+      {
+	gpio_set_value(sampleLED[1], HIGH);
+	currentBlinkDelay = 0;
+      }
     break;
   case 4:
     // GRABBING_SAMPLE
     ROS_INFO("ARM STATE: GRABBING SAMPLE");
     gpio_set_value(sampleLED[0], LOW); // Switch OFF Blue
     gpio_set_value(sampleLED[1], HIGH); // Switch ON Green    
+
+    // Blink Payload Bay LED Green
+    if (currentBlinkDelay++ < pauseLEDBlinkDelay)
+      gpio_set_value(bayLED[1], LOW);
+    else
+      {
+	gpio_set_value(bayLED[1], HIGH);
+	currentBlinkDelay = 0;
+      }
+    break;
+  case 5:
+    gpio_set_value(bayLED[1], HIGH);
+    gpio_set_value(sampleLED[1], HIGH);
     break;
   default:
     break;
