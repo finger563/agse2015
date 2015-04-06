@@ -263,8 +263,6 @@ package agse_package
 	component user_input_controller
 	{
 	    publisher<controlInputs> controlInputs_pub;
-     	    subscriber<sampleState> sampleState_sub;
-     	    subscriber<payloadBayState> payloadBayState_sub;
      	    subscriber<armState> armState_sub;
 	    timer userInputTimer
 	    {
@@ -295,6 +293,8 @@ package agse_package
 	    requires captureImage;
      	    subscriber<payloadBayDetectionImages> payloadBayDetectionImages_sub;
      	    subscriber<sampleDetectionImages> sampleDetectionImages_sub;
+     	    subscriber<payloadBayState> payloadBayState_sub;
+     	    subscriber<sampleState> sampleState_sub;
 	    timer uiImage_timer
 	    {
 	        period = 0.5s;

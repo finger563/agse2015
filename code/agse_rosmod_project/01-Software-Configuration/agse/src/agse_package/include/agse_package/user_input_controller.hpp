@@ -16,8 +16,6 @@ using namespace cv;
 //# End User Includes Marker
 
 #include "agse_package/controlInputs.h"
-#include "agse_package/sampleState.h"
-#include "agse_package/payloadBayState.h"
 #include "agse_package/armState.h"
 
 //# Start User Globals Marker
@@ -35,12 +33,6 @@ class user_input_controller : public Component
 	// Init() is always generated
 	void Init(const ros::TimerEvent& event);
 
-	// OnOneData Subscription handler for sampleState_sub subscriber 
-	void sampleState_sub_OnOneData(const agse_package::sampleState::ConstPtr& received_data); 
- 
-	// OnOneData Subscription handler for payloadBayState_sub subscriber 
-	void payloadBayState_sub_OnOneData(const agse_package::payloadBayState::ConstPtr& received_data); 
- 
 	// OnOneData Subscription handler for armState_sub subscriber 
 	void armState_sub_OnOneData(const agse_package::armState::ConstPtr& received_data); 
  
@@ -62,12 +54,6 @@ class user_input_controller : public Component
 	// ROS Timer - userInputTimer
 	ros::Timer userInputTimer;
 
-
-	// ROS Subscriber - sampleState_sub
-	ros::Subscriber sampleState_sub; 
-
-	// ROS Subscriber - payloadBayState_sub
-	ros::Subscriber payloadBayState_sub; 
 
 	// ROS Subscriber - armState_sub
 	ros::Subscriber armState_sub; 

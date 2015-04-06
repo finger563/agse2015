@@ -772,6 +772,10 @@ void arm_controller::Init(const ros::TimerEvent& event)
 	{
 	  usingSerialPort = false;
 	}
+      if (!strcmp(node_argv[i], "-state"))
+	{
+	  currentState = (arm_controller::ArmState)atoi(node_argv[i+1]);
+	}
       if (!strcmp(node_argv[i], "-r"))
 	{
 	  goalRadialPos = atoi(node_argv[i+1]);
