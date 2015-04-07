@@ -4,7 +4,7 @@
 //# End User Globals Marker
 
 // -------------------------------------------------------
-// BUSnINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
+// BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
 // Init Function
@@ -114,7 +114,6 @@ void user_input_controller::armState_sub_OnOneData(const agse_package::armState:
 {
     // Business Logic for armState_sub subscriber subscribing to topic armState callback 
   arm.state = received_data->state;
-  ROS_INFO("Recived Arm State: %d", (int)arm.state);
 }
 //# End armState_sub_OnOneData Marker
 
@@ -122,104 +121,7 @@ void user_input_controller::armState_sub_OnOneData(const agse_package::armState:
 //# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
-
-  //  key = 0;
-
-  /*
-  // Business Logic for userInputTimer 
-    key = cvWaitKey();
-
-    if (key == 65361) {
-
-      ROS_INFO("Mode 1 Activated");
-
-      Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      agse_package::captureImage arg;
-      Mat camera_feed;
-      if (this->captureImage_client.call(arg)) {
-
-	camera_feed = Mat(arg.response.height, 
-			  arg.response.width, 
-			  CV_8UC3, 
-			  arg.response.imgVector.data());
-
-      }
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(camera_feed.cols, camera_feed.rows), 8, 3);
-      IplImage ipltemp = camera_feed;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_1);
-      cvShowImage( "UIP", Mode_1);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 65363) {
-
-      ROS_INFO("Mode 2 Activated");
-
-      Mode_2 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(sample_gsImage.cols, sample_gsImage.rows), 8, 3);
-      IplImage ipltemp = sample_gsImage;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_2);
-      cvShowImage( "UIP", Mode_2);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 65362) {
-
-      ROS_INFO("Mode 3 Activated");
-
-      Mode_3 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(pb_hsvImage.cols, pb_hsvImage.rows), 8, 3);
-      IplImage ipltemp = pb_hsvImage;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_3);
-      cvShowImage( "UIP", Mode_3);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 65364) {
-
-      ROS_INFO("Mode 4 Activated"); 
-
-      Mode_4 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(pb_gsImage.cols, pb_gsImage.rows), 8, 3);
-      IplImage ipltemp = pb_gsImage;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_4);
-      cvShowImage( "UIP", Mode_4);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 13) {
-      
-      ROS_INFO("Mode 5 Activated");
-
-      cvShowManyImages("UIP", 4, top_left, top_right, bottom_left, bottom_right);
-      key = 0;
-    }
-  */
+  // Business Logic for userInputTimer
   // HANDLE MISSILE SWITCHES HERE
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
