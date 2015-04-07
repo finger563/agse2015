@@ -99,17 +99,18 @@ class arm_controller : public Component
         //# Start User Private Variables Marker
   bool paused;
   bool usingSerialPort;
+  bool payloadBayOpened;
   enum ArmState
     {
-      INIT,
-      OPENING_PB,
-      FINDING_SAMPLE,
-      FINDING_PB,
-      GRABBING_SAMPLE,
-      CARRYING_SAMPLE,
-      INSERTING_SAMPLE,
-      CLOSING_PB,
-      MOVING_AWAY
+      INIT = 0,
+      OPENING_PB = 1,
+      FINDING_SAMPLE = 2,
+      FINDING_PB = 3,
+      GRABBING_SAMPLE = 4,
+      CARRYING_SAMPLE = 5,
+      INSERTING_SAMPLE = 6,
+      CLOSING_PB = 7,
+      MOVING_AWAY = 8
     };
 
   void UpdateSensorData();

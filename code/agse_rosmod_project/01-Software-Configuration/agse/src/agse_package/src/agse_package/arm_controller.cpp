@@ -183,10 +183,7 @@ void arm_controller::Opening_PB_StateFunc()
   // send the command to the PB through UART to open the PB,
   // OPTIONAL : use image based detection to confirm PB opens
   // transition to next state (FINDING_SAMPLE) if PB responds well
-  char buffer[20];
-  sprintf(buffer,"%s",openPayloadBayString);
-  if ( usingSerialPort )
-    serialPort.sendArray((unsigned char *)buffer,strlen(buffer));
+  payloadBayOpened = true;
 
   //goalVerticalPos = minVerticalPos;
 
@@ -642,10 +639,7 @@ void arm_controller::Closing_PB_StateFunc()
   // move up some amount (to max height)
   goalVerticalPos = minVerticalPos;
   // send the command to the PB through UART to close the PB,
-  char buffer[20];
-  sprintf(buffer,"%s",closePayloadBayString);
-  if ( usingSerialPort )
-    serialPort.sendArray((unsigned char *)buffer,strlen(buffer));
+  payloadBayOpened = false;
 
   // OPTIONAL : use image based detection to confirm PB closes
   // transition to next state (MOVING_AWAY) if PB responds well
@@ -688,6 +682,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
     // Initialize Component
   paused = true;
   usingSerialPort = true;
+  payloadBayOpened = false;
   currentState = INIT;
 
   // need to initialize the offsets with measurements from the system
@@ -899,6 +894,19 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
       payloadBayState_pub.publish(payloadBay);
       arm.state = currentState;
       armState_pub.publish(arm);
+      if ( usingSerialPort )
+	{
+	  char buffer[20];
+	  if ( payloadBayOpened )
+	    {
+	      sprintf(buffer,"%s",openPayloadBayString);
+	    }
+	  else
+	    {
+	      sprintf(buffer,"%s",closePayloadBayString);
+	    }
+	  serialPort.sendArray((unsigned char *)buffer,strlen(buffer));
+	}
     }
 }
 //# End armTimerCallback Marker
