@@ -14,6 +14,8 @@ using namespace cv;
 
 #include "agse_package/payloadBayDetectionImages.h"
 #include "agse_package/sampleDetectionImages.h"
+#include "agse_package/payloadBayState.h"
+#include "agse_package/sampleState.h"
 #include "agse_package/captureImage.h"
 
 //# Start User Globals Marker
@@ -37,10 +39,14 @@ class user_input_imager : public Component
 	// OnOneData Subscription handler for sampleDetectionImages_sub subscriber 
 	void sampleDetectionImages_sub_OnOneData(const agse_package::sampleDetectionImages::ConstPtr& received_data); 
  
-
+	// OnOneData Subscription handler for payloadBayState_sub subscriber 
+	void payloadBayState_sub_OnOneData(const agse_package::payloadBayState::ConstPtr& received_data); 
+ 
+	// OnOneData Subscription handler for sampleState_sub subscriber 
+	void sampleState_sub_OnOneData(const agse_package::sampleState::ConstPtr& received_data); 
+ 
 	// Callback for uiImage_timer timer
 	void uiImage_timerCallback(const ros::TimerEvent& event);
-
 
 	// these functions' business logic will be auto-generated:
 
@@ -62,6 +68,11 @@ class user_input_imager : public Component
 	// ROS Subscriber - sampleDetectionImages_sub
 	ros::Subscriber sampleDetectionImages_sub; 
 
+	// ROS Subscriber - payloadBayState_sub
+	ros::Subscriber payloadBayState_sub; 
+
+	// ROS Subscriber - sampleState_sub
+	ros::Subscriber sampleState_sub; 
 
 	// ROS Service Client - captureImage_client
 	ros::ServiceClient captureImage_client;
@@ -91,7 +102,6 @@ class user_input_imager : public Component
 
   // Keyboard interrupt
   int key;
-
 
         //# End User Private Variables Marker
 };

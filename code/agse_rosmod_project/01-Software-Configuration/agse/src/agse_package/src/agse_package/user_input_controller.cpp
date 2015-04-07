@@ -12,7 +12,7 @@
 void user_input_controller::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
-  paused = true;
+  paused = false;
   halted = false;
   manual = false;
 
@@ -40,13 +40,13 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   //////////////////////////////////////////////
 
   // PAUSE MAIN LED 
-  pauseLED = 37; // P8_22
+  pauseLED = 37; // P8_22 - Amber
   gpio_export(pauseLED);
   gpio_set_dir(pauseLED, OUTPUT_PIN);
   pauseLEDBlinkDelay = 2;
 
   // ALARM MAIN LED
-  alarmLED = 66; // P8_07
+  alarmLED = 66; // P8_07 - Red
   gpio_export(alarmLED);
   gpio_set_dir(alarmLED, OUTPUT_PIN);  
 
@@ -75,8 +75,8 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(sampleLED[2], OUTPUT_PIN);  
 
   // BAY MAIN LED
-  bayLED[0] = 67; // P8_8 - Blue
-  bayLED[1] = 69; // P8_9 - Green
+  bayLED[0] = 67; // P8_08 - Blue
+  bayLED[1] = 69; // P8_09 - Green
   bayLED[2] = 68; // P8_10 - Red
   gpio_export(bayLED[0]);
   gpio_set_dir(bayLED[0], OUTPUT_PIN);  
@@ -95,7 +95,8 @@ void user_input_controller::Init(const ros::TimerEvent& event)
 void user_input_controller::sampleState_sub_OnOneData(const agse_package::sampleState::ConstPtr& received_data)
 {
     // Business Logic for sampleState_sub subscriber subscribing to topic sampleState callback 
-  sample = *received_data;
+  sample.pos = received_data->pos;
+  sample.orientation = received_data->orientation;
 }
 //# End sampleState_sub_OnOneData Marker
 // OnOneData Subscription handler for payloadBayState_sub subscriber
@@ -103,7 +104,8 @@ void user_input_controller::sampleState_sub_OnOneData(const agse_package::sample
 void user_input_controller::payloadBayState_sub_OnOneData(const agse_package::payloadBayState::ConstPtr& received_data)
 {
     // Business Logic for payloadBayState_sub subscriber subscribing to topic payloadBayState callback 
-  payloadBay = *received_data;
+  payloadBay.pos = received_data->pos;
+  payloadBay.orientation = received_data->orientation;
 }
 //# End payloadBayState_sub_OnOneData Marker
 // OnOneData Subscription handler for armState_sub subscriber
@@ -222,12 +224,12 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
   ROS_INFO("Pause Switch State: %d", pauseSwitchState);
+
   agse_package::controlInputs control;
   
   if ( previousSwitchState != pauseSwitchState )
     {
       paused = (pauseSwitchState == HIGH) ? true : false;
-      agse_package::controlInputs control;
       control.paused = paused;
       if (paused) {
 	ROS_INFO("Pausing the system!");

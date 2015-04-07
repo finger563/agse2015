@@ -1,7 +1,7 @@
 #include "agse_package/user_input_imager.hpp"
 
 //# Start User Globals Marker
-
+using namespace cv;
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -25,7 +25,6 @@ void user_input_imager::Init(const ros::TimerEvent& event)
   key = 0;
 
   Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
-
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -35,7 +34,7 @@ void user_input_imager::Init(const ros::TimerEvent& event)
 //# Start payloadBayDetectionImages_sub_OnOneData Marker
 void user_input_imager::payloadBayDetectionImages_sub_OnOneData(const agse_package::payloadBayDetectionImages::ConstPtr& received_data)
 {
-    // Business Logic for payloadBayDetectionImages_sub subscriber subscribing to topic payloadBayDetectionImages callback 
+    // Business Logic for payloadBayDetectionImages_sub subscriber subscribing to topic payloadBayDetectionImages callback
   pb_rawImage = Mat(received_data->height, 
 		    received_data->width, 
 		    CV_8UC3, 
@@ -62,6 +61,22 @@ void user_input_imager::payloadBayDetectionImages_sub_OnOneData(const agse_packa
 
 }
 //# End payloadBayDetectionImages_sub_OnOneData Marker
+// OnOneData Subscription handler for payloadBayState_sub subscriber
+//# Start payloadBayState_sub_OnOneData Marker
+void user_input_imager::payloadBayState_sub_OnOneData(const agse_package::payloadBayState::ConstPtr& received_data)
+{
+    // Business Logic for payloadBayState_sub subscriber subscribing to topic payloadBayState callback 
+
+}
+//# End payloadBayState_sub_OnOneData Marker
+// OnOneData Subscription handler for sampleState_sub subscriber
+//# Start sampleState_sub_OnOneData Marker
+void user_input_imager::sampleState_sub_OnOneData(const agse_package::sampleState::ConstPtr& received_data)
+{
+    // Business Logic for sampleState_sub subscriber subscribing to topic sampleState callback 
+
+}
+//# End sampleState_sub_OnOneData Marker
 // OnOneData Subscription handler for sampleDetectionImages_sub subscriber
 //# Start sampleDetectionImages_sub_OnOneData Marker
 void user_input_imager::sampleDetectionImages_sub_OnOneData(const agse_package::sampleDetectionImages::ConstPtr& received_data)
@@ -99,7 +114,6 @@ void user_input_imager::sampleDetectionImages_sub_OnOneData(const agse_package::
 void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
 {
     // Business Logic for uiImage_timer 
-
   agse_package::captureImage arg;
   Mat camera_feed;
 
@@ -124,7 +138,6 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
     cvShowImage( "UIP", Mode_1);
     cvNamedWindow( "UIP", 1 );
     cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-
 }
 //# End uiImage_timerCallback Marker
 
@@ -138,6 +151,8 @@ user_input_imager::~user_input_imager()
     uiImage_timer.stop();
     payloadBayDetectionImages_sub.shutdown();
     sampleDetectionImages_sub.shutdown();
+    payloadBayState_sub.shutdown();
+    sampleState_sub.shutdown();
     captureImage_client.shutdown();
 //# Start Destructor Marker
 
@@ -186,6 +201,32 @@ void user_input_imager::startUp()
 	     ros::VoidPtr(),
              &this->compQueue);
     this->sampleDetectionImages_sub = nh.subscribe(sampleDetectionImages_sub_options);
+    // subscriber: payloadBayState_sub
+    advertiseName = "payloadBayState";
+    if ( portGroupMap != NULL && portGroupMap->find("payloadBayState_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["payloadBayState_sub"];
+    ros::SubscribeOptions payloadBayState_sub_options;
+    payloadBayState_sub_options = 
+	ros::SubscribeOptions::create<agse_package::payloadBayState>
+	    (advertiseName.c_str(),
+	     1000,
+	     boost::bind(&user_input_imager::payloadBayState_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->payloadBayState_sub = nh.subscribe(payloadBayState_sub_options);
+    // subscriber: sampleState_sub
+    advertiseName = "sampleState";
+    if ( portGroupMap != NULL && portGroupMap->find("sampleState_sub") != portGroupMap->end() )
+        advertiseName += "_" + (*portGroupMap)["sampleState_sub"];
+    ros::SubscribeOptions sampleState_sub_options;
+    sampleState_sub_options = 
+	ros::SubscribeOptions::create<agse_package::sampleState>
+	    (advertiseName.c_str(),
+	     1000,
+	     boost::bind(&user_input_imager::sampleState_sub_OnOneData, this, _1),
+	     ros::VoidPtr(),
+             &this->compQueue);
+    this->sampleState_sub = nh.subscribe(sampleState_sub_options);
 
     // Configure all required services associated with this component
     // client: captureImage_client
