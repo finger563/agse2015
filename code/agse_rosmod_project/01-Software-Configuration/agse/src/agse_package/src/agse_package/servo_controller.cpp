@@ -86,7 +86,6 @@ void servo_controller::controlInputs_sub_OnOneData(const agse_package::controlIn
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
-  ROS_INFO( paused ? "Servos paused!" : "Servos Unpaused" );
 }
 //# End controlInputs_sub_OnOneData Marker
 

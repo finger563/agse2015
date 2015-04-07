@@ -66,7 +66,6 @@ void radial_actuator_controller::controlInputs_sub_OnOneData(const agse_package:
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
-  ROS_INFO( paused ? "Radial motor PAUSED!" : "Radial motor UNPAUSED!");
 }
 //# End controlInputs_sub_OnOneData Marker
 
@@ -84,7 +83,7 @@ bool radial_actuator_controller::radialPosCallback(agse_package::radialPos::Requ
     }
   if (req.setZeroPosition == true)
     {
-      ROS_INFO("ZEROED RADIUS ENCODER");
+      ROS_INFO("ZEROED RADIAL ENCODER");
       radialMotoreQEP.set_position(0);
     }
   res.lowerLimitReached = lowerLimitReached;
@@ -111,7 +110,6 @@ void radial_actuator_controller::radialPosTimerCallback(const ros::TimerEvent& e
       gpio_get_value(motorBackwardPin,&backwardPinState);
       if (backwardPinState && !limitSwitchState)
 	{
-	  ROS_INFO("LOWER LIMIT REACHED: RADIUS");
 	  lowerLimitReached = true;
 	}
       // update motor based on current value
