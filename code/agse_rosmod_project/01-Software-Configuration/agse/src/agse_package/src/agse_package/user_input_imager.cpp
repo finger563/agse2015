@@ -1,7 +1,7 @@
 #include "agse_package/user_input_imager.hpp"
 
 //# Start User Globals Marker
-
+using namespace cv;
 //# End User Globals Marker
 
 // -------------------------------------------------------

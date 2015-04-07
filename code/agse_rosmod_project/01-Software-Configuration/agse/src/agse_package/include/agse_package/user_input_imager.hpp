@@ -8,7 +8,7 @@
 //      USER INCLUDES GO HERE
 // --------------------------------
 //# Start User Includes Marker
-
+#inclue "agse_package/uip.h"
 //# End User Includes Marker
 
 #include "agse_package/payloadBayDetectionImages.h"
