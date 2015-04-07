@@ -78,8 +78,8 @@ bool radial_actuator_controller::radialPosCallback(agse_package::radialPos::Requ
     // Business Logic for radialPos_server Server providing radialPos Service
   if (req.update == true)
     {
-      ROS_INFO("GOT NEW RADIAL GOAL: %d",(int)req.goal);
-      ROS_INFO("CURRENT RADIUS: %d",radialCurrent);
+      //      ROS_INFO("GOT NEW RADIAL GOAL: %d",(int)req.goal);
+      //      ROS_INFO("CURRENT RADIUS: %d",radialCurrent);
       radialGoal = req.goal;
     }
   if (req.setZeroPosition == true)

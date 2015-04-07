@@ -30,10 +30,10 @@ void image_processor::Init(const ros::TimerEvent& event)
 	  {
 	    agse_package::captureImage arg;
 	    if (this->captureImage_client.call(arg)) {
-	      ROS_INFO("Image width: %d, height: %d, size: %d", 
-		       arg.response.width,
-		       arg.response.height,
-		       arg.response.imgVector.size());
+	      //	      ROS_INFO("Image width: %d, height: %d, size: %d", 
+	      //		       arg.response.width,
+	      //	       arg.response.height,
+	      //       arg.response.imgVector.size());
 	      Mat image = Mat( arg.response.height, 
 			       arg.response.width, 
 			       CV_8UC3, 
@@ -77,10 +77,10 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
     {
       agse_package::captureImage arg;
       if (this->captureImage_client.call(arg)) {
-	ROS_INFO("Image width: %d, height: %d, size: %d", 
-		 arg.response.width,
-		 arg.response.height,
-		 arg.response.imgVector.size());
+	//	ROS_INFO("Image width: %d, height: %d, size: %d", 
+	//		 arg.response.width,
+	//		 arg.response.height,
+	//		 arg.response.imgVector.size());
 	Mat image = Mat( arg.response.height, 
 			 arg.response.width, 
 			 CV_8UC3, 
@@ -89,7 +89,7 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 	// NEED TO GET RETURN VALUES ABOUT DETECTED SAMPLE HERE
 	DetectedObject sample =
 	  sampleDetector.run(image,detectedObjectsMask,"autonomous_S"); 
-	ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
+	//	ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
 	cv::imwrite("Sample-01-Raw.png", image+detectedObjectsMask);
 	if ( sample.x >= 0 && sample.x <= arg.response.width &&
 	     sample.y >= 0 && sample.y <= arg.response.height )
@@ -120,10 +120,10 @@ bool image_processor::payloadBayStateFromImageCallback(agse_package::payloadBayS
     {
       agse_package::captureImage arg;
       if (this->captureImage_client.call(arg)) {
-	ROS_INFO("Image width: %d, height: %d, size: %d", 
-		 arg.response.width,
-		 arg.response.height,
-		 arg.response.imgVector.size());
+	//	ROS_INFO("Image width: %d, height: %d, size: %d", 
+	//	 arg.response.width,
+	//	 arg.response.height,
+	//	 arg.response.imgVector.size());
 	Mat image = Mat( arg.response.height, 
 			 arg.response.width, 
 			 CV_8UC3, 

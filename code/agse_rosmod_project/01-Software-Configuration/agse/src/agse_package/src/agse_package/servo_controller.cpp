@@ -146,19 +146,19 @@ void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
       // ARM SERVO 
       dynamixel.setPosition(&serialPort, armServoID, Dynamixel::angleToPos(armRotationGoal));
       pos = dynamixel.getPosition(&serialPort, armServoID);
-      ROS_INFO("Arm base servo angle: %f\n",Dynamixel::posToAngle(pos));
+      //      ROS_INFO("Arm base servo angle: %f\n",Dynamixel::posToAngle(pos));
       armRotationCurrent = Dynamixel::posToAngle(pos);
 
       // GRIPPER ROTATION SERVO
       dynamixel.setPosition(&serialPort, gripperRotationID, Dynamixel::angleToPos(gripperRotationGoal));
       pos = dynamixel.getPosition(&serialPort, gripperRotationID);
-      ROS_INFO("Gripper rotation servo angle: %f\n",Dynamixel::posToAngle(pos));
+      //      ROS_INFO("Gripper rotation servo angle: %f\n",Dynamixel::posToAngle(pos));
       gripperRotationCurrent = Dynamixel::posToAngle(pos);
     
       // GRIPPER POSITION SERVO
       dynamixel.setPosition(&serialPort, gripperPositionID, Dynamixel::angleToPos(gripperPosGoal));
       pos = dynamixel.getPosition(&serialPort, gripperPositionID);
-      ROS_INFO("Gripper position servo angle: %f\n",Dynamixel::posToAngle(pos));
+      //      ROS_INFO("Gripper position servo angle: %f\n",Dynamixel::posToAngle(pos));
       gripperPosCurrent = Dynamixel::posToAngle(pos);
     }
   else 
@@ -168,19 +168,19 @@ void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
       // ARM SERVO 
       dynamixel.setPosition(&serialPort, armServoID, Dynamixel::angleToPos(armRotationCurrent));
       pos = dynamixel.getPosition(&serialPort, armServoID);
-      ROS_INFO("Arm base servo angle: %f\n",Dynamixel::posToAngle(pos));
+      //      ROS_INFO("Arm base servo angle: %f\n",Dynamixel::posToAngle(pos));
       armRotationCurrent = Dynamixel::posToAngle(pos);
 
       // GRIPPER ROTATION SERVO
       dynamixel.setPosition(&serialPort, gripperRotationID, Dynamixel::angleToPos(gripperRotationCurrent));
       pos = dynamixel.getPosition(&serialPort, gripperRotationID);
-      ROS_INFO("Gripper rotation servo angle: %f\n",Dynamixel::posToAngle(pos));
+      //      ROS_INFO("Gripper rotation servo angle: %f\n",Dynamixel::posToAngle(pos));
       gripperRotationCurrent = Dynamixel::posToAngle(pos);
     
       // GRIPPER POSITION SERVO
       dynamixel.setPosition(&serialPort, gripperPositionID, Dynamixel::angleToPos(gripperPosCurrent));
       pos = dynamixel.getPosition(&serialPort, gripperPositionID);
-      ROS_INFO("Gripper position servo angle: %f\n",Dynamixel::posToAngle(pos));
+      //      ROS_INFO("Gripper position servo angle: %f\n",Dynamixel::posToAngle(pos));
       gripperPosCurrent = Dynamixel::posToAngle(pos);
     }
 }
