@@ -230,7 +230,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   if ( previousSwitchState != pauseSwitchState )
     {
       paused = (pauseSwitchState == HIGH) ? true : false;
-      control.paused = paused;
       if (paused) {
 	ROS_INFO("Pausing the system!");
       }
@@ -243,7 +242,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   if ( previousSwitchState != haltSwitchState )
     {
       halted = (haltSwitchState == HIGH) ? true : false;
-      control.stop = halted;
       if (halted) {
 	ROS_INFO("Halting the system!");
       }
@@ -256,7 +254,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   if ( previousSwitchState != manualSwitchState )
     {
       manual= (manualSwitchState == HIGH) ? true : false;
-      control.manual = manual;
       if (manual) {
 	ROS_INFO("Switching the system to manual!");
       }
@@ -264,6 +261,9 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 	ROS_INFO("Switching the system to automatic!");
       }
     }
+  control.paused = paused;
+  control.stop = halted;
+  control.manual = manual;
   controlInputs_pub.publish(control);
 
   // HANDLE LED OUTPUTS HERE
