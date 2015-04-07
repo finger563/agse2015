@@ -100,6 +100,7 @@ class arm_controller : public Component
   bool paused;
   bool usingSerialPort;
   bool payloadBayOpened;
+  bool stateChanged;
   enum ArmState
     {
       INIT = 0,
@@ -113,6 +114,7 @@ class arm_controller : public Component
       MOVING_AWAY = 8
     };
 
+  void PrintCurrentState();
   void UpdateSensorData();
   void UpdateArmPosition();
   bool CheckGoals();

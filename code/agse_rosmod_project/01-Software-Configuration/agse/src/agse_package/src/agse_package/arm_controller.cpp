@@ -5,6 +5,31 @@
 const char* openPayloadBayString = "1";
 const char* closePayloadBayString = "0";
 
+void arm_controller::PrintCurrentState()
+{
+  switch (currentState)
+    {
+    case INIT:
+      ROS_INFO("INITIALIZING");
+    case OPENING_PB:
+      ROS_INFO("OPENING PAYLOAD BAY");
+    case FINDING_SAMPLE:
+      ROS_INFO("FINDING SAMPLE");
+    case FINDING_PB:
+      ROS_INFO("FINDING PAYLOAD BAY");
+    case GRABBING_SAMPLE:
+      ROS_INFO("GRABBING SAMPLE");
+    case CARRYING_SAMPLE:
+      ROS_INFO("CARRYING SAMPLE");
+    case INSERTING_SAMPLE:
+      ROS_INFO("INSERTING SAMPLE");
+    case CLOSING_PB:
+      ROS_INFO("CLOSING PAYLOAD BAY");
+    case MOVING_AWAY:
+      ROS_INFO("MOVING AWAY");
+    }
+}
+
 void arm_controller::UpdateSensorData()
 {
   // all servers have 
@@ -100,7 +125,6 @@ bool arm_controller::CheckGoals()
     return false;
   if ( abs(goalGripperPos - currentGripperPos) > gripperPosEpsilon )
     return false;
-  //  ROS_INFO("REACHED GOALS");
   return true;
 }
 
@@ -111,7 +135,6 @@ void arm_controller::Init_StateFunc()
   static bool zeroedRadius = false;
   if (!zeroedHeight)
     {
-      //      ROS_INFO("ZEROING HEIGHT");
       agse_package::verticalPos vPos;
       vPos.request.update = true;
       vPos.request.setZeroPosition = false;
@@ -119,7 +142,7 @@ void arm_controller::Init_StateFunc()
       verticalPos_client.call(vPos);
       if (vPos.response.lowerLimitReached)
 	{
-    	  ROS_INFO("LOWER LIMIT REACHED: HEIGHT");
+    	  ROS_INFO("ZEROED HEIGHT");
 	  vPos.request.update = false;
 	  vPos.request.setZeroPosition = true;
 	  verticalPos_client.call(vPos);
@@ -128,7 +151,6 @@ void arm_controller::Init_StateFunc()
     }
   else if (!zeroedRadius)
     {
-      //      ROS_INFO("ZEROING RADIUS");
       agse_package::radialPos rPos;
       rPos.request.update = true;
       rPos.request.setZeroPosition = false;
@@ -136,7 +158,7 @@ void arm_controller::Init_StateFunc()
       radialPos_client.call(rPos);
       if (rPos.response.lowerLimitReached)
 	{
-	  //	  ROS_INFO("LOWER LIMIT REACHED: RADIUS");
+	  ROS_INFO("ZEROED RADIUS");
 	  rPos.request.update = false;
 	  rPos.request.setZeroPosition = true;
 	  radialPos_client.call(rPos);
@@ -164,6 +186,7 @@ void arm_controller::Init_StateFunc()
       goalGripperPos = gripperPosOpened;
 
       currentState = OPENING_PB;
+      stateChanged = true;
     }
 }
 
@@ -188,6 +211,7 @@ void arm_controller::Opening_PB_StateFunc()
   //goalVerticalPos = minVerticalPos;
 
   currentState = FINDING_SAMPLE;
+  stateChanged = true;
 }
 
 void arm_controller::Finding_Sample_StateFunc()
@@ -344,6 +368,7 @@ void arm_controller::Finding_Sample_StateFunc()
       sample = internalSampleState;
       // transition to next state (GRABBING_SAMPLE)
       currentState = FINDING_PB;
+      stateChanged = true;
     }
 }
 
@@ -509,6 +534,7 @@ void arm_controller::Finding_PB_StateFunc()
       payloadBay = internalPBState;
       // transition to next state (GRABBING_SAMPLE)
       currentState = GRABBING_SAMPLE;
+      stateChanged = true;
     }
 }
 
@@ -560,6 +586,7 @@ void arm_controller::Grabbing_Sample_StateFunc()
       goalVerticalPos = payloadBayVerticalPos - 10000;
       // transition to next state (CARRYING_SAMPLE)
       currentState = CARRYING_SAMPLE;
+      stateChanged = true;
     }
 }
 
@@ -601,6 +628,7 @@ void arm_controller::Carrying_Sample_StateFunc()
       goalVerticalPos = payloadBayZPlane;
       // transition to next state (INSERTING_SAMPLE)
       currentState = INSERTING_SAMPLE;
+      stateChanged = true;
     }
 }
 
@@ -621,6 +649,7 @@ void arm_controller::Inserting_Sample_StateFunc()
   goalGripperPos = gripperPosOpened;
   // transition to next state (CLOSING_PB)
   currentState = CLOSING_PB;
+  stateChanged = true;
 }
 
 void arm_controller::Closing_PB_StateFunc()
@@ -644,6 +673,7 @@ void arm_controller::Closing_PB_StateFunc()
   // OPTIONAL : use image based detection to confirm PB closes
   // transition to next state (MOVING_AWAY) if PB responds well
   currentState = MOVING_AWAY;
+  stateChanged = true;
 }
 
 void arm_controller::Moving_Away_StateFunc()
@@ -683,6 +713,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
   paused = true;
   usingSerialPort = true;
   payloadBayOpened = false;
+  stateChanged = true;
   currentState = INIT;
 
   // need to initialize the offsets with measurements from the system
@@ -836,55 +867,51 @@ void arm_controller::armTimerCallback(const ros::TimerEvent& event)
 	  Init_StateFunc();
 	  break;
 	case FINDING_PB:
-	  ROS_INFO("FINDING PAYLOAD BAY");
 	  if ( CheckGoals() )
 	    Finding_PB_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case OPENING_PB:
-	  ROS_INFO("OPENING PAYLOAD BAY");
-	  //if ( CheckGoals() )
 	  Opening_PB_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case FINDING_SAMPLE:
-	  ROS_INFO("FINDING SAMPLE");
 	  if ( CheckGoals() )
 	    Finding_Sample_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case GRABBING_SAMPLE:
-	  ROS_INFO("GRABBING SAMPLE");
 	  if ( CheckGoals() )
 	    Grabbing_Sample_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case CARRYING_SAMPLE:
-	  ROS_INFO("CARRYING SAMPLE");
 	  if ( CheckGoals() )
 	    Carrying_Sample_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case INSERTING_SAMPLE:
-	  ROS_INFO("INSERTING SAMPLE");
 	  if ( CheckGoals() )
 	    Inserting_Sample_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case CLOSING_PB:
-	  ROS_INFO("CLOSING PAYLOAD BAY");
 	  if ( CheckGoals() )
 	    Closing_PB_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	case MOVING_AWAY:
-	  ROS_INFO("MOVING AWAY");
 	  if ( CheckGoals() )
 	    Moving_Away_StateFunc();
 	  UpdateArmPosition();
 	  break;
 	default:
 	  break;
+	}
+      if ( stateChanged )
+	{
+	  PrintCurrentState();
+	  stateChanged = false;
 	}
       sampleState_pub.publish(sample);
       payloadBayState_pub.publish(payloadBay);

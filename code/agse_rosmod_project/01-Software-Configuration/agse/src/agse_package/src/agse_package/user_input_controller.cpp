@@ -172,7 +172,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   static int currentBlinkDelay = 0;
   if (paused)
     {
-      ROS_INFO("Lighting up Pause LED");
       gpio_set_value(pauseLED, HIGH);
     }
   else
@@ -187,7 +186,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     }
 
   if (halted) {
-    ROS_INFO("Lighting up Halt LED");
     gpio_set_value(alarmLED, HIGH);
   }
   else {
@@ -212,7 +210,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     break;
   case 3:
     // FINDING_PB
-    ROS_INFO("ARM STATE: FINDING PB");
     gpio_set_value(bayLED[0], HIGH); // Blue
 
     // Blink Sample LED Gree
