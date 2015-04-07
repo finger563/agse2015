@@ -158,7 +158,7 @@ vector<RotatedRect> Object_Tracker::track(Mat& raw_image, Mat& filtered_output, 
     area = width * height;
     cArea = contourArea(contours_poly[i]);
     areaRatio = area/cArea;
-    printf("area: %f, cArea: %f, areaRatio: %f,aspectRatio: %f, h: %f, w: %f, angle: %f\n",area,cArea,areaRatio,aspectRatio,height,width,boundRect[i].angle);
+    //    printf("area: %f, cArea: %f, areaRatio: %f,aspectRatio: %f, h: %f, w: %f, angle: %f\n",area,cArea,areaRatio,aspectRatio,height,width,boundRect[i].angle);
     if ( area > minArea && area < maxArea && 
 	 aspectRatio > minRatio && aspectRatio < maxRatio &&
 	 areaRatio > minAreaRatio && areaRatio < maxAreaRatio &&

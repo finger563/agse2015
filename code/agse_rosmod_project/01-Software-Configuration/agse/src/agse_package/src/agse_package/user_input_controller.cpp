@@ -125,7 +125,7 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   // HANDLE MISSILE SWITCHES HERE
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
-  ROS_INFO("Pause Switch State: %d", pauseSwitchState);
+  //  ROS_INFO("Pause Switch State: %d", pauseSwitchState);
 
   agse_package::controlInputs control;
   
@@ -197,20 +197,17 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   switch (arm.state) {
   case 0:
     // INIT
-    ROS_INFO("ARM STATE: INIT");
     gpio_set_value(initLED[0], HIGH);
     break;
   case 1:
     // OPENING_PB
     gpio_set_value(initLED[0], LOW); // Switch OFF Blue
     gpio_set_value(initLED[1], HIGH); // Switch ON Green
-    ROS_INFO("ARM STATE: OPENING PB");
     gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
     //    gpio_set_value(bayLED[1], HIGH); // Switch ON Green    
     break;
   case 2:
     // FINDING_SAMPLE
-    ROS_INFO("ARM STATE: FINDING SAMPLE");
     gpio_set_value(sampleLED[0], HIGH); // Switch ON Blue
     break;
   case 3:
@@ -230,7 +227,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     break;
   case 4:
     // GRABBING_SAMPLE
-    ROS_INFO("ARM STATE: GRABBING SAMPLE");
     gpio_set_value(sampleLED[0], LOW); // Switch OFF Blue
     gpio_set_value(sampleLED[1], HIGH); // Switch ON Green    
 

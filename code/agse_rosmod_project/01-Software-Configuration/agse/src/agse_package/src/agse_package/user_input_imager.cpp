@@ -117,11 +117,11 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
   agse_package::captureImage arg;
   Mat camera_feed;
 
-  ROS_INFO("UI Imager Timer Triggered");
+  //  ROS_INFO("UI Imager Timer Triggered");
 
   if (this->captureImage_client.call(arg)) {
 
-    ROS_INFO("Capture Image Client Call Successful");
+    //    ROS_INFO("Capture Image Client Call Successful");
     
     camera_feed = Mat(arg.response.height, 
 		      arg.response.width, 
