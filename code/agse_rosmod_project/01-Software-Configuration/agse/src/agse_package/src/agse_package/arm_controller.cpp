@@ -11,22 +11,31 @@ void arm_controller::PrintCurrentState()
     {
     case INIT:
       ROS_INFO("INITIALIZING");
+      break;
     case OPENING_PB:
       ROS_INFO("OPENING PAYLOAD BAY");
+      break;
     case FINDING_SAMPLE:
       ROS_INFO("FINDING SAMPLE");
+      break;
     case FINDING_PB:
       ROS_INFO("FINDING PAYLOAD BAY");
+      break;
     case GRABBING_SAMPLE:
       ROS_INFO("GRABBING SAMPLE");
+      break;
     case CARRYING_SAMPLE:
       ROS_INFO("CARRYING SAMPLE");
+      break;
     case INSERTING_SAMPLE:
       ROS_INFO("INSERTING SAMPLE");
+      break;
     case CLOSING_PB:
       ROS_INFO("CLOSING PAYLOAD BAY");
+      break;
     case MOVING_AWAY:
       ROS_INFO("MOVING AWAY");
+      break;
     }
 }
 
@@ -798,6 +807,10 @@ void arm_controller::Init(const ros::TimerEvent& event)
 	{
 	  usingSerialPort = false;
 	}
+      if (!strcmp(node_argv[i], "-state"))
+	{
+	  currentState = (arm_controller::ArmState)atoi(node_argv[i+1]);
+	}
       if (!strcmp(node_argv[i], "-r"))
 	{
 	  goalRadialPos = atoi(node_argv[i+1]);
@@ -849,7 +862,7 @@ void arm_controller::controlInputs_sub_OnOneData(const agse_package::controlInpu
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
-  ROS_INFO( paused ? "Arm controller PAUSED!" : "Arm controller UNPAUSED!");
+  //ROS_INFO( paused ? "Arm controller PAUSED!" : "Arm controller UNPAUSED!");
 }
 //# End controlInputs_sub_OnOneData Marker
 
