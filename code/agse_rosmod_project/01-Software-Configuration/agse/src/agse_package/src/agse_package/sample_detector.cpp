@@ -118,7 +118,7 @@ Mat equalizeIntensity(const Mat& inputImage)
 
 vector<RotatedRect> hsv_method(Mat &image, Mat& imgMask) {
 
-  std::cout << "SAMPLE_DETECTOR::Starting YCrCb METHOD" << std::endl;
+  //  std::cout << "SAMPLE_DETECTOR::Starting YCrCb METHOD" << std::endl;
 
    // Convert from RGB TO HSV space
   //  cvtColor(image, hsv_image, COLOR_BGR2HSV);
@@ -138,14 +138,14 @@ vector<RotatedRect> hsv_method(Mat &image, Mat& imgMask) {
 	
   cv::imwrite("Sample-YCrCb-Filtered.png", hsv_filtered_image);
 
-  std::cout << "SAMPLE_DETECTOR::Completed YCrCb METHOD" << std::endl;
+  //  std::cout << "SAMPLE_DETECTOR::Completed YCrCb METHOD" << std::endl;
 
   return obj_tracker.track(image,hsv_filtered_image,imgMask);
 }
 
 vector<RotatedRect> grayscale_method(Mat& image, Mat& imgMask) {
 
-  std::cout << "SAMPLE_DETECTOR::Starting Grayscale METHOD" << std::endl;
+  //  std::cout << "SAMPLE_DETECTOR::Starting Grayscale METHOD" << std::endl;
 
   cvtColor(image, grayscale_image, CV_BGR2GRAY);
   Mat eq_gray;
@@ -161,7 +161,7 @@ vector<RotatedRect> grayscale_method(Mat& image, Mat& imgMask) {
 	
   cv::imwrite("Sample-06-Grayscale-Filtered.png", grayscale_filtered_image);
 
-  std::cout << "SAMPLE_DETECTOR::Completed Grayscale METHOD" << std::endl;
+  //  std::cout << "SAMPLE_DETECTOR::Completed Grayscale METHOD" << std::endl;
 
   return obj_tracker.track(image,grayscale_filtered_image,imgMask);
 }

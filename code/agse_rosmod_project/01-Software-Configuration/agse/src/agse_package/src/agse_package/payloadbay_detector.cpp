@@ -65,7 +65,7 @@ DetectedObject PayloadBay_Detector::run( Mat& image,
       object.state = DETECTED;
       if (Markers.size() == 1)
 	object.state = PARTIAL;
-      printf("CENTER XY = %f,%f\n",center.x,center.y);
+      //      printf("CENTER XY = %f,%f\n",center.x,center.y);
       object.x = center.x;
       object.y = center.y;
       object.angle = angle;

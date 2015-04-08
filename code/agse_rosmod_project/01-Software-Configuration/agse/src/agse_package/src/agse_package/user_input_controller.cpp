@@ -4,7 +4,7 @@
 //# End User Globals Marker
 
 // -------------------------------------------------------
-// BUSnINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
+// BUSINESS LOGIC OF THESE FUNCTIONS SUPPLIED BY DEVELOPER
 // -------------------------------------------------------
 
 // Init Function
@@ -43,7 +43,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   pauseLED = 37; // P8_22 - Amber
   gpio_export(pauseLED);
   gpio_set_dir(pauseLED, OUTPUT_PIN);
-  pauseLEDBlinkDelay = 2;
+  pauseLEDBlinkDelay = 5;
 
   // ALARM MAIN LED
   alarmLED = 66; // P8_07 - Red
@@ -73,6 +73,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(sampleLED[1], OUTPUT_PIN);  
   gpio_export(sampleLED[2]);
   gpio_set_dir(sampleLED[2], OUTPUT_PIN);  
+  sampleLEDBlinkDelay = 5;
 
   // BAY MAIN LED
   bayLED[0] = 67; // P8_08 - Blue
@@ -84,6 +85,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(bayLED[1], OUTPUT_PIN);  
   gpio_export(bayLED[2]);
   gpio_set_dir(bayLED[2], OUTPUT_PIN);  
+  bayLEDBlinkDelay = 5;
 
   // Stop Init Timer
   initOneShotTimer.stop();
@@ -114,7 +116,6 @@ void user_input_controller::armState_sub_OnOneData(const agse_package::armState:
 {
     // Business Logic for armState_sub subscriber subscribing to topic armState callback 
   arm.state = received_data->state;
-  ROS_INFO("Recived Arm State: %d", (int)arm.state);
 }
 //# End armState_sub_OnOneData Marker
 
@@ -122,115 +123,17 @@ void user_input_controller::armState_sub_OnOneData(const agse_package::armState:
 //# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
-
-  //  key = 0;
-
-  /*
-  // Business Logic for userInputTimer 
-    key = cvWaitKey();
-
-    if (key == 65361) {
-
-      ROS_INFO("Mode 1 Activated");
-
-      Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      agse_package::captureImage arg;
-      Mat camera_feed;
-      if (this->captureImage_client.call(arg)) {
-
-	camera_feed = Mat(arg.response.height, 
-			  arg.response.width, 
-			  CV_8UC3, 
-			  arg.response.imgVector.data());
-
-      }
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(camera_feed.cols, camera_feed.rows), 8, 3);
-      IplImage ipltemp = camera_feed;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_1);
-      cvShowImage( "UIP", Mode_1);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 65363) {
-
-      ROS_INFO("Mode 2 Activated");
-
-      Mode_2 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(sample_gsImage.cols, sample_gsImage.rows), 8, 3);
-      IplImage ipltemp = sample_gsImage;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_2);
-      cvShowImage( "UIP", Mode_2);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 65362) {
-
-      ROS_INFO("Mode 3 Activated");
-
-      Mode_3 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(pb_hsvImage.cols, pb_hsvImage.rows), 8, 3);
-      IplImage ipltemp = pb_hsvImage;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_3);
-      cvShowImage( "UIP", Mode_3);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 65364) {
-
-      ROS_INFO("Mode 4 Activated"); 
-
-      Mode_4 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(pb_gsImage.cols, pb_gsImage.rows), 8, 3);
-      IplImage ipltemp = pb_gsImage;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_4);
-      cvShowImage( "UIP", Mode_4);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 13) {
-      
-      ROS_INFO("Mode 5 Activated");
-
-      cvShowManyImages("UIP", 4, top_left, top_right, bottom_left, bottom_right);
-      key = 0;
-    }
-  */
+  // Business Logic for userInputTimer
   // HANDLE MISSILE SWITCHES HERE
   unsigned int previousSwitchState = pauseSwitchState;
   gpio_get_value(pauseSwitchPin, &pauseSwitchState);
-  ROS_INFO("Pause Switch State: %d", pauseSwitchState);
+  //  ROS_INFO("Pause Switch State: %d", pauseSwitchState);
 
   agse_package::controlInputs control;
   
   if ( previousSwitchState != pauseSwitchState )
     {
       paused = (pauseSwitchState == HIGH) ? true : false;
-      control.paused = paused;
       if (paused) {
 	ROS_INFO("Pausing the system!");
       }
@@ -243,7 +146,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   if ( previousSwitchState != haltSwitchState )
     {
       halted = (haltSwitchState == HIGH) ? true : false;
-      control.stop = halted;
       if (halted) {
 	ROS_INFO("Halting the system!");
       }
@@ -256,7 +158,6 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   if ( previousSwitchState != manualSwitchState )
     {
       manual= (manualSwitchState == HIGH) ? true : false;
-      control.manual = manual;
       if (manual) {
 	ROS_INFO("Switching the system to manual!");
       }
@@ -264,28 +165,32 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 	ROS_INFO("Switching the system to automatic!");
       }
     }
+  control.paused = paused;
+  control.stop = halted;
+  control.manual = manual;
   controlInputs_pub.publish(control);
 
   // HANDLE LED OUTPUTS HERE
-  static int currentBlinkDelay = 0;
+  static int currentPauseLEDBlinkDelay = 0;
+  static int currentSampleLEDBlinkDelay = 0;
+  static int currentBayLEDBlinkDelay = 0;
+
   if (paused)
     {
-      ROS_INFO("Lighting up Pause LED");
       gpio_set_value(pauseLED, HIGH);
     }
   else
     {
-      if (currentBlinkDelay++ < pauseLEDBlinkDelay)
+      if (currentPauseLEDBlinkDelay++ < pauseLEDBlinkDelay)
 	gpio_set_value(pauseLED,LOW);
       else
 	{
 	  gpio_set_value(pauseLED,HIGH);
-	  currentBlinkDelay = 0;
+	  currentPauseLEDBlinkDelay = 0;
 	}
     }
 
   if (halted) {
-    ROS_INFO("Lighting up Halt LED");
     gpio_set_value(alarmLED, HIGH);
   }
   else {
@@ -295,51 +200,46 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   switch (arm.state) {
   case 0:
     // INIT
-    ROS_INFO("ARM STATE: INIT");
     gpio_set_value(initLED[0], HIGH);
     break;
   case 1:
     // OPENING_PB
     gpio_set_value(initLED[0], LOW); // Switch OFF Blue
     gpio_set_value(initLED[1], HIGH); // Switch ON Green
-    ROS_INFO("ARM STATE: OPENING PB");
     gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
     //    gpio_set_value(bayLED[1], HIGH); // Switch ON Green    
     break;
   case 2:
     // FINDING_SAMPLE
-    ROS_INFO("ARM STATE: FINDING SAMPLE");
     gpio_set_value(sampleLED[0], HIGH); // Switch ON Blue
     break;
   case 3:
     // FINDING_PB
-    ROS_INFO("ARM STATE: FINDING PB");
     gpio_set_value(bayLED[0], HIGH); // Blue
 
-    // Blink Sample LED Gree
+    // Blink Sample LED Green
     gpio_set_value(sampleLED[0], LOW); // Switch ON Blue
-    if (currentBlinkDelay++ < pauseLEDBlinkDelay)
+    if (currentSampleLEDBlinkDelay++ < sampleLEDBlinkDelay)
       gpio_set_value(sampleLED[1], LOW);
     else
       {
 	gpio_set_value(sampleLED[1], HIGH);
-	currentBlinkDelay = 0;
+	currentSampleLEDBlinkDelay = 0;
       }
     break;
   case 4:
     // GRABBING_SAMPLE
-    ROS_INFO("ARM STATE: GRABBING SAMPLE");
     gpio_set_value(sampleLED[0], LOW); // Switch OFF Blue
     gpio_set_value(sampleLED[1], HIGH); // Switch ON Green    
 
     // Blink Payload Bay LED Gree
     gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
-    if (currentBlinkDelay++ < pauseLEDBlinkDelay)
+    if (currentBayLEDBlinkDelay++ < bayLEDBlinkDelay)
       gpio_set_value(bayLED[1], LOW);
     else
       {
 	gpio_set_value(bayLED[1], HIGH);
-	currentBlinkDelay = 0;
+	currentBayLEDBlinkDelay = 0;
       }
     break;
   case 5:
@@ -450,7 +350,7 @@ void user_input_controller::startUp()
     // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(0.2),
+             (ros::Duration(0.1),
 	     boost::bind(&user_input_controller::userInputTimerCallback, this, _1),
 	     &this->compQueue);
     this->userInputTimer = nh.createTimer(timer_options);

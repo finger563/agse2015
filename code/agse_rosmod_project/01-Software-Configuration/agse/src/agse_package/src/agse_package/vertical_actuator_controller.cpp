@@ -66,7 +66,6 @@ void vertical_actuator_controller::controlInputs_sub_OnOneData(const agse_packag
 {
     // Business Logic for controlInputs_sub subscriber subscribing to topic controlInputs callback 
   paused = received_data->paused;
-  ROS_INFO( paused ? "Vertical motor PAUSED!" : "Vertical motor UNPAUSED!");
 }
 //# End controlInputs_sub_OnOneData Marker
 
@@ -78,13 +77,13 @@ bool vertical_actuator_controller::verticalPosCallback(agse_package::verticalPos
     // Business Logic for verticalPos_server Server providing verticalPos Service
   if (req.update == true)
     {
-      ROS_INFO("GOT NEW HEIGHT GOAL: %d",(int)req.goal);
-      ROS_INFO("CURRENT HEIGHT: %d",verticalCurrent);
+      //      ROS_INFO("GOT NEW HEIGHT GOAL: %d",(int)req.goal);
+      //      ROS_INFO("CURRENT HEIGHT: %d",verticalCurrent);
       verticalGoal = req.goal;
     }
   if (req.setZeroPosition == true)
     {
-      ROS_INFO("ZEROED HEIGHT ENCODER");
+      ROS_INFO("ZEROED VERTICAL ENCODER");
       verticalMotoreQEP.set_position(0);
     }
   res.lowerLimitReached = lowerLimitReached;
@@ -111,7 +110,6 @@ void vertical_actuator_controller::verticalPosTimerCallback(const ros::TimerEven
       gpio_get_value(motorBackwardPin,&backwardPinState);
       if (backwardPinState && !limitSwitchState)
 	{
-	  ROS_INFO("LOWER LIMIT REACHED: HEIGHT");
 	  lowerLimitReached = true;
 	}
       // update motor based on current value

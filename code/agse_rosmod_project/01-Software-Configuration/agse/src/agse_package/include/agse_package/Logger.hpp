@@ -88,7 +88,6 @@ private:
 			   .CRITICAL = true};
 			*/
 
-
   // High Resolution Clock
   chrono::high_resolution_clock clock;
 };
