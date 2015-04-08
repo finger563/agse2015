@@ -24,7 +24,7 @@ void servo_controller::Init(const ros::TimerEvent& event)
   gripperPositionSpeed = 0;
 
   complianceMargin = 0;
-  complianceSlope = 10;
+  complianceSlope = 5;
 
   armRotationGoal = 0;
   gripperRotationGoal = 180.0f;
