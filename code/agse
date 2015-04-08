@@ -1,0 +1,30 @@
+#!/bin/sh
+export ROS_IP=10.1.1.1
+AGSE_PIDFILE='/var/run/agse.pid'
+touch $AGSE_PIDFILE
+
+# carry out specific functions when asked by the system
+case "$1" in
+  start)
+    echo "Starting agse service ..."
+    su -c "source /home/ubuntu/Source/ROS-Indigo/install_isolated/setup.bash && export ROS_IP=10.1.1.1 && roscore" &
+    su -c "source /home/ubuntu/Source/ROS-Indigo/install_isolated/setup.bash && /home/ubuntu/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/imager & /home/ubuntu/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/detector & /home/ubuntu/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/arm " &
+#    su -c "source /home/ubuntu/Source/ROS-Indigo/install_isolated/setup.bash && /home/ubuntu/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/detector" &
+#    su -c "source /home/ubuntu/Source/ROS-Indigo/install_isolated/setup.bash && /home/ubuntu/Repositories/agse2015/code/agse_rosmod_project/01-Software-Configuration/agse/devel/lib/agse_package/arm" &
+    ;;  
+  stop)
+    kill -2 $(cat $AGSE_PIDFILE) > /dev/null
+    echo -n "" > $AGSE_PIDFILE
+    echo "Stopping agse services ..."
+    ;;  
+  restart)
+    $0 stop
+    sleep 3
+    $0 start
+    ;;  
+  *)  
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+    ;;  
+esac
+exit 0

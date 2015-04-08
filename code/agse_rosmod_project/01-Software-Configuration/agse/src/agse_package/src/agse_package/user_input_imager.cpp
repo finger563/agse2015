@@ -348,7 +348,7 @@ void user_input_imager::startUp()
     // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(0.5),
+             (ros::Duration(2.0),
 	     boost::bind(&user_input_imager::uiImage_timerCallback, this, _1),
 	     &this->compQueue);
     this->uiImage_timer = nh.createTimer(timer_options);
