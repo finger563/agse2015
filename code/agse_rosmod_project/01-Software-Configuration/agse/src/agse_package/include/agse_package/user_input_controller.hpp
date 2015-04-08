@@ -106,8 +106,10 @@ class user_input_controller : public Component
   unsigned int alarmLED;
   // Pin for Sample LED
   unsigned int sampleLED[3];
+  unsigned int sampleLEDBlinkDelay;
   // Pin for Bay LED
   unsigned int bayLED[3];
+  unsigned int bayLEDBlinkDelay;
   // Pin for Init LED
   unsigned int initLED[3];
 

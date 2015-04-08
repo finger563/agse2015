@@ -43,7 +43,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   pauseLED = 37; // P8_22 - Amber
   gpio_export(pauseLED);
   gpio_set_dir(pauseLED, OUTPUT_PIN);
-  pauseLEDBlinkDelay = 2;
+  pauseLEDBlinkDelay = 3;
 
   // ALARM MAIN LED
   alarmLED = 66; // P8_07 - Red
@@ -73,6 +73,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(sampleLED[1], OUTPUT_PIN);  
   gpio_export(sampleLED[2]);
   gpio_set_dir(sampleLED[2], OUTPUT_PIN);  
+  sampleLEDBlinkDelay = 3;
 
   // BAY MAIN LED
   bayLED[0] = 67; // P8_08 - Blue
@@ -84,6 +85,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(bayLED[1], OUTPUT_PIN);  
   gpio_export(bayLED[2]);
   gpio_set_dir(bayLED[2], OUTPUT_PIN);  
+  bayLEDBlinkDelay = 3;
 
   // Stop Init Timer
   initOneShotTimer.stop();
@@ -169,19 +171,22 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
   controlInputs_pub.publish(control);
 
   // HANDLE LED OUTPUTS HERE
-  static int currentBlinkDelay = 0;
+  static int currentPauseLEDBlinkDelay = 0;
+  static int currentSampleLEDBlinkDelay = 0;
+  static int currentBayLEDBlinkDelay = 0;
+
   if (paused)
     {
       gpio_set_value(pauseLED, HIGH);
     }
   else
     {
-      if (currentBlinkDelay++ < pauseLEDBlinkDelay)
+      if (currentPauseLEDBlinkDelay++ < pauseLEDBlinkDelay)
 	gpio_set_value(pauseLED,LOW);
       else
 	{
 	  gpio_set_value(pauseLED,HIGH);
-	  currentBlinkDelay = 0;
+	  currentPauseLEDBlinkDelay = 0;
 	}
     }
 
@@ -212,14 +217,14 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
     // FINDING_PB
     gpio_set_value(bayLED[0], HIGH); // Blue
 
-    // Blink Sample LED Gree
+    // Blink Sample LED Green
     gpio_set_value(sampleLED[0], LOW); // Switch ON Blue
-    if (currentBlinkDelay++ < pauseLEDBlinkDelay)
+    if (currentSampleLEDBlinkDelay++ < sampleLEDBlinkDelay)
       gpio_set_value(sampleLED[1], LOW);
     else
       {
 	gpio_set_value(sampleLED[1], HIGH);
-	currentBlinkDelay = 0;
+	currentSampleLEDBlinkDelay = 0;
       }
     break;
   case 4:
@@ -229,12 +234,12 @@ void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 
     // Blink Payload Bay LED Gree
     gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
-    if (currentBlinkDelay++ < pauseLEDBlinkDelay)
+    if (currentBayLEDBlinkDelay++ < bayLEDBlinkDelay)
       gpio_set_value(bayLED[1], LOW);
     else
       {
 	gpio_set_value(bayLED[1], HIGH);
-	currentBlinkDelay = 0;
+	currentBayLEDBlinkDelay = 0;
       }
     break;
   case 5:
