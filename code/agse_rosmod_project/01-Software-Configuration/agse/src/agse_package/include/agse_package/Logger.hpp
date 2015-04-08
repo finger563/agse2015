@@ -72,7 +72,7 @@ private:
   string log_content;
 
   // Max size of log_content before contents are written to file
-  const int max_log_unit = 1000;
+  int max_log_unit;
 
   // Log file stream
   ofstream log_stream;
@@ -81,11 +81,13 @@ private:
   string log_path;
 
   // Level of Logging
-  Log_Levels log_levels = {.DEBUG = false,
+  Log_Levels log_levels;/* = {.DEBUG = false,
 			   .INFO = true, 
 			   .WARNING = false, 
 			   .ERROR = true, 
 			   .CRITICAL = true};
+			*/
+
 
   // High Resolution Clock
   chrono::high_resolution_clock clock;

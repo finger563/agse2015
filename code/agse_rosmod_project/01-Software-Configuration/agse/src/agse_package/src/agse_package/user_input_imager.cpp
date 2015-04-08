@@ -117,11 +117,11 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
   agse_package::captureImage arg;
   Mat camera_feed;
 
-  ROS_INFO("UI Imager Timer Triggered");
+  //  ROS_INFO("UI Imager Timer Triggered");
 
   if (this->captureImage_client.call(arg)) {
 
-    ROS_INFO("Capture Image Client Call Successful");
+    //    ROS_INFO("Capture Image Client Call Successful");
     
     camera_feed = Mat(arg.response.height, 
 		      arg.response.width, 
@@ -138,6 +138,104 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
     cvShowImage( "UIP", Mode_1);
     cvNamedWindow( "UIP", 1 );
     cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+
+
+  //  key = 0;
+
+  /* 
+    key = cvWaitKey();
+
+    if (key == 65361) {
+
+      ROS_INFO("Mode 1 Activated");
+
+      Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
+
+      agse_package::captureImage arg;
+      Mat camera_feed;
+      if (this->captureImage_client.call(arg)) {
+
+	camera_feed = Mat(arg.response.height, 
+			  arg.response.width, 
+			  CV_8UC3, 
+			  arg.response.imgVector.data());
+
+      }
+
+      // Mat to IplImage *
+      processed_image = cvCreateImage(cvSize(camera_feed.cols, camera_feed.rows), 8, 3);
+      IplImage ipltemp = camera_feed;
+      cvCopy(&ipltemp, processed_image);
+
+      cvResize(processed_image, Mode_1);
+      cvShowImage( "UIP", Mode_1);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 65363) {
+
+      ROS_INFO("Mode 2 Activated");
+
+      Mode_2 = cvCreateImage( cvSize(800, 480), 8, 3);
+
+      // Mat to IplImage *
+      processed_image = cvCreateImage(cvSize(sample_gsImage.cols, sample_gsImage.rows), 8, 3);
+      IplImage ipltemp = sample_gsImage;
+      cvCopy(&ipltemp, processed_image);
+
+      cvResize(processed_image, Mode_2);
+      cvShowImage( "UIP", Mode_2);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 65362) {
+
+      ROS_INFO("Mode 3 Activated");
+
+      Mode_3 = cvCreateImage( cvSize(800, 480), 8, 3);
+
+      // Mat to IplImage *
+      processed_image = cvCreateImage(cvSize(pb_hsvImage.cols, pb_hsvImage.rows), 8, 3);
+      IplImage ipltemp = pb_hsvImage;
+      cvCopy(&ipltemp, processed_image);
+
+      cvResize(processed_image, Mode_3);
+      cvShowImage( "UIP", Mode_3);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 65364) {
+
+      ROS_INFO("Mode 4 Activated"); 
+
+      Mode_4 = cvCreateImage( cvSize(800, 480), 8, 3);
+
+      // Mat to IplImage *
+      processed_image = cvCreateImage(cvSize(pb_gsImage.cols, pb_gsImage.rows), 8, 3);
+      IplImage ipltemp = pb_gsImage;
+      cvCopy(&ipltemp, processed_image);
+
+      cvResize(processed_image, Mode_4);
+      cvShowImage( "UIP", Mode_4);
+      cvNamedWindow( "UIP", 1 );
+      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+      key = 0;
+    }
+
+    else if (key == 13) {
+      
+      ROS_INFO("Mode 5 Activated");
+
+      cvShowManyImages("UIP", 4, top_left, top_right, bottom_left, bottom_right);
+      key = 0;
+    }
+  */
 }
 //# End uiImage_timerCallback Marker
 
@@ -250,7 +348,7 @@ void user_input_imager::startUp()
     // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(0.5),
+             (ros::Duration(2.0),
 	     boost::bind(&user_input_imager::uiImage_timerCallback, this, _1),
 	     &this->compQueue);
     this->uiImage_timer = nh.createTimer(timer_options);
