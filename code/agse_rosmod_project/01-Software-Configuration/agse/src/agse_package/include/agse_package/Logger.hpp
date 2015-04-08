@@ -72,7 +72,7 @@ private:
   string log_content;
 
   // Max size of log_content before contents are written to file
-  int max_log_unit;// = 1000;
+  int max_log_unit;
 
   // Log file stream
   ofstream log_stream;
@@ -87,6 +87,7 @@ private:
 			   .ERROR = true, 
 			   .CRITICAL = true};
 			*/
+
   // High Resolution Clock
   chrono::high_resolution_clock clock;
 };
