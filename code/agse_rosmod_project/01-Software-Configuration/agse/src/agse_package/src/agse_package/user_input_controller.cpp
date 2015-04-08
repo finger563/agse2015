@@ -43,7 +43,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   pauseLED = 37; // P8_22 - Amber
   gpio_export(pauseLED);
   gpio_set_dir(pauseLED, OUTPUT_PIN);
-  pauseLEDBlinkDelay = 3;
+  pauseLEDBlinkDelay = 5;
 
   // ALARM MAIN LED
   alarmLED = 66; // P8_07 - Red
@@ -73,7 +73,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(sampleLED[1], OUTPUT_PIN);  
   gpio_export(sampleLED[2]);
   gpio_set_dir(sampleLED[2], OUTPUT_PIN);  
-  sampleLEDBlinkDelay = 3;
+  sampleLEDBlinkDelay = 5;
 
   // BAY MAIN LED
   bayLED[0] = 67; // P8_08 - Blue
@@ -85,7 +85,7 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   gpio_set_dir(bayLED[1], OUTPUT_PIN);  
   gpio_export(bayLED[2]);
   gpio_set_dir(bayLED[2], OUTPUT_PIN);  
-  bayLEDBlinkDelay = 3;
+  bayLEDBlinkDelay = 5;
 
   // Stop Init Timer
   initOneShotTimer.stop();
@@ -350,7 +350,7 @@ void user_input_controller::startUp()
     // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(0.2),
+             (ros::Duration(0.1),
 	     boost::bind(&user_input_controller::userInputTimerCallback, this, _1),
 	     &this->compQueue);
     this->userInputTimer = nh.createTimer(timer_options);

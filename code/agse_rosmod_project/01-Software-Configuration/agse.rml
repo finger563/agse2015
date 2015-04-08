@@ -266,7 +266,7 @@ package agse_package
      	    subscriber<armState> armState_sub;
 	    timer userInputTimer
 	    {
-	        period = 0.2s;
+	        period = 0.1s;
 	    }
 	}
         // ROS Component - servo_controller
