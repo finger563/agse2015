@@ -460,7 +460,13 @@ int Dynamixel::getSetCWAngleLimitCommand(byte id, short limit)
 
   // CW Compliance Margin
   buffer[pos++] = 0x06;
-  buffer[pos++] = limit;
+
+  byte hexH = 0;
+  byte hexL = 0;
+  toHexHLConversion(limit, &hexH, &hexL);
+  buffer[pos++] = hexL;
+  numberOfParameters++;
+  buffer[pos++] = hexH;
   numberOfParameters++;
 
   // bodyLength
@@ -489,7 +495,13 @@ int Dynamixel::getSetCCWAngleLimitCommand(byte id, short limit)
 
   // CW Compliance Margin
   buffer[pos++] = 0x08;
-  buffer[pos++] = limit;
+
+  byte hexH = 0;
+  byte hexL = 0;
+  toHexHLConversion(limit, &hexH, &hexL);
+  buffer[pos++] = hexL;
+  numberOfParameters++;
+  buffer[pos++] = hexH;
   numberOfParameters++;
 
   // bodyLength
