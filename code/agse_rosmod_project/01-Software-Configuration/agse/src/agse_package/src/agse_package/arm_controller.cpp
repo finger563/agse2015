@@ -299,7 +299,7 @@ void arm_controller::Finding_Sample_StateFunc()
 		  initArmRotation -= armRotationStep;
 		  if (initArmRotation < minArmRotation)
 		    {
-		      initArmRotation = startSeachArmRotation;
+		      initArmRotation = startSearchArmRotation;
 		      initRadialPos += radialPosStep;
 		      if (initRadialPos > maxRadialPos)
 			{
@@ -466,7 +466,7 @@ void arm_controller::Finding_PB_StateFunc()
 		  initArmRotation += armRotationStep;
 		  if (initArmRotation > maxArmRotation)
 		    {
-		      initArmRotation = minArmRotation;
+		      initArmRotation = startSearchArmRotation;
 		      initRadialPos += radialPosStep;
 		      if (initRadialPos > maxRadialPos)
 			{
@@ -747,7 +747,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
   // need to initialize the min and max sensor values
   maxRadialPos       = 275000;
   maxVerticalPos     = 495000;
-  maxArmRotation     = 285.0f;
+  maxArmRotation     = 330.0f;
   maxGripperRotation = 180.0f;
   maxGripperPos      = 260.0f;
 
