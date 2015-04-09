@@ -1,3 +1,6 @@
+#ifndef UIP_H
+#define UIP_H
+
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
@@ -8,12 +11,11 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
-
-  IplImage *DispImage;
-  IplImage *Mode_1;    
-  IplImage *Mode_2;    
-  IplImage *Mode_3;    
-  IplImage *Mode_4;    
+IplImage *DispImage;
+IplImage *Mode_1;    
+IplImage *Mode_2;    
+IplImage *Mode_3;    
+IplImage *Mode_4;    
 
 void cvShowManyImages(char* title, int nArgs, ...) {
 
@@ -185,3 +187,5 @@ void cvShowManyImages(char* title, int nArgs, ...) {
    cvReleaseImage(&DispImage);
    */
 }
+
+#endif

@@ -2,6 +2,7 @@
 
 //# Start User Globals Marker
 using namespace cv;
+#include "agse_package/uip.h"
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -13,18 +14,23 @@ using namespace cv;
 void user_input_imager::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
+  ROS_INFO("Initializing User Input Imager");
 
   //////////////////////////////////////////////
   // UIP LCD SETUP
   //////////////////////////////////////////////
   
   // The Four Images to show in UIP
-  top_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
-  bottom_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
+  //  top_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
+  //  bottom_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
 
   key = 0;
 
   Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
+  Mode_2 = cvCreateImage( cvSize(800, 480), 8, 3);
+  Mode_3 = cvCreateImage( cvSize(800, 480), 8, 3);
+  Mode_4 = cvCreateImage( cvSize(800, 480), 8, 3);
+  processed_image = cvCreateImage(cvSize(1920, 1080), 8, 3);
     // Stop Init Timer
     initOneShotTimer.stop();
 }
@@ -34,6 +40,9 @@ void user_input_imager::Init(const ros::TimerEvent& event)
 //# Start payloadBayDetectionImages_sub_OnOneData Marker
 void user_input_imager::payloadBayDetectionImages_sub_OnOneData(const agse_package::payloadBayDetectionImages::ConstPtr& received_data)
 {
+
+  ROS_INFO("Payload Bay Subscriber::Received processed payload bay images");
+
     // Business Logic for payloadBayDetectionImages_sub subscriber subscribing to topic payloadBayDetectionImages callback
   pb_rawImage = Mat(received_data->height, 
 		    received_data->width, 
@@ -81,6 +90,9 @@ void user_input_imager::sampleState_sub_OnOneData(const agse_package::sampleStat
 //# Start sampleDetectionImages_sub_OnOneData Marker
 void user_input_imager::sampleDetectionImages_sub_OnOneData(const agse_package::sampleDetectionImages::ConstPtr& received_data)
 {
+
+  ROS_INFO("Sample Subscriber::Received processed sample images");
+
     // Business Logic for sampleDetectionImages_sub subscriber subscribing to topic sampleDetectionImages callback 
   sample_rawImage = Mat(received_data->height, 
 			received_data->width, 
@@ -113,129 +125,99 @@ void user_input_imager::sampleDetectionImages_sub_OnOneData(const agse_package::
 //# Start uiImage_timerCallback Marker
 void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
 {
+  ROS_INFO("UIP Imager Timer Callback");
     // Business Logic for uiImage_timer 
   agse_package::captureImage arg;
   Mat camera_feed;
 
-  //  ROS_INFO("UI Imager Timer Triggered");
-
   if (this->captureImage_client.call(arg)) {
 
-    //    ROS_INFO("Capture Image Client Call Successful");
+    ROS_INFO("Capture Image Client Call Successful; Height: %d, Width: %d ", arg.response.height, arg.response.width);
     
     camera_feed = Mat(arg.response.height, 
 		      arg.response.width, 
 		      CV_8UC3, 
 		      arg.response.imgVector.data());
-  }
 
     // Mat to IplImage *
-    processed_image = cvCreateImage(cvSize(camera_feed.cols, camera_feed.rows), 8, 3);
     IplImage ipltemp = camera_feed;
     cvCopy(&ipltemp, processed_image);
-    
     cvResize(processed_image, Mode_1);
     cvShowImage( "UIP", Mode_1);
     cvNamedWindow( "UIP", 1 );
     cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+  }
 
+  key = 0;
+  key = cvWaitKey(1);
 
-  //  key = 0;
+  // RAW CAMERA FEED
+  if (key == 65361) {
+    ROS_INFO("Mode 1 Activated");
+    cvShowImage( "UIP", Mode_1);
+  }
+  /*
+  // SAMPLE PROCESSED IMAGE
+  else if (key == 65363) {
+    ROS_INFO("Mode 2 Activated");
 
-  /* 
-    key = cvWaitKey();
+    // Mat to IplImage *
+    processed_image = cvCreateImage(cvSize(sample_rawImage.cols, sample_rawImage.rows), 8, 3);
+    IplImage ipltemp = sample_rawImage;
+    cvCopy(&ipltemp, processed_image);
 
-    if (key == 65361) {
+    cvResize(processed_image, Mode_2);
+    cvShowImage( "UIP", Mode_2);
+    cvNamedWindow( "UIP", 1 );
+    cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+    key = 0;
 
-      ROS_INFO("Mode 1 Activated");
+  }
 
-      Mode_1 = cvCreateImage( cvSize(800, 480), 8, 3);
+  else if (key == 65362) {
 
-      agse_package::captureImage arg;
-      Mat camera_feed;
-      if (this->captureImage_client.call(arg)) {
+    ROS_INFO("Mode 3 Activated");
 
-	camera_feed = Mat(arg.response.height, 
-			  arg.response.width, 
-			  CV_8UC3, 
-			  arg.response.imgVector.data());
+    // Mat to IplImage *
+    processed_image = cvCreateImage(cvSize(pb_rawImage.cols, pb_rawImage.rows), 8, 3);
+    IplImage ipltemp = pb_rawImage;
+    cvCopy(&ipltemp, processed_image);
 
-      }
+    cvResize(processed_image, Mode_3);
+    cvShowImage( "UIP", Mode_3);
+    cvNamedWindow( "UIP", 1 );
+    cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+    key = 0;
+  }
 
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(camera_feed.cols, camera_feed.rows), 8, 3);
-      IplImage ipltemp = camera_feed;
-      cvCopy(&ipltemp, processed_image);
+  else if (key == 65364) {
 
-      cvResize(processed_image, Mode_1);
-      cvShowImage( "UIP", Mode_1);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
+    ROS_INFO("Mode 4 Activated"); 
 
-    else if (key == 65363) {
+    // Mat to IplImage *
+    processed_image = cvCreateImage(cvSize(pb_gsImage.cols, pb_gsImage.rows), 8, 3);
+    IplImage ipltemp = pb_gsImage;
+    cvCopy(&ipltemp, processed_image);
 
-      ROS_INFO("Mode 2 Activated");
+    cvResize(processed_image, Mode_4);
+    cvShowImage( "UIP", Mode_4);
+    cvNamedWindow( "UIP", 1 );
+    cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+    key = 0;
+  }
 
-      Mode_2 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(sample_gsImage.cols, sample_gsImage.rows), 8, 3);
-      IplImage ipltemp = sample_gsImage;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_2);
-      cvShowImage( "UIP", Mode_2);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 65362) {
-
-      ROS_INFO("Mode 3 Activated");
-
-      Mode_3 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(pb_hsvImage.cols, pb_hsvImage.rows), 8, 3);
-      IplImage ipltemp = pb_hsvImage;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_3);
-      cvShowImage( "UIP", Mode_3);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 65364) {
-
-      ROS_INFO("Mode 4 Activated"); 
-
-      Mode_4 = cvCreateImage( cvSize(800, 480), 8, 3);
-
-      // Mat to IplImage *
-      processed_image = cvCreateImage(cvSize(pb_gsImage.cols, pb_gsImage.rows), 8, 3);
-      IplImage ipltemp = pb_gsImage;
-      cvCopy(&ipltemp, processed_image);
-
-      cvResize(processed_image, Mode_4);
-      cvShowImage( "UIP", Mode_4);
-      cvNamedWindow( "UIP", 1 );
-      cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-      key = 0;
-    }
-
-    else if (key == 13) {
+  else if (key == 13) {
       
-      ROS_INFO("Mode 5 Activated");
-
-      cvShowManyImages("UIP", 4, top_left, top_right, bottom_left, bottom_right);
-      key = 0;
-    }
+    ROS_INFO("Mode 5 Activated");
+    cvShowManyImages("UIP", 4, top_left, top_right, bottom_left, bottom_right);
+    key = 0;
+  }
   */
+  else {
+    ROS_INFO("No Mode Activated");
+    cvShowImage( "UIP", Mode_1);
+  }
+
 }
 //# End uiImage_timerCallback Marker
 
@@ -348,7 +330,7 @@ void user_input_imager::startUp()
     // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(2.0),
+             (ros::Duration(0.5),
 	     boost::bind(&user_input_imager::uiImage_timerCallback, this, _1),
 	     &this->compQueue);
     this->uiImage_timer = nh.createTimer(timer_options);

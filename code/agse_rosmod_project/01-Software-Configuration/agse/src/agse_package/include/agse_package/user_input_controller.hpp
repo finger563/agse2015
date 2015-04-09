@@ -82,6 +82,8 @@ class user_input_controller : public Component
   bool halted;
   bool manual;
 
+  bool noGPIO;
+
   // used to keep track of AGSE state
   agse_package::armState arm;
   agse_package::sampleState sample;
