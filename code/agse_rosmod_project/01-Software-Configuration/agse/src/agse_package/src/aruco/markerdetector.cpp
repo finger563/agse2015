@@ -201,7 +201,7 @@ void MarkerDetector::detect ( const  cv::Mat &input,vector<Marker> &detectedMark
             if ( id!=-1 )
             {
  		if(_cornerMethod==LINES) // make LINES refinement before lose contour points
-		  refineCandidateLines( MarkerCanditates[i], camMatrix, distCoeff ); 
+		  //		  refineCandidateLines( MarkerCanditates[i], camMatrix, distCoeff ); 
                 markers_omp[omp_get_thread_num()].push_back ( MarkerCanditates[i] );
                 markers_omp[omp_get_thread_num()].back().id=id;
                 //sort the points so that they are always in the same order no matter the camera orientation
