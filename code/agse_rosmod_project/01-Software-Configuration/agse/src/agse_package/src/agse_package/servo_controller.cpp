@@ -75,6 +75,8 @@ void servo_controller::Init(const ros::TimerEvent& event)
       // Min: 0; Max: 254
       // for MX28T the CWComplianceMargin is the D gain
       dynamixel.setCWComplianceMargin(&serialPort, armServoID, complianceMargin);
+      dynamixel.setCWAngleLimit(&serialPort, armServoID, 1);
+      dynamixel.setCCWAngleLimit(&serialPort, armServoID, 4095);
       //dynamixel.setCCWComplianceMargin(&serialPort, armServoID, complianceMargin);
       //dynamixel.setCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);
       //dynamixel.setCCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);

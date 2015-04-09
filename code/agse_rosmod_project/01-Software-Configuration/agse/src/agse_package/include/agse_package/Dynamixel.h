@@ -42,6 +42,9 @@ class Dynamixel {
 
   int getSetAX12SpeedCommand(byte id, short speed);
 
+  int getSetCWAngleLimitCommand(byte id, short limit);
+  int getSetCCWAngleLimitCommand(byte id, short limit);
+
   int getSetCCWComplianceMarginCommand(byte id, short margin);
   int getSetCWComplianceMarginCommand(byte id, short margin);
 
@@ -61,6 +64,9 @@ class Dynamixel {
   int setPosition(SerialPort *serialPort, int idAX12, int position);
   
   int setSpeed(SerialPort *serialPort, int idAX12, int speed);
+
+  int setCCWAngleLimit(SerialPort *serialPort, int idAX12, int limit);
+  int setCWAngleLimit(SerialPort *serialPort, int idAX12, int limit);
 
   int setCCWComplianceMargin(SerialPort *serialPort, int idAX12, int margin);
   int setCWComplianceMargin(SerialPort *serialPort, int idAX12, int margin);
