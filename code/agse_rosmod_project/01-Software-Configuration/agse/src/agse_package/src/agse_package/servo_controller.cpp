@@ -28,6 +28,7 @@ void servo_controller::Init(const ros::TimerEvent& event)
 
   if (serialPort.connect(portName,9600)!=0)
     {
+      int pos;
       // ARM SERVO 
       pos = dynamixel.getPosition(&serialPort, armServoID);
       //      ROS_INFO("Arm base servo angle: %f\n",Dynamixel::posToAngle(pos));
