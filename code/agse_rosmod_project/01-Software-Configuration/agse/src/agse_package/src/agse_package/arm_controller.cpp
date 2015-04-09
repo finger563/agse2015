@@ -753,7 +753,7 @@ void arm_controller::Init(const ros::TimerEvent& event)
 
   minRadialPos       = 0;
   minVerticalPos     = 0;
-  minArmRotation     = 0.0f;
+  minArmRotation     = 1.0f;
   minGripperRotation = 0.0f;
   minGripperPos      = 190.0f;
 
