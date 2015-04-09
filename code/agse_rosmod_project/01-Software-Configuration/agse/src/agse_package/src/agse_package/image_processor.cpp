@@ -91,6 +91,7 @@ bool image_processor::sampleStateFromImageCallback(agse_package::sampleStateFrom
 	  sampleDetector.run(image,detectedObjectsMask,"autonomous_S"); 
 	//	ROS_INFO("Sample: %d, (%f,%f), %f",sample.state, sample.x, sample.y, sample.angle);
 	cv::imwrite("Sample-01-Raw.png", image+detectedObjectsMask);
+	cv::Mat sample_detected_image = image + detectedObjectsMask; 
 	if ( sample.x >= 0 && sample.x <= arg.response.width &&
 	     sample.y >= 0 && sample.y <= arg.response.height )
 	  {

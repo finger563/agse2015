@@ -151,17 +151,19 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
   key = 0;
   key = cvWaitKey(1);
 
+  // RAW CAMERA FEED
   if (key == 65361) {
     ROS_INFO("Mode 1 Activated");
     cvShowImage( "UIP", Mode_1);
   }
-
+  /*
+  // SAMPLE PROCESSED IMAGE
   else if (key == 65363) {
     ROS_INFO("Mode 2 Activated");
 
     // Mat to IplImage *
-    processed_image = cvCreateImage(cvSize(sample_gsImage.cols, sample_gsImage.rows), 8, 3);
-    IplImage ipltemp = sample_gsImage;
+    processed_image = cvCreateImage(cvSize(sample_rawImage.cols, sample_rawImage.rows), 8, 3);
+    IplImage ipltemp = sample_rawImage;
     cvCopy(&ipltemp, processed_image);
 
     cvResize(processed_image, Mode_2);
@@ -169,6 +171,7 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
     cvNamedWindow( "UIP", 1 );
     cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
     key = 0;
+
   }
 
   else if (key == 65362) {
@@ -176,8 +179,8 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
     ROS_INFO("Mode 3 Activated");
 
     // Mat to IplImage *
-    processed_image = cvCreateImage(cvSize(pb_hsvImage.cols, pb_hsvImage.rows), 8, 3);
-    IplImage ipltemp = pb_hsvImage;
+    processed_image = cvCreateImage(cvSize(pb_rawImage.cols, pb_rawImage.rows), 8, 3);
+    IplImage ipltemp = pb_rawImage;
     cvCopy(&ipltemp, processed_image);
 
     cvResize(processed_image, Mode_3);
@@ -209,7 +212,7 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
     cvShowManyImages("UIP", 4, top_left, top_right, bottom_left, bottom_right);
     key = 0;
   }
-
+  */
   else {
     ROS_INFO("No Mode Activated");
     cvShowImage( "UIP", Mode_1);
