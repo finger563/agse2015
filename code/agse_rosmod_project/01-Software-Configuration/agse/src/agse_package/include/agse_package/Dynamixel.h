@@ -52,6 +52,8 @@ class Dynamixel {
   Dynamixel();
   ~Dynamixel();
 
+  static float posToAngle_28T(short pos);
+  static short angleToPos_28T(float angle);
   static float posToAngle(short pos);
   static short angleToPos(float angle);
 
