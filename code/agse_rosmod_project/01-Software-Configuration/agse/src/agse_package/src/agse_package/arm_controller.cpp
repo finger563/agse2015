@@ -227,9 +227,10 @@ void arm_controller::Finding_Sample_StateFunc()
 {
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
+  static float startSearchArmRotation = 200.0f;
   static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
   static float initVerticalPos     = 311000;//minVerticalPos + 50000;
-  static float initArmRotation     = 100.0f;
+  static float initArmRotation     = startSearchArmRotation;
   static float initGripperRotation = gripperRotationSafe;
   static float initGripperPos      = gripperPosClosed;
   static bool firstRun = true;
@@ -295,10 +296,10 @@ void arm_controller::Finding_Sample_StateFunc()
 	      if (!foundSample) // if never found Sample:
 		{
 		  // increment arm rotation by arm rotation step
-		  initArmRotation += armRotationStep;
-		  if (initArmRotation > maxArmRotation)
+		  initArmRotation -= armRotationStep;
+		  if (initArmRotation < minArmRotation)
 		    {
-		      initArmRotation = minArmRotation;
+		      initArmRotation = startSeachArmRotation;
 		      initRadialPos += radialPosStep;
 		      if (initRadialPos > maxRadialPos)
 			{

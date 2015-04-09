@@ -23,15 +23,26 @@ void servo_controller::Init(const ros::TimerEvent& event)
   gripperRotationSpeed = 0;
   gripperPositionSpeed = 0;
 
-  complianceMargin = 0;
+  complianceMargin = 70;
   complianceSlope = 5;
-
-  armRotationGoal = 0;
-  gripperRotationGoal = 180.0f;
-  gripperPosGoal = 250.0f;
 
   if (serialPort.connect(portName,9600)!=0)
     {
+      // ARM SERVO 
+      pos = dynamixel.getPosition(&serialPort, armServoID);
+      //      ROS_INFO("Arm base servo angle: %f\n",Dynamixel::posToAngle(pos));
+      armRotationGoal = Dynamixel::posToAngle(pos);
+
+      // GRIPPER ROTATION SERVO
+      pos = dynamixel.getPosition(&serialPort, gripperRotationID);
+      //      ROS_INFO("Gripper rotation servo angle: %f\n",Dynamixel::posToAngle(pos));
+      gripperRotationGoal = Dynamixel::posToAngle(pos);
+    
+      // GRIPPER POSITION SERVO
+      pos = dynamixel.getPosition(&serialPort, gripperPositionID);
+      //      ROS_INFO("Gripper position servo angle: %f\n",Dynamixel::posToAngle(pos));
+      gripperPosGoal = Dynamixel::posToAngle(pos);
+
       // Command line args for servo control
       for (int i = 0; i < node_argc; i++) 
 	{
@@ -55,21 +66,22 @@ void servo_controller::Init(const ros::TimerEvent& event)
 	    gripperPositionSpeed = atoi(node_argv[i+1]);
 	}
 
-      dynamixel.setSpeed(&serialPort, armServoID, armServoSpeed);
-      dynamixel.setSpeed(&serialPort, gripperRotationID, gripperRotationSpeed);
-      dynamixel.setSpeed(&serialPort, gripperPositionID, gripperPositionSpeed);
+      //dynamixel.setSpeed(&serialPort, armServoID, armServoSpeed);
+      //dynamixel.setSpeed(&serialPort, gripperRotationID, gripperRotationSpeed);
+      //dynamixel.setSpeed(&serialPort, gripperPositionID, gripperPositionSpeed);
 
       // Setting a compliance margin
       // Min: 0; Max: 254
+      // for MX28T the CWComplianceMargin is the D gain
       dynamixel.setCWComplianceMargin(&serialPort, armServoID, complianceMargin);
-      dynamixel.setCCWComplianceMargin(&serialPort, armServoID, complianceMargin);
+      //dynamixel.setCCWComplianceMargin(&serialPort, armServoID, complianceMargin);
       //dynamixel.setCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);
       //dynamixel.setCCWComplianceMargin(&serialPort, gripperRotationID, complianceMargin);
       //dynamixel.setCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
       //dynamixel.setCCWComplianceMargin(&serialPort, gripperPositionID, complianceMargin);
 
-      dynamixel.setCWComplianceSlope(&serialPort, armServoID, complianceSlope);
-      dynamixel.setCCWComplianceSlope(&serialPort, armServoID, complianceSlope);
+      //dynamixel.setCWComplianceSlope(&serialPort, armServoID, complianceSlope);
+      //dynamixel.setCCWComplianceSlope(&serialPort, armServoID, complianceSlope);
     }
   else
     {
@@ -165,19 +177,16 @@ void servo_controller::servoTimerCallback(const ros::TimerEvent& event)
       int pos; // temp value to store position from servo
     
       // ARM SERVO 
-      dynamixel.setPosition(&serialPort, armServoID, Dynamixel::angleToPos(armRotationCurrent));
       pos = dynamixel.getPosition(&serialPort, armServoID);
       //      ROS_INFO("Arm base servo angle: %f\n",Dynamixel::posToAngle(pos));
       armRotationCurrent = Dynamixel::posToAngle(pos);
 
       // GRIPPER ROTATION SERVO
-      dynamixel.setPosition(&serialPort, gripperRotationID, Dynamixel::angleToPos(gripperRotationCurrent));
       pos = dynamixel.getPosition(&serialPort, gripperRotationID);
       //      ROS_INFO("Gripper rotation servo angle: %f\n",Dynamixel::posToAngle(pos));
       gripperRotationCurrent = Dynamixel::posToAngle(pos);
     
       // GRIPPER POSITION SERVO
-      dynamixel.setPosition(&serialPort, gripperPositionID, Dynamixel::angleToPos(gripperPosCurrent));
       pos = dynamixel.getPosition(&serialPort, gripperPositionID);
       //      ROS_INFO("Gripper position servo angle: %f\n",Dynamixel::posToAngle(pos));
       gripperPosCurrent = Dynamixel::posToAngle(pos);
