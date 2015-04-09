@@ -8,7 +8,8 @@
 //      USER INCLUDES GO HERE
 // --------------------------------
 //# Start User Includes Marker
-#include "agse_package/uip.h"
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 using namespace cv;
 //# End User Includes Marker
 

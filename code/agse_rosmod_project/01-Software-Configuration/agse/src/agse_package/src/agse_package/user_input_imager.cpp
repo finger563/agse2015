@@ -2,6 +2,7 @@
 
 //# Start User Globals Marker
 using namespace cv;
+#include "agse_package/uip.h"
 //# End User Globals Marker
 
 // -------------------------------------------------------
@@ -13,14 +14,15 @@ using namespace cv;
 void user_input_imager::Init(const ros::TimerEvent& event)
 {
     // Initialize Component
+  ROS_INFO("Initializing User Input Imager");
 
   //////////////////////////////////////////////
   // UIP LCD SETUP
   //////////////////////////////////////////////
   
   // The Four Images to show in UIP
-  top_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
-  bottom_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
+  //  top_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
+  //  bottom_right = cvLoadImage("/home/debian/Repositories/agse2015/code/UIP/input/white.png");
 
   key = 0;
 
@@ -34,6 +36,7 @@ void user_input_imager::Init(const ros::TimerEvent& event)
 //# Start payloadBayDetectionImages_sub_OnOneData Marker
 void user_input_imager::payloadBayDetectionImages_sub_OnOneData(const agse_package::payloadBayDetectionImages::ConstPtr& received_data)
 {
+  /*
     // Business Logic for payloadBayDetectionImages_sub subscriber subscribing to topic payloadBayDetectionImages callback
   pb_rawImage = Mat(received_data->height, 
 		    received_data->width, 
@@ -58,7 +61,7 @@ void user_input_imager::payloadBayDetectionImages_sub_OnOneData(const agse_packa
   bottom_left = cvCreateImage(cvSize(pb_rawImage.cols, pb_rawImage.rows), 8, 3);
   IplImage ipltemp = pb_rawImage;
   cvCopy(&ipltemp, bottom_left);
-
+  */
 }
 //# End payloadBayDetectionImages_sub_OnOneData Marker
 // OnOneData Subscription handler for payloadBayState_sub subscriber
@@ -81,6 +84,7 @@ void user_input_imager::sampleState_sub_OnOneData(const agse_package::sampleStat
 //# Start sampleDetectionImages_sub_OnOneData Marker
 void user_input_imager::sampleDetectionImages_sub_OnOneData(const agse_package::sampleDetectionImages::ConstPtr& received_data)
 {
+  /*
     // Business Logic for sampleDetectionImages_sub subscriber subscribing to topic sampleDetectionImages callback 
   sample_rawImage = Mat(received_data->height, 
 			received_data->width, 
@@ -105,7 +109,7 @@ void user_input_imager::sampleDetectionImages_sub_OnOneData(const agse_package::
   top_left = cvCreateImage(cvSize(sample_rawImage.cols, sample_rawImage.rows), 8, 3);
   IplImage ipltemp = sample_rawImage;
   cvCopy(&ipltemp, top_left);
-
+  */
 }
 //# End sampleDetectionImages_sub_OnOneData Marker
 
@@ -113,20 +117,21 @@ void user_input_imager::sampleDetectionImages_sub_OnOneData(const agse_package::
 //# Start uiImage_timerCallback Marker
 void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
 {
+  ROS_INFO("UIP Imager Timer Callback");
     // Business Logic for uiImage_timer 
   agse_package::captureImage arg;
   Mat camera_feed;
 
   //  ROS_INFO("UI Imager Timer Triggered");
 
-  this->captureImage_client.call(arg);
+  if (this->captureImage_client.call(arg)) {
 
-  //    ROS_INFO("Capture Image Client Call Successful");
+      ROS_INFO("Capture Image Client Call Successful");
     
-  camera_feed = Mat(arg.response.height, 
-		    arg.response.width, 
-		    CV_8UC3, 
-		    arg.response.imgVector.data());
+      camera_feed = Mat(arg.response.height, 
+			arg.response.width, 
+			CV_8UC3, 
+			arg.response.imgVector.data());
 
     // Mat to IplImage *
     processed_image = cvCreateImage(cvSize(camera_feed.cols, camera_feed.rows), 8, 3);
@@ -138,6 +143,7 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
     cvNamedWindow( "UIP", 1 );
     cvSetWindowProperty("UIP", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 
+  }
 
   //  key = 0;
 
@@ -347,7 +353,7 @@ void user_input_imager::startUp()
     // timer: timer.properties["name"]
     timer_options = 
 	ros::TimerOptions
-             (ros::Duration(2.0),
+             (ros::Duration(5.0),
 	     boost::bind(&user_input_imager::uiImage_timerCallback, this, _1),
 	     &this->compQueue);
     this->uiImage_timer = nh.createTimer(timer_options);

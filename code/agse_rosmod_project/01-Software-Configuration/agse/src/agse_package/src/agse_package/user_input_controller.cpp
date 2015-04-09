@@ -15,78 +15,91 @@ void user_input_controller::Init(const ros::TimerEvent& event)
   paused = false;
   halted = false;
   manual = false;
+  
+  noGPIO = false;
 
-  //////////////////////////////////////////////
-  // UIP SWITCHES
-  //////////////////////////////////////////////
+  // Command line args for radial goal
+  for (int i = 0; i < node_argc; i++)
+    {
+      if (!strcmp(node_argv[i], "-noGPIO"))
+	{
+	  noGPIO = true;
+	}
+    }
 
-  // PAUSE Switch - Amber
-  pauseSwitchPin = 27; // P8_17
-  gpio_export(pauseSwitchPin);
-  gpio_set_dir(pauseSwitchPin,INPUT_PIN);
+  if (noGPIO == false) {
 
-  // MANUAL Switch - Blue
-  manualSwitchPin = 22; // P8_19
-  gpio_export(manualSwitchPin);
-  gpio_set_dir(manualSwitchPin,INPUT_PIN);
+    //////////////////////////////////////////////
+    // UIP SWITCHES
+    //////////////////////////////////////////////
 
-  // HALT Switch - Red
-  haltSwitchPin = 65; // P8_18
-  gpio_export(haltSwitchPin);
-  gpio_set_dir(haltSwitchPin,INPUT_PIN);
+    // PAUSE Switch - Amber
+    pauseSwitchPin = 27; // P8_17
+    gpio_export(pauseSwitchPin);
+    gpio_set_dir(pauseSwitchPin,INPUT_PIN);
 
-  //////////////////////////////////////////////
-  // UIP LEDS
-  //////////////////////////////////////////////
+    // MANUAL Switch - Blue
+    manualSwitchPin = 22; // P8_19
+    gpio_export(manualSwitchPin);
+    gpio_set_dir(manualSwitchPin,INPUT_PIN);
 
-  // PAUSE MAIN LED 
-  pauseLED = 37; // P8_22 - Amber
-  gpio_export(pauseLED);
-  gpio_set_dir(pauseLED, OUTPUT_PIN);
-  pauseLEDBlinkDelay = 5;
+    // HALT Switch - Red
+    haltSwitchPin = 65; // P8_18
+    gpio_export(haltSwitchPin);
+    gpio_set_dir(haltSwitchPin,INPUT_PIN);
 
-  // ALARM MAIN LED
-  alarmLED = 66; // P8_07 - Red
-  gpio_export(alarmLED);
-  gpio_set_dir(alarmLED, OUTPUT_PIN);  
+    //////////////////////////////////////////////
+    // UIP LEDS
+    //////////////////////////////////////////////
 
-  // INIT MAIN LED
-  initLED[0] = 45; // P8_11 - Blue
-  initLED[1] = 44; // P8_12 - Green
-  initLED[2] = 23; // P8_13 - Red
-  gpio_export(initLED[0]);
-  gpio_set_dir(initLED[0], OUTPUT_PIN);  
-  gpio_export(initLED[1]);
-  gpio_set_dir(initLED[1], OUTPUT_PIN);  
-  gpio_export(initLED[2]);
-  gpio_set_dir(initLED[2], OUTPUT_PIN);  
+    // PAUSE MAIN LED 
+    pauseLED = 37; // P8_22 - Amber
+    gpio_export(pauseLED);
+    gpio_set_dir(pauseLED, OUTPUT_PIN);
+    pauseLEDBlinkDelay = 5;
 
-  gpio_set_value(initLED[0], HIGH);
+    // ALARM MAIN LED
+    alarmLED = 66; // P8_07 - Red
+    gpio_export(alarmLED);
+    gpio_set_dir(alarmLED, OUTPUT_PIN);  
 
-  // SAMPLE MAIN LED
-  sampleLED[0] = 26; // P8_14 - Blue
-  sampleLED[1] = 47; // P8_15 - Green
-  sampleLED[2] = 46; // P8_16 - Red
-  gpio_export(sampleLED[0]);
-  gpio_set_dir(sampleLED[0], OUTPUT_PIN);  
-  gpio_export(sampleLED[1]);
-  gpio_set_dir(sampleLED[1], OUTPUT_PIN);  
-  gpio_export(sampleLED[2]);
-  gpio_set_dir(sampleLED[2], OUTPUT_PIN);  
-  sampleLEDBlinkDelay = 5;
+    // INIT MAIN LED
+    initLED[0] = 45; // P8_11 - Blue
+    initLED[1] = 44; // P8_12 - Green
+    initLED[2] = 23; // P8_13 - Red
+    gpio_export(initLED[0]);
+    gpio_set_dir(initLED[0], OUTPUT_PIN);  
+    gpio_export(initLED[1]);
+    gpio_set_dir(initLED[1], OUTPUT_PIN);  
+    gpio_export(initLED[2]);
+    gpio_set_dir(initLED[2], OUTPUT_PIN);  
 
-  // BAY MAIN LED
-  bayLED[0] = 67; // P8_08 - Blue
-  bayLED[1] = 69; // P8_09 - Green
-  bayLED[2] = 68; // P8_10 - Red
-  gpio_export(bayLED[0]);
-  gpio_set_dir(bayLED[0], OUTPUT_PIN);  
-  gpio_export(bayLED[1]);
-  gpio_set_dir(bayLED[1], OUTPUT_PIN);  
-  gpio_export(bayLED[2]);
-  gpio_set_dir(bayLED[2], OUTPUT_PIN);  
-  bayLEDBlinkDelay = 5;
+    gpio_set_value(initLED[0], HIGH);
 
+    // SAMPLE MAIN LED
+    sampleLED[0] = 26; // P8_14 - Blue
+    sampleLED[1] = 47; // P8_15 - Green
+    sampleLED[2] = 46; // P8_16 - Red
+    gpio_export(sampleLED[0]);
+    gpio_set_dir(sampleLED[0], OUTPUT_PIN);  
+    gpio_export(sampleLED[1]);
+    gpio_set_dir(sampleLED[1], OUTPUT_PIN);  
+    gpio_export(sampleLED[2]);
+    gpio_set_dir(sampleLED[2], OUTPUT_PIN);  
+    sampleLEDBlinkDelay = 5;
+
+    // BAY MAIN LED
+    bayLED[0] = 67; // P8_08 - Blue
+    bayLED[1] = 69; // P8_09 - Green
+    bayLED[2] = 68; // P8_10 - Red
+    gpio_export(bayLED[0]);
+    gpio_set_dir(bayLED[0], OUTPUT_PIN);  
+    gpio_export(bayLED[1]);
+    gpio_set_dir(bayLED[1], OUTPUT_PIN);  
+    gpio_export(bayLED[2]);
+    gpio_set_dir(bayLED[2], OUTPUT_PIN);  
+    bayLEDBlinkDelay = 5;
+  }
   // Stop Init Timer
   initOneShotTimer.stop();
 }
@@ -123,133 +136,136 @@ void user_input_controller::armState_sub_OnOneData(const agse_package::armState:
 //# Start userInputTimerCallback Marker
 void user_input_controller::userInputTimerCallback(const ros::TimerEvent& event)
 {
-  // Business Logic for userInputTimer
-  // HANDLE MISSILE SWITCHES HERE
-  unsigned int previousSwitchState = pauseSwitchState;
-  gpio_get_value(pauseSwitchPin, &pauseSwitchState);
-  //  ROS_INFO("Pause Switch State: %d", pauseSwitchState);
 
-  agse_package::controlInputs control;
+  if (noGPIO == false) {
+
+    // Business Logic for userInputTimer
+    // HANDLE MISSILE SWITCHES HERE
+    unsigned int previousSwitchState = pauseSwitchState;
+    gpio_get_value(pauseSwitchPin, &pauseSwitchState);
+    //  ROS_INFO("Pause Switch State: %d", pauseSwitchState);
+
+    agse_package::controlInputs control;
   
-  if ( previousSwitchState != pauseSwitchState )
-    {
-      paused = (pauseSwitchState == HIGH) ? true : false;
-      if (paused) {
-	ROS_INFO("Pausing the system!");
+    if ( previousSwitchState != pauseSwitchState )
+      {
+	paused = (pauseSwitchState == HIGH) ? true : false;
+	if (paused) {
+	  ROS_INFO("Pausing the system!");
+	}
+	else {
+	  ROS_INFO("Unpausing the system!");
+	}
       }
-      else {
-	ROS_INFO("Unpausing the system!");
+    previousSwitchState = haltSwitchState;
+    gpio_get_value(haltSwitchPin, &haltSwitchState);
+    if ( previousSwitchState != haltSwitchState )
+      {
+	halted = (haltSwitchState == HIGH) ? true : false;
+	if (halted) {
+	  ROS_INFO("Halting the system!");
+	}
+	else {
+	  ROS_INFO("Un-halting the system!");
+	}
       }
-    }
-  previousSwitchState = haltSwitchState;
-  gpio_get_value(haltSwitchPin, &haltSwitchState);
-  if ( previousSwitchState != haltSwitchState )
-    {
-      halted = (haltSwitchState == HIGH) ? true : false;
-      if (halted) {
-	ROS_INFO("Halting the system!");
+    previousSwitchState = manualSwitchState;
+    gpio_get_value(manualSwitchPin, &manualSwitchState);
+    if ( previousSwitchState != manualSwitchState )
+      {
+	manual= (manualSwitchState == HIGH) ? true : false;
+	if (manual) {
+	  ROS_INFO("Switching the system to manual!");
+	}
+	else {
+	  ROS_INFO("Switching the system to automatic!");
+	}
       }
-      else {
-	ROS_INFO("Un-halting the system!");
-      }
-    }
-  previousSwitchState = manualSwitchState;
-  gpio_get_value(manualSwitchPin, &manualSwitchState);
-  if ( previousSwitchState != manualSwitchState )
-    {
-      manual= (manualSwitchState == HIGH) ? true : false;
-      if (manual) {
-	ROS_INFO("Switching the system to manual!");
-      }
-      else {
-	ROS_INFO("Switching the system to automatic!");
-      }
-    }
-  control.paused = paused;
-  control.stop = halted;
-  control.manual = manual;
-  controlInputs_pub.publish(control);
+    control.paused = paused;
+    control.stop = halted;
+    control.manual = manual;
+    controlInputs_pub.publish(control);
 
-  // HANDLE LED OUTPUTS HERE
-  static int currentPauseLEDBlinkDelay = 0;
-  static int currentSampleLEDBlinkDelay = 0;
-  static int currentBayLEDBlinkDelay = 0;
+    // HANDLE LED OUTPUTS HERE
+    static int currentPauseLEDBlinkDelay = 0;
+    static int currentSampleLEDBlinkDelay = 0;
+    static int currentBayLEDBlinkDelay = 0;
 
-  if (paused)
-    {
-      gpio_set_value(pauseLED, HIGH);
+    if (paused)
+      {
+	gpio_set_value(pauseLED, HIGH);
+      }
+    else
+      {
+	if (currentPauseLEDBlinkDelay++ < pauseLEDBlinkDelay)
+	  gpio_set_value(pauseLED,LOW);
+	else
+	  {
+	    gpio_set_value(pauseLED,HIGH);
+	    currentPauseLEDBlinkDelay = 0;
+	  }
+      }
+
+    if (halted) {
+      gpio_set_value(alarmLED, HIGH);
     }
-  else
-    {
-      if (currentPauseLEDBlinkDelay++ < pauseLEDBlinkDelay)
-	gpio_set_value(pauseLED,LOW);
+    else {
+      gpio_set_value(alarmLED, LOW);
+    }
+
+    switch (arm.state) {
+    case 0:
+      // INIT
+      gpio_set_value(initLED[0], HIGH);
+      break;
+    case 1:
+      // OPENING_PB
+      gpio_set_value(initLED[0], LOW); // Switch OFF Blue
+      gpio_set_value(initLED[1], HIGH); // Switch ON Green
+      gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
+      //    gpio_set_value(bayLED[1], HIGH); // Switch ON Green    
+      break;
+    case 2:
+      // FINDING_SAMPLE
+      gpio_set_value(sampleLED[0], HIGH); // Switch ON Blue
+      break;
+    case 3:
+      // FINDING_PB
+      gpio_set_value(bayLED[0], HIGH); // Blue
+
+      // Blink Sample LED Green
+      gpio_set_value(sampleLED[0], LOW); // Switch ON Blue
+      if (currentSampleLEDBlinkDelay++ < sampleLEDBlinkDelay)
+	gpio_set_value(sampleLED[1], LOW);
       else
 	{
-	  gpio_set_value(pauseLED,HIGH);
-	  currentPauseLEDBlinkDelay = 0;
+	  gpio_set_value(sampleLED[1], HIGH);
+	  currentSampleLEDBlinkDelay = 0;
 	}
+      break;
+    case 4:
+      // GRABBING_SAMPLE
+      gpio_set_value(sampleLED[0], LOW); // Switch OFF Blue
+      gpio_set_value(sampleLED[1], HIGH); // Switch ON Green    
+
+      // Blink Payload Bay LED Gree
+      gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
+      if (currentBayLEDBlinkDelay++ < bayLEDBlinkDelay)
+	gpio_set_value(bayLED[1], LOW);
+      else
+	{
+	  gpio_set_value(bayLED[1], HIGH);
+	  currentBayLEDBlinkDelay = 0;
+	}
+      break;
+    case 5:
+      gpio_set_value(bayLED[1], HIGH);
+      gpio_set_value(sampleLED[1], HIGH);
+      break;
+    default:
+      break;
     }
-
-  if (halted) {
-    gpio_set_value(alarmLED, HIGH);
   }
-  else {
-    gpio_set_value(alarmLED, LOW);
-  }
-
-  switch (arm.state) {
-  case 0:
-    // INIT
-    gpio_set_value(initLED[0], HIGH);
-    break;
-  case 1:
-    // OPENING_PB
-    gpio_set_value(initLED[0], LOW); // Switch OFF Blue
-    gpio_set_value(initLED[1], HIGH); // Switch ON Green
-    gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
-    //    gpio_set_value(bayLED[1], HIGH); // Switch ON Green    
-    break;
-  case 2:
-    // FINDING_SAMPLE
-    gpio_set_value(sampleLED[0], HIGH); // Switch ON Blue
-    break;
-  case 3:
-    // FINDING_PB
-    gpio_set_value(bayLED[0], HIGH); // Blue
-
-    // Blink Sample LED Green
-    gpio_set_value(sampleLED[0], LOW); // Switch ON Blue
-    if (currentSampleLEDBlinkDelay++ < sampleLEDBlinkDelay)
-      gpio_set_value(sampleLED[1], LOW);
-    else
-      {
-	gpio_set_value(sampleLED[1], HIGH);
-	currentSampleLEDBlinkDelay = 0;
-      }
-    break;
-  case 4:
-    // GRABBING_SAMPLE
-    gpio_set_value(sampleLED[0], LOW); // Switch OFF Blue
-    gpio_set_value(sampleLED[1], HIGH); // Switch ON Green    
-
-    // Blink Payload Bay LED Gree
-    gpio_set_value(bayLED[0], LOW); // Switch OFF Blue
-    if (currentBayLEDBlinkDelay++ < bayLEDBlinkDelay)
-      gpio_set_value(bayLED[1], LOW);
-    else
-      {
-	gpio_set_value(bayLED[1], HIGH);
-	currentBayLEDBlinkDelay = 0;
-      }
-    break;
-  case 5:
-    gpio_set_value(bayLED[1], HIGH);
-    gpio_set_value(sampleLED[1], HIGH);
-    break;
-  default:
-    break;
-  }
-
 }
 //# End userInputTimerCallback Marker
 
@@ -266,8 +282,10 @@ user_input_controller::~user_input_controller()
     payloadBayState_sub.shutdown();
     armState_sub.shutdown();
 //# Start Destructor Marker
-    gpio_set_value(initLED[0], LOW);
-    gpio_set_value(pauseLED, LOW);
+    if (noGPIO == false) {
+      gpio_set_value(initLED[0], LOW);
+      gpio_set_value(pauseLED, LOW);
+    }
 //# End Destructor Marker
 }
 
