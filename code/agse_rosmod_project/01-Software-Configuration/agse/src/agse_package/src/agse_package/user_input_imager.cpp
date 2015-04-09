@@ -119,15 +119,14 @@ void user_input_imager::uiImage_timerCallback(const ros::TimerEvent& event)
 
   //  ROS_INFO("UI Imager Timer Triggered");
 
-  if (this->captureImage_client.call(arg)) {
+  this->captureImage_client.call(arg);
 
-    //    ROS_INFO("Capture Image Client Call Successful");
+  //    ROS_INFO("Capture Image Client Call Successful");
     
-    camera_feed = Mat(arg.response.height, 
-		      arg.response.width, 
-		      CV_8UC3, 
-		      arg.response.imgVector.data());
-  }
+  camera_feed = Mat(arg.response.height, 
+		    arg.response.width, 
+		    CV_8UC3, 
+		    arg.response.imgVector.data());
 
     // Mat to IplImage *
     processed_image = cvCreateImage(cvSize(camera_feed.cols, camera_feed.rows), 8, 3);
