@@ -17,7 +17,7 @@ void image_processor::Init(const ros::TimerEvent& event)
   // initialize both the sample detector code
   // and the payload bay (marker) detector code
     sampleDetector.init();
-    payloadBayDetector.init( 0.75f, "camera.yml");
+    payloadBayDetector.init( 0.75f, "/home/ubuntu/camera.yml");
 
     // Command line args for image processor
     for (int i = 0; i < node_argc; i++)
