@@ -112,7 +112,7 @@ void arm_controller::UpdateArmPosition()
 
 bool arm_controller::CheckGoals()
 {
-#if AGSE_DEBUG
+#if 1
   ROS_INFO("RADIAL GOAL: %d",goalRadialPos);
   ROS_INFO("RADIUS : %d",currentRadialPos);
   ROS_INFO("HEIGHT GOAL: %d",goalVerticalPos);
@@ -134,6 +134,7 @@ bool arm_controller::CheckGoals()
     return false;
   if ( abs(goalGripperPos - currentGripperPos) > gripperPosEpsilon )
     return false;
+  ROS_INFO("Reached Goals");
   return true;
 }
 
@@ -227,7 +228,7 @@ void arm_controller::Finding_Sample_StateFunc()
 {
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
-  static float startSearchArmRotation = 200.0f;
+  static float startSearchArmRotation = 0.0f; //200.0f;
   static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
   static float initVerticalPos     = 311000;//minVerticalPos + 50000;
   static float initArmRotation     = startSearchArmRotation;
@@ -251,7 +252,7 @@ void arm_controller::Finding_Sample_StateFunc()
   static float armRotationStep = 15.0f;     // degrees between steps of the state search
   static float radialPosStep = 10000.0f;    // amount to move by in radius
   static float armRotationScale = 1.0f/150.0f;  // amount to move by in theta based on image space
-  static float radialPosScale = 75.0f;         // amount to move by in radius based on image space
+  static float radialPosScale = 100.0f;         // amount to move by in radius based on image space
 
   static float positionRadius = 50.0f; // once center of sample is in this radius, we are done
   
@@ -296,8 +297,8 @@ void arm_controller::Finding_Sample_StateFunc()
 	      if (!foundSample) // if never found Sample:
 		{
 		  // increment arm rotation by arm rotation step
-		  initArmRotation -= armRotationStep;
-		  if (initArmRotation < minArmRotation)
+		  initArmRotation += armRotationStep;
+		  if (initArmRotation >= 200.0f) //< minArmRotation)
 		    {
 		      initArmRotation = startSearchArmRotation;
 		      initRadialPos += radialPosStep;
@@ -351,7 +352,7 @@ void arm_controller::Finding_Sample_StateFunc()
 		  // if sY > 0 : rotate CW, else if sY < 0 CCW
 		  if ( abs(sY) > positionRadius )
 		    {
-		      initArmRotation += (-sY) * armRotationScale;
+		      initArmRotation += (sY) * armRotationScale;
 		      if ( initArmRotation > maxArmRotation )
 			initArmRotation = maxArmRotation;
 		      if ( initArmRotation < minArmRotation )
@@ -378,6 +379,7 @@ void arm_controller::Finding_Sample_StateFunc()
       sample = internalSampleState;
       // transition to next state (GRABBING_SAMPLE)
       currentState = FINDING_PB;
+      //      currentState = GRABBING_SAMPLE;
       stateChanged = true;
     }
 }
@@ -386,7 +388,7 @@ void arm_controller::Finding_PB_StateFunc()
 {
   // initialize static members for initial values of this state
   //   e.g. where the search starts, what the goals of the state are, etc.
-  static float startSearchArmRotation = 230.0f;
+  static float startSearchArmRotation = 200.0f;
   static float initRadialPos       = (maxRadialPos + minRadialPos) * 3.0f / 4.0f;
   static float initVerticalPos     = minVerticalPos + 50000;
   static float initArmRotation     = startSearchArmRotation;
@@ -418,7 +420,7 @@ void arm_controller::Finding_PB_StateFunc()
   static float armRotationStep = 15.0f;     // degrees between steps of the state search (arm rotation)
   static float radialPosStep = 10000.0f;    // distance between steps of state search (radius)
   static float armRotationScale = 1.0f/150.0f;   // amount to move by in theta based on image space 
-  static float radialPosScale = 75.0f;          // amount to move by in radius based on image space
+  static float radialPosScale = 100.0f;          // amount to move by in radius based on image space
 
   static float positionRadius = 50.0f; // once center of PB is in this radius, we are done
   
@@ -518,7 +520,7 @@ void arm_controller::Finding_PB_StateFunc()
 		  // if pbY < 0 : rotate CW, else if pbY > 0 rotate CCW
 		  if ( abs(pbY) > positionRadius )
 		    {
-		      initArmRotation += (-pbY) * armRotationScale;
+		      initArmRotation += (pbY) * armRotationScale;
 		      if ( initArmRotation > maxArmRotation )
 			initArmRotation = maxArmRotation;
 		      if ( initArmRotation < minArmRotation )
@@ -538,6 +540,10 @@ void arm_controller::Finding_PB_StateFunc()
 		  goalArmRotation = initArmRotation;
 		}
 	    }
+	}
+      else // else client call to detector failed
+	{
+	  ROS_INFO("CLIENT CALL TO PAYLOAD BAY DETECTOR FAILED");
 	}
     } else // else payload has been found and is within radius
     {
@@ -572,7 +578,7 @@ void arm_controller::Grabbing_Sample_StateFunc()
       float angleOffset = 0;
       angleOffset = atan2( arcLengthBetweenGripperAndCamera, goalRadialPos ) * 180.0f / M_PI;
       ROS_INFO("ANGLE OFFSET = %f",angleOffset);
-      goalArmRotation = sample.pos.theta + angleOffset;
+      goalArmRotation = sample.pos.theta - angleOffset;
       // Orient gripper to sample (based on sample.orientation.theta)
       if ( sample.orientation.theta < 0 )
 	sample.orientation.theta += 180.0f;
@@ -625,18 +631,22 @@ void arm_controller::Carrying_Sample_StateFunc()
       float angleOffset = 0.0f;
       angleOffset = atan2( arcLengthBetweenGripperAndCamera, goalRadialPos ) * 180.0f / M_PI;
       ROS_INFO("ANGLE OFFSET = %f",angleOffset);
-      goalArmRotation = payloadBay.pos.theta + angleOffset;
+      goalArmRotation = payloadBay.pos.theta - angleOffset;
       // change gripper rotation to payloadBay's orientation (payloadBay.orientation.theta)
       if ( payloadBay.orientation.theta < 0 )
-	payloadBay.orientation.theta += 180.0f;
+      	payloadBay.orientation.theta += 180.0f;
       if ( payloadBay.orientation.theta > 180.0f )
-	payloadBay.orientation.theta -= 180.0f;
+      	payloadBay.orientation.theta -= 180.0f;
       goalGripperRotation = payloadBay.orientation.theta + gripperRotationOffset;
+      //      goalGripperRotation = 100;
+      //goalArmRotation = 255;
+      //goalRadialPos = 253000;
       atPayloadBay = true;
     } else
     {
       // move down in Z to proper height for PB
       goalVerticalPos = payloadBayZPlane;
+      //   goalVerticalPos = 161300;
       // transition to next state (INSERTING_SAMPLE)
       currentState = INSERTING_SAMPLE;
       stateChanged = true;
@@ -737,12 +747,12 @@ void arm_controller::Init(const ros::TimerEvent& event)
   sampleOrientationOffset = 0.0f;
 
   // need to initialize the offsets with measurements from the system
-  radiusBetweenGripperAndCamera = 30000;
-  arcLengthBetweenGripperAndCamera = int(2.5f * 20000.0f);  // 2.5 inches * 20000 counts per inch
+  radiusBetweenGripperAndCamera = 25000;
+  arcLengthBetweenGripperAndCamera = int(1.75f * 20000.0f);  // 2.5 inches * 20000 counts per inch
 
   // initialization of the z-plane for the payload bay and the sample
   sampleVerticalPos = 498550;
-  payloadBayVerticalPos = 165660;
+  payloadBayVerticalPos = 157660;
 
   // need to initialize the min and max sensor values
   maxRadialPos       = 275000;
