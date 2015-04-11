@@ -23,8 +23,10 @@ void servo_controller::Init(const ros::TimerEvent& event)
   gripperRotationSpeed = 0;
   gripperPositionSpeed = 0;
 
-  complianceMargin = 70;
+  complianceMargin = 90;
   complianceSlope = 5;
+
+  int iGain = 8;
 
   if (serialPort.connect(portName,9600)!=0)
     {
@@ -65,6 +67,8 @@ void servo_controller::Init(const ros::TimerEvent& event)
 	    gripperRotationSpeed = atoi(node_argv[i+1]);
 	  else if (!strcmp(node_argv[i], "-gPosSpeed"))
 	    gripperPositionSpeed = atoi(node_argv[i+1]);
+	  else if (!strcmp(node_argv[i], "-iGain"))
+	    iGain = atoi(node_argv[i+1]);
 	}
 
       //dynamixel.setSpeed(&serialPort, armServoID, armServoSpeed);
@@ -75,6 +79,7 @@ void servo_controller::Init(const ros::TimerEvent& event)
       // Min: 0; Max: 254
       // for MX28T the CWComplianceMargin is the D gain
       dynamixel.setCWComplianceMargin(&serialPort, armServoID, complianceMargin);
+      dynamixel.setCCWComplianceMargin(&serialPort, armServoID, iGain);
       dynamixel.setCWAngleLimit(&serialPort, armServoID, 1);
       dynamixel.setCCWAngleLimit(&serialPort, armServoID, 4095);
       //dynamixel.setCCWComplianceMargin(&serialPort, armServoID, complianceMargin);

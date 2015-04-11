@@ -222,7 +222,7 @@ int Dynamixel::getPosition(SerialPort *serialPort, int idAX12)
     }
 
   printf("getPosition: id=<%i> pos=<%i>\n", idAX12, pos);
-  if (pos<0 || pos > 1023)
+  if (pos<0)
     ret=-2;
   else
     ret=pos;
