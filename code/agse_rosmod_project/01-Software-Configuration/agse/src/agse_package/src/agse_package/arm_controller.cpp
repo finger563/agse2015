@@ -847,6 +847,10 @@ void arm_controller::Init(const ros::TimerEvent& event)
 	{
 	  armRotationEpsilon = atof(node_argv[i+1]);
 	}
+      if (!strcmp(node_argv[i], "-samplePlane"))
+	{
+	  sampleVerticalPos = atoi(node_argv[i+1]);
+	}
     }
   // Jetson's USB-Serial Port for communicating with the ardunio
   sprintf(portName,"//dev//ttyACM0");
