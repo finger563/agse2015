@@ -8,14 +8,20 @@ NASA PLAR AGSE
   * the capabilities of the AGSE as it was demoed
 * Cover exactly what happened for the demos:
   * demo one:
+    * found sample from unknown position and orientation
+    * found payload bay from unkown position and orientation
     * showed the need to level the platform or properly calibrate the height of the sample
   * demo two:
+    * found sample from unknown position and orientation
+    * found payload bay from unkown position and orientation
   	* showed properly calibrated sample height and good detection & recovery
   * demo three:
+    * found sample from unknown position and orientation
+    * found payload bay from unkown position and orientation
   	* showed the capabilites of the gripper to handle sample mis-alignment and still properly grasp and hold on to the sample
   * for all three demos:
-  	* the sample was found
-  	* the payload bay was found
+  	* the sample was found (unknown pos & orientation)
+  	* the payload bay was found (unknown pos & orientation)
   	* the sample was picked up
   	* the payload bay was opened
   	* the sample was inserted into the payload bay
@@ -34,3 +40,11 @@ NASA PLAR AGSE
  * Developed an autonomous, modular, extendable platform for extra-terrestrial sample acquisition
  * Showed that it can simulataneously detect more than one object of interest and segment them properly
  * The sample description in the AGSE code (i.e. the filters) are modular and configurable, so that they can be used to describe any object(s) of interest; this allows the same code and the same hardware to be used repeatedly for different objectives
+
+ Timeline for the AGSE:
+ 00-30s : Zero & Calibrate
+ 30-90s : Find Sample & open payload bay (simultaneous)
+ 90-150s : Find Payload bay
+ 150-180s : Grab Sample
+ 180-200s : Place Sample in Payload Bay
+ 200-240s : Close Payload Bay & rotate to safe position (simultaneous)
