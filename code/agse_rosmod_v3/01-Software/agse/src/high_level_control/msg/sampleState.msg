@@ -1,2 +1,2 @@
-agse_package/samplePosition pos
-agse_package/sampleOrientation orientation
+high_level_control/samplePosition pos
+high_level_control/sampleOrientation orientation
