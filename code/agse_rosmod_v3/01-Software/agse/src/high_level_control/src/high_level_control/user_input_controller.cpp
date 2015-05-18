@@ -38,7 +38,6 @@ user_input_controller::~user_input_controller()
   controlInputs_pub.shutdown();
   armState_sub.shutdown();
   //# Start Destructor Marker
-
   //# End Destructor Marker
 }
 

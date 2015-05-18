@@ -40,7 +40,6 @@ image_sensor::~image_sensor()
   controlInputs_sub.shutdown();
   captureImage_server.shutdown();
   //# Start Destructor Marker
-
   //# End Destructor Marker
 }
 

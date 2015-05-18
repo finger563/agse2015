@@ -47,7 +47,6 @@ arm_controller::~arm_controller()
   sampleStateFromImage_client.shutdown();
   payloadBayStateFromImage_client.shutdown();
   //# Start Destructor Marker
-
   //# End Destructor Marker
 }
 

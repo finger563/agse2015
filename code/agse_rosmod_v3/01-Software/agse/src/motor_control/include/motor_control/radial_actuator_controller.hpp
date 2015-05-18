@@ -48,7 +48,6 @@ private:
   ros::ServiceServer radialPos_server;
 
   //# Start User Private Variables Marker
-
   //# End User Private Variables Marker
 };
 

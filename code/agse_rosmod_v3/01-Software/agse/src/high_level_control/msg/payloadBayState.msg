@@ -1,2 +1,2 @@
-high_level_control/payloadBayPosition pos
-high_level_control/payloadBayOrientation orientation
+agse_package/payloadBayPosition pos
+agse_package/payloadBayOrientation orientation

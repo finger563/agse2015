@@ -49,7 +49,6 @@ radial_actuator_controller::~radial_actuator_controller()
   controlInputs_sub.shutdown();
   radialPos_server.shutdown();
   //# Start Destructor Marker
-
   //# End Destructor Marker
 }
 

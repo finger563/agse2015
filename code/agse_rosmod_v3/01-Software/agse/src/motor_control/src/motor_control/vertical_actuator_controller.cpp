@@ -49,7 +49,6 @@ vertical_actuator_controller::~vertical_actuator_controller()
   controlInputs_sub.shutdown();
   verticalPos_server.shutdown();
   //# Start Destructor Marker
-
   //# End Destructor Marker
 }
 

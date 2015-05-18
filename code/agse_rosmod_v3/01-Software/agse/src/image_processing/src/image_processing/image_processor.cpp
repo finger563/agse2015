@@ -54,7 +54,6 @@ image_processor::~image_processor()
   payloadBayStateFromImage_server.shutdown();
   captureImage_client.shutdown();
   //# Start Destructor Marker
-
   //# End Destructor Marker
 }
 

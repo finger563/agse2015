@@ -62,7 +62,6 @@ private:
   ros::ServiceClient captureImage_client;
 
   //# Start User Private Variables Marker
-
   //# End User Private Variables Marker
 };
 

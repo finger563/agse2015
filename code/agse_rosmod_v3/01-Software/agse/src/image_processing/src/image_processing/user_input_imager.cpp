@@ -62,7 +62,6 @@ user_input_imager::~user_input_imager()
   payloadBayState_sub.shutdown();
   captureImage_client.shutdown();
   //# Start Destructor Marker
-
   //# End Destructor Marker
 }
 

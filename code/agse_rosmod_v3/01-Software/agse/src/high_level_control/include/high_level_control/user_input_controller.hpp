@@ -44,7 +44,6 @@ private:
   ros::Publisher controlInputs_pub;
 
   //# Start User Private Variables Marker
-
   //# End User Private Variables Marker
 };
 

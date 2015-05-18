@@ -71,7 +71,6 @@ servo_controller::~servo_controller()
   armRotation_server.shutdown();
   gripperPos_server.shutdown();
   //# Start Destructor Marker
-
   //# End Destructor Marker
 }
 

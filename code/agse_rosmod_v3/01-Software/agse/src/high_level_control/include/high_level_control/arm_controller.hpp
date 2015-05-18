@@ -80,7 +80,6 @@ private:
   ros::ServiceClient payloadBayStateFromImage_client;
 
   //# Start User Private Variables Marker
-
   //# End User Private Variables Marker
 };
 
